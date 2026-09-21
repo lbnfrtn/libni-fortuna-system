@@ -1,0 +1,20 @@
+# dependencies
+/node_modules
+
+# next
+/.next
+/out
+next-env.d.ts
+
+# env & secrets — NEVER commit real keys
+.env
+.env.local
+.env*.local
+
+# local order store (test mode). Real orders live in Firestore in production.
+/data/*.json
+
+# misc
+.DS_Store
+*.log
+.vercel

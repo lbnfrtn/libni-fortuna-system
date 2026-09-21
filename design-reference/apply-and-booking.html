@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Apply for Liberate</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=La+Belle+Aurore&display=swap">
+<style>
+body{margin:0;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;background:#EEE7DA}
+a{color:#1B1815}a:hover{color:#B8623B}
+*{box-sizing:border-box}
+:focus-visible{outline:2px solid #B8623B;outline-offset:2px}
+.serif{font-family:"Cormorant Garamond",Georgia,serif;font-weight:300}
+.field{display:flex;flex-direction:column;gap:8px}
+.field label,.legend{font-size:14px;line-height:1.4;color:#1B1815}
+.field input,.field textarea,.field select{width:100%;font:inherit;font-size:16px;color:#1B1815;background:#F7F3EB;border:1px solid #C9BFAD;border-radius:0;padding:14px;min-height:52px;-webkit-appearance:none;appearance:none}
+.field textarea{min-height:120px;resize:vertical;line-height:1.5}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:#A88B4A;outline:none;box-shadow:0 0 0 1px #A88B4A}
+.primary{display:flex;align-items:center;justify-content:center;width:100%;min-height:56px;background:#1B1815;color:#EEE7DA;border:1px solid #1B1815;font:inherit;font-size:12px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;text-decoration:none}
+.primary:hover{background:#5B4470;border-color:#5B4470;color:#EEE7DA}
+.ghost{display:flex;align-items:center;justify-content:center;width:100%;min-height:48px;background:transparent;color:#5C554C;border:0;font:inherit;font-size:13px;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.radio{display:flex;align-items:center;gap:12px;min-height:52px;padding:0 14px;border:1px solid #C9BFAD;background:#F7F3EB;font-size:15px}
+.radio input{width:20px;height:20px;accent-color:#5B4470;margin:0}
+.chip{min-height:64px;border:1px solid #C9BFAD;background:#F7F3EB;color:#1B1815;font:inherit;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px}
+.chip-on{background:#5B4470;border-color:#5B4470;color:#EEE7DA}
+.slot{min-height:52px;border:1px solid #C9BFAD;background:#F7F3EB;color:#1B1815;font:inherit;font-size:15px;cursor:pointer}
+.bar{height:3px;background:#C9BFAD;display:block}
+.bar-on{background:#5B4470}
+.slot-on{background:#5B4470;border-color:#5B4470;color:#EEE7DA}
+</style>
+</helmet>
+<div style="width: 390px; height: 1480px; background: #EEE7DA; color: #1B1815; font-size: 16px; line-height: 1.65; display: flex; flex-direction: column;">
+
+<div style="padding: 22px 22px 0; display: flex; justify-content: space-between; align-items: center;">
+<img src="liberate-logo-ink.png" alt="Liberate with Libni" style="width: 132px; height: auto; display: block;">
+<a href="Main.dc.html" style="font-size: 13px; min-height: 44px; display: inline-flex; align-items: center; color: #5C554C;">Back to the page</a>
+</div>
+
+<sc-if value="{{ isIntro }}" hint-placeholder-val="{{ true }}">
+<div style="padding: 44px 22px 0; display: flex; flex-direction: column; gap: 24px;">
+<h1 class="serif" style="margin: 0; font-size: 40px; line-height: 1.06;">Let’s see if Liberate is the right space for you.</h1>
+<p style="margin: 0;">Liberate is intentionally intimate. This short application, and the call that follows, lets both of us feel into whether this is the right experience for you right now.</p>
+<p style="margin: 0;">There are no wrong answers. Write the way you’d talk to me.</p>
+<div style="border-top: 1px solid #A88B4A; border-bottom: 1px solid #A88B4A; padding: 18px 0; display: flex; flex-direction: column; gap: 6px; font-size: 14.5px; color: #5C554C;">
+<span>About 7 minutes</span>
+<span>Then you choose a time for our call</span>
+<span>No payment is taken here</span>
+</div>
+<button class="primary" type="button" onClick="{{ next }}">Begin my application</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isForm }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 30px 22px 0; display: flex; flex-direction: column; gap: 10px;">
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px;">
+<span class="{{ bar1 }}"></span><span class="{{ bar2 }}"></span><span class="{{ bar3 }}"></span>
+</div>
+<p style="margin: 0; font-size: 13px; color: #5C554C;">{{ stepLabel }}</p>
+</div>
+</sc-if>
+
+<sc-if value="{{ isS1 }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 18px 22px 0; display: flex; flex-direction: column; gap: 20px;">
+<h2 class="serif" style="margin: 0 0 4px; font-size: 32px; line-height: 1.1;">First, about you</h2>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+<div class="field"><label for="fn">First name</label><input id="fn" type="text" autocomplete="given-name"></div>
+<div class="field"><label for="ln">Last name</label><input id="ln" type="text" autocomplete="family-name"></div>
+</div>
+<div class="field"><label for="em">Email</label><input id="em" type="email" autocomplete="email" inputmode="email"></div>
+<div class="field"><label for="ph">Phone, with country code</label><input id="ph" type="tel" autocomplete="tel" inputmode="tel" placeholder="+63"></div>
+<div class="field"><label for="ig">Instagram handle (optional)</label><input id="ig" type="text" placeholder="@"></div>
+<div class="field"><label for="co">Country</label><input id="co" type="text" autocomplete="country-name"></div>
+<button class="primary" type="button" onClick="{{ next }}">Continue</button>
+<button class="ghost" type="button" onClick="{{ back }}">Go back</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isS2 }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 18px 22px 0; display: flex; flex-direction: column; gap: 20px;">
+<h2 class="serif" style="margin: 0 0 4px; font-size: 32px; line-height: 1.1;">Where you are right now</h2>
+<div class="field"><label for="q1">What brought you to Liberate, and what are you navigating right now?</label><textarea id="q1"></textarea></div>
+<div class="field"><label for="q2">What pattern do you most want to break?</label><textarea id="q2"></textarea></div>
+<div class="field"><label for="q3">What would you love to experience by the end of Liberate?</label><textarea id="q3"></textarea></div>
+<button class="primary" type="button" onClick="{{ next }}">Continue</button>
+<button class="ghost" type="button" onClick="{{ back }}">Go back</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isS3 }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 18px 22px 0; display: flex; flex-direction: column; gap: 20px;">
+<h2 class="serif" style="margin: 0 0 4px; font-size: 32px; line-height: 1.1;">Your readiness</h2>
+<div class="field"><label for="q4">What inner work have you done before?</label><textarea id="q4"></textarea></div>
+<div class="field"><label for="q5">Why now?</label><textarea id="q5"></textarea></div>
+<fieldset style="border: 0; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px;">
+<legend class="legend" style="padding: 0 0 8px;">If Liberate feels like the right fit, are you ready to invest ₱70,000?</legend>
+<label class="radio"><input type="radio" name="inv" value="yes"> Yes, I’m ready</label>
+<label class="radio"><input type="radio" name="inv" value="plan"> Yes, with a payment plan</label>
+<label class="radio"><input type="radio" name="inv" value="unsure"> I’d like to talk it through</label>
+</fieldset>
+<div class="field"><label for="src">How did you hear about Liberate?</label>
+<select id="src"><option value="">Choose one</option><option>Instagram</option><option>TikTok</option><option>Podcast</option><option>Substack</option><option>A friend or past client</option><option>Libni’s website</option><option>Somewhere else</option></select></div>
+<button class="primary" type="button" onClick="{{ next }}">Send my application</button>
+<button class="ghost" type="button" onClick="{{ back }}">Go back</button>
+</div>
+</sc-if>
+
+<sc-if value="{{ isBook }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 40px 22px 0; display: flex; flex-direction: column; gap: 22px;">
+<div style="display: flex; flex-direction: column; gap: 10px;">
+<p class="serif" style="margin: 0; font-style: italic; font-size: 21px; color: #5B4470;">Application sent</p>
+<h2 class="serif" style="margin: 0; font-size: 36px; line-height: 1.08;">Thank you. Now let’s find a time to connect.</h2>
+<p style="margin: 0; font-size: 15px; color: #5C554C;">A 30-minute call with Libni, on Zoom. Times shown in Manila time.</p>
+</div>
+<div style="display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;">
+<sc-for list="{{ days }}" as="d" hint-placeholder-count="4">
+<button type="button" class="{{ d.cls }}" onClick="{{ d.pick }}"><span style="font-size: 12px;">{{ d.dow }}</span><span class="serif" style="font-size: 24px; line-height: 1;">{{ d.num }}</span></button>
+</sc-for>
+</div>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px;">
+<sc-for list="{{ slots }}" as="s" hint-placeholder-count="4">
+<button type="button" class="{{ s.cls }}" onClick="{{ s.pick }}">{{ s.label }}</button>
+</sc-for>
+</div>
+<sc-if value="{{ hasSlot }}" hint-placeholder-val="{{ false }}">
+<button class="primary" type="button" onClick="{{ next }}">Book this time</button>
+</sc-if>
+<p style="margin: 0; font-size: 13px; color: #5C554C;">Your real calendar appears here once it’s connected. These times are samples.</p>
+</div>
+</sc-if>
+
+<sc-if value="{{ isDone }}" hint-placeholder-val="{{ false }}">
+<div style="padding: 56px 22px 0; display: flex; flex-direction: column; gap: 22px; align-items: center; text-align: center;">
+<div style="display: flex; align-items: center; gap: 14px; color: #A88B4A;"><span style="width: 56px; border-top: 1px solid #A88B4A;"></span><span style="width: 7px; height: 7px; border: 1px solid #A88B4A; transform: rotate(45deg);"></span><span style="width: 56px; border-top: 1px solid #A88B4A;"></span></div>
+<h2 class="serif" style="margin: 0; font-size: 40px; line-height: 1.06;">It’s in the calendar.</h2>
+<p class="serif" style="margin: 0; font-size: 24px; line-height: 1.3;">{{ bookedLine }}</p>
+<p style="margin: 0; max-width: 32ch;">You’ll get an email with the Zoom link and a reminder the day before. Until then, there’s nothing you need to prepare. Just come as you are.</p>
+<p style="margin: 0; font-family: 'La Belle Aurore', cursive; font-size: 38px; line-height: 1; color: #5B4470;">See you soon, Libni</p>
+<a class="primary" href="Main.dc.html" style="margin-top: 10px;">Back to Liberate</a>
+</div>
+</sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":390,"height":1480}}'>
+class Component extends DCLogic {
+renderVals() {
+var self = this;
+var st = this.state || {};
+var step = st.step || 0;
+var day = st.day == null ? 0 : st.day;
+var slot = st.slot == null ? -1 : st.slot;
+var dayList = [
+{ dow: 'Tue', num: '22', full: 'Tuesday, September 22' },
+{ dow: 'Wed', num: '23', full: 'Wednesday, September 23' },
+{ dow: 'Thu', num: '24', full: 'Thursday, September 24' },
+{ dow: 'Fri', num: '25', full: 'Friday, September 25' }
+];
+var slotList = ['10:00 AM', '11:30 AM', '2:00 PM', '4:30 PM'];
+var on = 'bar bar-on';
+var off = 'bar';
+var labels = { 1: 'Step 1 of 3', 2: 'Step 2 of 3', 3: 'Step 3 of 3' };
+return {
+isIntro: step === 0,
+isForm: step >= 1 && step <= 3,
+isS1: step === 1,
+isS2: step === 2,
+isS3: step === 3,
+isBook: step === 4,
+isDone: step === 5,
+bar1: step >= 1 ? on : off,
+bar2: step >= 2 ? on : off,
+bar3: step >= 3 ? on : off,
+stepLabel: labels[step] || '',
+hasSlot: slot >= 0,
+bookedLine: dayList[day].full + ' at ' + (slot >= 0 ? slotList[slot] : '') + ', Manila time',
+next: function () { self.setState({ step: step + 1 }); },
+back: function () { self.setState({ step: Math.max(0, step - 1) }); },
+days: dayList.map(function (d, i) {
+return { dow: d.dow, num: d.num, cls: i === day ? 'chip chip-on' : 'chip', pick: function () { self.setState({ day: i, slot: null }); } };
+}),
+slots: slotList.map(function (label, i) {
+return { label: label, cls: i === slot ? 'slot slot-on' : 'slot', pick: function () { self.setState({ slot: i }); } };
+})
+};
+}
+}
+</script>
+</body>
+</html>

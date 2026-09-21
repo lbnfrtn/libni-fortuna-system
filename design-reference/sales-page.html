@@ -1,0 +1,443 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Liberate sales page</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=La+Belle+Aurore&display=swap">
+<style>
+:root{--cream:#EEE7DA;--paper:#F7F3EB;--ink:#1B1815;--soft:#5C554C;--line:#C9BFAD;--gold:#A88B4A;--plum:#5B4470;--terra:#B8623B;--night:#2A2329;--ph:#DDD3C2}
+body{margin:0;background:#EEE7DA;color:#1B1815;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:17px;line-height:1.7;-webkit-font-smoothing:antialiased}
+a{color:inherit}a:hover{color:#B8623B}
+*{box-sizing:border-box}
+p{margin:0}
+h1,h2,h3{margin:0;font-family:"Cormorant Garamond",Georgia,serif;font-weight:300}
+:focus-visible{outline:2px solid #B8623B;outline-offset:3px}
+.page{width:100%;overflow-x:hidden}
+.wrap{max-width:1240px;margin:0 auto;padding:0 48px}
+.narrow{max-width:720px;margin:0 auto}
+.sec{padding:120px 0}
+.paper{background:var(--paper)}
+.display{font-size:clamp(32px,4vw,58px);line-height:1.06;letter-spacing:-0.01em}
+.lede{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(21px,1.9vw,27px);line-height:1.3;font-weight:300}
+.soft{color:var(--soft)}
+.stack{display:flex;flex-direction:column;gap:22px}
+.stack-lg{display:flex;flex-direction:column;gap:44px}
+.center{text-align:center;align-items:center}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:54px;padding:0 32px;border:1px solid var(--ink);font-size:12px;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;color:var(--ink);background:transparent;transition:background .2s,color .2s}
+.btn:hover{background:var(--ink);color:var(--cream)}
+.btn-solid{background:var(--ink);color:var(--cream)}
+.btn-solid:hover{background:var(--plum);border-color:var(--plum);color:var(--cream)}
+.btn-light{border-color:var(--cream);color:var(--cream)}
+.btn-light:hover{background:var(--cream);color:var(--ink)}
+.btn-cream{background:var(--cream);border-color:var(--cream);color:var(--ink)}
+.btn-cream:hover{background:var(--terra);border-color:var(--terra);color:var(--cream)}
+.btns{display:flex;flex-wrap:wrap;gap:14px}
+.ph{background:var(--ph);display:flex;align-items:flex-end;padding:26px;width:100%;outline:1px solid rgba(168,139,74,.75);outline-offset:-12px}
+.ph span{font-size:12px;line-height:1.45;color:var(--soft);max-width:30ch}
+.ph-dark{background:#3A3138;outline-color:rgba(217,194,138,.55)}
+.ph-dark span{color:#D8CEBD}
+.split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:96px;align-items:center}
+.hero{background:var(--night);color:var(--cream);min-height:100vh;display:flex;flex-direction:column;justify-content:space-between;padding:32px 0 64px;position:relative}
+.nav{display:flex;justify-content:space-between;align-items:center}
+.nav a{text-decoration:none;font-size:12px;letter-spacing:.2em;text-transform:uppercase}
+.nav a:hover{color:#E5B79F}
+.wordmark{font-size:clamp(56px,12vw,176px);letter-spacing:.1em;line-height:.9;font-weight:300;margin-left:-0.04em}
+.hero-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:96px;align-items:end;margin-top:36px}
+.hero::before,.retreat-top::before,.closing::before{content:"";position:absolute;inset:16px;border:1px solid rgba(217,194,138,.5);pointer-events:none}
+.closing{position:relative}
+.orn{display:flex;align-items:center;justify-content:center;gap:14px;color:#A88B4A}
+.orn::before,.orn::after{content:"";width:64px;border-top:1px solid currentColor}
+.orn i{display:block;width:7px;height:7px;border:1px solid currentColor;transform:rotate(45deg)}
+.orn-light{color:#D9C28A}
+.frame{border:1px solid #A88B4A;outline:1px solid rgba(168,139,74,.55);outline-offset:7px;padding:72px 64px}
+.logo{display:block;height:auto;max-width:100%}
+.hero-note{position:absolute;right:48px;top:96px;font-size:12px;color:#D8CEBD;max-width:26ch;text-align:right;line-height:1.45}
+.intake{font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:#D9C28A;border-top:1px solid rgba(217,194,138,.5);padding-top:18px}
+.tools{display:flex;flex-direction:column;gap:2px;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:clamp(23px,2.2vw,30px);line-height:1.3}
+.inside{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:64px 36px}
+.item{display:flex;flex-direction:column;gap:18px;border-top:1px solid var(--gold);padding-top:18px}
+.item h3{font-size:23px;line-height:1.15;font-weight:400}
+.item p{font-size:15px;line-height:1.65;color:var(--soft)}
+.journey{background:var(--plum);color:var(--cream)}
+.road{position:relative}
+.row{position:relative;display:flex;flex-direction:row}
+.row-rev{flex-direction:row-reverse}
+.row::before{content:"";position:absolute;top:44px;left:0;right:0;border-top:1px solid rgba(217,194,138,.7)}
+.row::after{content:"";position:absolute;top:44px;right:-40px;width:40px;height:100%;border:1px solid rgba(217,194,138,.7);border-left:0;border-radius:0 40px 40px 0}
+.row-rev::after{right:auto;left:-40px;border:1px solid rgba(217,194,138,.7);border-right:0;border-radius:40px 0 0 40px}
+.row-end::after{display:none}
+.month-tag{position:absolute;top:0;left:0;font-family:"Cormorant Garamond",Georgia,serif;font-style:italic;font-size:21px;color:#E5D9F0}
+.row-rev .month-tag{left:auto;right:0}
+.stop{position:relative;flex:1 1 0;min-width:0;padding:76px 28px 58px 0;display:flex;flex-direction:column;gap:6px}
+.dot{position:absolute;top:29px;left:0;width:30px;height:30px;border-radius:50%;background:#5B4470;border:1px solid #D9C28A;display:flex;align-items:center;justify-content:center;font-size:11px;letter-spacing:.04em;color:#D9C28A}
+.stop h3{font-size:24px;line-height:1.15;font-weight:400}
+.stop p{font-size:14.5px;line-height:1.5;color:#E9E0EE}
+.stop-last .dot{background:#D9C28A;color:#3E2D4E}
+.stop-last h3{font-style:italic;font-size:30px}
+.retreat{background:var(--night);color:var(--cream)}
+.retreat-top{min-height:720px;display:flex;flex-direction:column;justify-content:flex-end;padding:0 0 72px;position:relative;background:#3A3138}
+.mosaic{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));grid-auto-rows:240px;gap:12px}
+.span2{grid-column:span 2}
+.tall{grid-row:span 2}
+.sign{font-family:"La Belle Aurore",cursive;font-size:46px;line-height:1;color:var(--plum)}
+.videos{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.video{aspect-ratio:4/5;position:relative}
+.play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:64px;height:64px;border:1px solid #D9C28A;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.peace p{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(19px,1.7vw,23px);line-height:1.45;font-weight:300}
+.price{font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(54px,6vw,88px);line-height:1;font-weight:300}
+.incl{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:40px}
+.incl li{border-top:1px solid var(--line);padding:16px 0;font-size:16px}
+details{border-top:1px solid var(--line)}
+details:last-of-type{border-bottom:1px solid var(--line)}
+summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:24px;align-items:center;padding:22px 0;font-family:"Cormorant Garamond",Georgia,serif;font-size:clamp(20px,1.8vw,24px);line-height:1.25;min-height:44px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;font-size:22px;font-weight:300;color:var(--terra)}
+details[open] summary::after{content:"–"}
+details p{padding:0 0 28px;max-width:62ch;color:var(--soft)}
+.foot{border-top:1px solid var(--line);padding:40px 0 56px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--soft)}
+.foot nav{display:flex;gap:24px;flex-wrap:wrap}
+.foot a{text-decoration:none;min-height:44px;display:inline-flex;align-items:center}
+@media (max-width:860px){
+body{font-size:16px}
+.wrap{padding:0 22px}
+.sec{padding:88px 0}
+.split,.hero-grid{grid-template-columns:minmax(0,1fr);gap:40px}
+.hero{padding:22px 0 40px}
+.hero-note{right:22px;top:72px}
+.wordmark{letter-spacing:.06em}
+.btns .btn{width:100%}
+.flip-mobile{order:-1}
+.inside{grid-template-columns:minmax(0,1fr);gap:0}
+.item{display:grid;grid-template-columns:104px minmax(0,1fr);column-gap:18px;row-gap:6px;padding:20px 0}
+.item .ph{grid-row:span 2;aspect-ratio:1/1 !important;padding:8px;outline-offset:-5px}
+.frame{padding:40px 22px;outline-offset:5px}
+.hero::before,.retreat-top::before,.closing::before{inset:9px}
+.item .ph span{display:none}
+.item h3{font-size:23px}
+.row,.row-rev{flex-direction:column}
+.row::before{top:0;bottom:0;left:15px;right:auto;border-top:0;border-left:1px solid rgba(217,194,138,.7)}
+.row::after{display:none}
+.month-tag,.row-rev .month-tag{position:static;padding:6px 0 18px 52px}
+.stop{padding:0 0 30px 52px}
+.dot{top:0}
+.stop-last{padding-bottom:0}
+.retreat-top{min-height:560px;padding-bottom:44px}
+.mosaic{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:170px;gap:8px}
+.videos{grid-template-columns:minmax(0,1fr)}
+.video{aspect-ratio:16/10}
+.incl{grid-template-columns:minmax(0,1fr)}
+.foot{flex-direction:column}
+}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+</helmet>
+<div class="page" style="width: 100%;">
+
+<header class="hero">
+<div class="wrap" style="width: 100%;">
+<div class="nav">
+<a href="#top" style="font-family: 'Cormorant Garamond', Georgia, serif; font-size: 20px; letter-spacing: .04em; text-transform: none;">Libni Fortuna</a>
+<a href="Apply.dc.html" style="min-height: 44px; display: inline-flex; align-items: center;">Book a call</a>
+</div>
+</div>
+<p class="hero-note">Photo goes here, full width: your strongest portrait. Eyes closed or looking away works well behind the type.</p>
+<div class="wrap" style="width: 100%;">
+<h1 id="top" style="margin: 0;"><img class="logo" src="liberate-logo-white.png" alt="Liberate with Libni" style="width: min(100%, 940px);"></h1>
+<div class="hero-grid">
+<p class="lede" style="color: #F7F3EB;">For the soul-led ones ready to let go of the weight and come home to their power.</p>
+<div class="stack">
+<p style="color: #E4DBCB; max-width: 52ch;">A 3-month transformational experience for people ready to break free from emotional patterns, people-pleasing, overthinking, and the quiet exhaustion of holding it all together.</p>
+<p class="intake">Next intake: October 2026</p>
+<div class="btns">
+<a class="btn btn-cream" href="#investment">Liberate yourself today</a>
+<a class="btn btn-light" href="Apply.dc.html">Book a call</a>
+</div>
+</div>
+</div>
+</div>
+</header>
+
+<section class="sec">
+<div class="wrap split">
+<div class="ph" style="aspect-ratio: 4/5;"><span>Photo: you, alone and quiet. A still, in-between moment.</span></div>
+<div class="stack-lg">
+<h2 class="display">There comes a moment when the tools stop working.</h2>
+<div class="tools">
+<span style="color: #1B1815;">The affirmation.</span>
+<span style="color: #5C554C;">The mindset shift.</span>
+<span style="color: #7A7165;">The journaling.</span>
+<span style="color: #8F8577;">The spiritual checklist.</span>
+</div>
+<div class="stack" style="max-width: 54ch;">
+<p>They once brought comfort, but now they feel like surface noise.</p>
+<p>Not because you’re doing it wrong. Because you’re ready for something deeper.</p>
+<p>Liberate is a 3-month group coaching experience for soul-led humans ready to break free from emotional patterns, people-pleasing, and the quiet burnout of holding it all together, and step into their next level of wholeness, power, and spiritual expansion.</p>
+</div>
+<div class="btns"><a class="btn" href="#weight">Is this for me?</a></div>
+</div>
+</div>
+</section>
+
+<section class="sec paper" id="weight">
+<div class="wrap split">
+<div class="stack-lg">
+<h2 class="display">They’ve called you intuitive, grounded, even strong.</h2>
+<p class="lede">But what they don’t see is the quiet weight you carry.</p>
+<div class="stack" style="max-width: 54ch;">
+<p>The overthinking. The people-pleasing. The constant shapeshifting just to feel safe or seen.</p>
+<p>You’ve built a life, maybe even a business, but deep down, you still question your worth. You still feel the pull of old stories, emotional loops, and spiritual disconnection.</p>
+<p>And yet there’s a whisper beneath it all. A part of you that knows it’s time to break the cycle. To stop managing your healing and start embodying it.</p>
+<p>To feel safe in your body. Clear in your boundaries. Free in your energy. To lead your life from your center, not from your wounds.</p>
+</div>
+</div>
+<div class="ph flip-mobile" style="aspect-ratio: 4/5;"><span>Photo: the bath portrait from your current page.</span></div>
+</div>
+</section>
+
+<section class="sec">
+<div class="wrap stack-lg center">
+<div class="orn"><i></i></div>
+<p class="lede" style="font-style: italic;">Introducing…</p>
+<div class="stack center" style="gap: 10px;">
+<h2 style="margin: 0;"><img class="logo" src="liberate-logo-ink.png" alt="Liberate with Libni" style="width: min(100%, 600px);"></h2>
+</div>
+<div class="ph" style="aspect-ratio: 16/9;"><span>The real Zoom group screenshot, shown large. No laptop mockup around it, so faces are big enough to feel.</span></div>
+<div class="narrow stack" style="gap: 28px;">
+<p class="lede">A 3-month group experience that will help you release yourself from what no longer serves, reconnect with your truth, and rise, fully and unapologetically.</p>
+<p>This is where deep healing meets grounded embodiment. You won’t just talk about change. You’ll feel it in your body, your energy, your boundaries, and your life.</p>
+</div>
+</div>
+</section>
+
+<section class="sec paper">
+<div class="wrap stack-lg">
+<div class="split" style="align-items: end;">
+<h2 class="display">Here’s what you’ll experience inside.</h2>
+<div class="ph" style="aspect-ratio: 16/9;"><span>Photo: the group around the table, from your current page.</span></div>
+</div>
+<div class="inside">
+<div class="item"><div class="ph" style="aspect-ratio: 4/5;"><span>Zoom session</span></div><h3>Weekly live group sessions</h3><p>Guided coaching, shadow work, and somatic healing practices in a safe, intimate setting on Zoom.</p></div>
+<div class="item"><div class="ph" style="aspect-ratio: 4/5;"><span>Candlelit room</span></div><h3>Subconscious reprogramming</h3><p>Release old beliefs and patterns stored deep within, and create new ones rooted in self-trust and truth.</p></div>
+<div class="item"><div class="ph" style="aspect-ratio: 4/5;"><span>Outdoor practice</span></div><h3>Energetic exploration and chakra alignment</h3><p>Understand your energy body and return to balance through breathwork and gentle practices.</p></div>
+<div class="item"><div class="ph" style="aspect-ratio: 4/5;"><span>Poolside, nature</span></div><h3>Spiritual tools and intuitive activation</h3><p>Deepen your connection with intuition, inner knowing, and your spiritual path.</p></div>
+<div class="item"><div class="ph" style="aspect-ratio: 4/5;"><span>Journaling</span></div><h3>Journaling and breakthrough exercises</h3><p>Process each layer of your transformation with clarity and intention, guided every step of the way.</p></div>
+<div class="item"><div class="ph" style="aspect-ratio: 4/5;"><span>Circle by the window</span></div><h3>Private community</h3><p>You’re not doing this alone. You’ll be surrounded by like-hearted people walking this path with you.</p></div>
+<div class="item"><div class="ph" style="aspect-ratio: 4/5;"><span>Portal screen</span></div><h3>Online portal</h3><p>A library of guided meditations, workshops, practices, and resources to support you throughout.</p></div>
+<div class="item"><div class="ph" style="aspect-ratio: 4/5;"><span>Retreat group photo</span></div><h3>In-person celebratory retreat</h3><p>Anchor everything you’ve integrated in a closing retreat designed to help you ground your growth and embody your liberation.</p></div>
+</div>
+</div>
+</section>
+
+<section class="sec journey">
+<div class="wrap stack-lg">
+<div class="split" style="align-items: end;">
+<h2 class="display">Your 12-week roadmap</h2>
+<p style="color: #E9E0EE; max-width: 48ch;">Each week goes a little deeper than the last. You start by seeing the pattern. You end by living without it.</p>
+</div>
+<div class="road">
+<div class="row">
+<p class="month-tag">Month one</p>
+<div class="stop"><span class="dot">01</span><h3>Awareness</h3><p>See your patterns.</p></div>
+<div class="stop"><span class="dot">02</span><h3>The root</h3><p>Understand where they came from.</p></div>
+<div class="stop"><span class="dot">03</span><h3>Identity</h3><p>Question the identities built around old beliefs.</p></div>
+<div class="stop"><span class="dot">04</span><h3>The body</h3><p>Listen to what your body has been communicating.</p></div>
+</div>
+<div class="row row-rev">
+<p class="month-tag">Month two</p>
+<div class="stop"><span class="dot">05</span><h3>Emotions</h3><p>Feel what you’ve learned to suppress.</p></div>
+<div class="stop"><span class="dot">06</span><h3>Subconscious</h3><p>Work beneath conscious understanding.</p></div>
+<div class="stop"><span class="dot">07</span><h3>Self-trust</h3><p>Reconnect with your own voice.</p></div>
+<div class="stop"><span class="dot">08</span><h3>Boundaries</h3><p>Choose yourself without guilt.</p></div>
+</div>
+<div class="row row-end">
+<p class="month-tag">Month three</p>
+<div class="stop"><span class="dot">09</span><h3>Repatterning</h3><p>Practice a new way of being.</p></div>
+<div class="stop"><span class="dot">10</span><h3>Nervous system</h3><p>Create more capacity for safety, receiving, and expression.</p></div>
+<div class="stop"><span class="dot">11</span><h3>Integration</h3><p>Bring the work into real life.</p></div>
+<div class="stop stop-last"><span class="dot">12</span><h3>Liberation</h3><p>Step into greater freedom and choice.</p></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="retreat">
+<div class="retreat-top">
+<p class="hero-note" style="top: 40px;">Photo goes here, full width: your widest retreat shot. Landscape, people small in nature.</p>
+<div class="wrap" style="width: 100%;">
+<h2 class="display" style="max-width: 16ch;">It doesn’t end on Zoom. It ends with a celebration.</h2>
+</div>
+</div>
+<div class="wrap" style="padding-top: 96px; padding-bottom: 130px;">
+<div class="stack-lg">
+<div class="split" style="align-items: start;">
+<p class="lede">The journey culminates in an in-person overnight retreat where we slow down, connect, integrate, celebrate, and embody everything you’ve experienced.</p>
+<div class="stack">
+<p style="color: #E4DBCB;">Because sometimes transformation needs more than another Zoom call.</p>
+<p class="lede" style="font-style: italic;">It needs to be lived.</p>
+</div>
+</div>
+<div class="mosaic">
+<div class="ph ph-dark span2 tall"><span>Group photo</span></div>
+<div class="ph ph-dark"><span>Nature</span></div>
+<div class="ph ph-dark"><span>Food, the table</span></div>
+<div class="ph ph-dark"><span>Movement</span></div>
+<div class="ph ph-dark"><span>Meditation</span></div>
+<div class="ph ph-dark span2"><span>Connection: two people mid-laugh or mid-hug</span></div>
+<div class="ph ph-dark span2"><span>The place itself, at golden hour</span></div>
+</div>
+</div>
+</div>
+</section>
+
+<section class="sec">
+<div class="wrap split" style="align-items: start;">
+<div class="ph" style="aspect-ratio: 4/5;"><span>Photo: your portrait for the story section.</span></div>
+<div class="stack-lg">
+<div class="stack" style="gap: 10px;">
+<p class="lede" style="font-style: italic;">My story</p>
+<h2 class="display">Why I created Liberate</h2>
+</div>
+<div class="stack" style="max-width: 56ch;">
+<p>If you’re reading this, I want you to know I see you. I know that feeling.</p>
+<p>For years, I carried so much that wasn’t mine: the weight of expectations, emotional baggage I didn’t even realize I was holding, and patterns that kept me stuck in cycles I desperately wanted to break.</p>
+<p>I did all the things. The self-help books. The affirmations. The journaling. And while they helped, I still felt like something was missing. Like there was something deeper blocking me from fully stepping into who I was meant to be.</p>
+<p>It wasn’t until I went beyond mindset work and into deep subconscious and energetic healing that everything changed.</p>
+<p>I started working with my chakras, rewiring my subconscious mind, releasing stored trauma, and integrating the spiritual side of healing. And for the first time, I felt free.</p>
+<p>That’s why I created Liberate. Because I know you’ve done the work, but something still isn’t clicking. And I want to take you beyond surface-level healing into the deep, soul-shifting work that truly sets you free.</p>
+<p>If you’re ready for that, welcome home. This is your space.</p>
+</div>
+<p class="sign">Libni</p>
+</div>
+</div>
+</section>
+
+<section class="sec paper">
+<div class="wrap stack-lg">
+<h2 class="display">Real people. Real shifts.</h2>
+<div class="videos">
+<div class="ph ph-dark video"><div class="play"><svg width="18" height="20" viewBox="0 0 18 20" fill="none" aria-hidden="true"><path d="M2 2l14 8-14 8V2z" stroke="#D8CEBD" stroke-width="1.2"></path></svg></div><span>Video testimony 1, with first name</span></div>
+<div class="ph ph-dark video"><div class="play"><svg width="18" height="20" viewBox="0 0 18 20" fill="none" aria-hidden="true"><path d="M2 2l14 8-14 8V2z" stroke="#D8CEBD" stroke-width="1.2"></path></svg></div><span>Video testimony 2, with first name</span></div>
+<div class="ph ph-dark video"><div class="play"><svg width="18" height="20" viewBox="0 0 18 20" fill="none" aria-hidden="true"><path d="M2 2l14 8-14 8V2z" stroke="#D8CEBD" stroke-width="1.2"></path></svg></div><span>Video testimony 3, with first name</span></div>
+</div>
+<div class="narrow stack center">
+<p class="lede" style="font-style: italic;">[One written testimonial in the client’s own words goes here. Two or three sentences about what shifted.]</p>
+<p class="soft" style="font-size: 14px;">[First name, cohort year]</p>
+</div>
+</div>
+</section>
+
+<section class="sec">
+<div class="wrap">
+<div class="narrow stack-lg center peace">
+<div class="orn"><i></i></div>
+<h2 class="display">Your peace of mind matters</h2>
+<div class="stack" style="gap: 26px;">
+<p>Liberate is a sacred container, and joining it is a meaningful choice.</p>
+<p>We honor the depth of this kind of work, and we believe it deserves a full-body yes.</p>
+<p>That’s why Liberate does not offer refunds. Not because we don’t care, but because we do.</p>
+<p>Because this space isn’t built on urgency, pressure, or impulse decisions. It’s built on alignment, trust, and mutual devotion.</p>
+<p>If you’re unsure, it’s okay to take your time. Feel into it. Ask your questions. Breathe with the decision.</p>
+<p>And when you say yes, let it be a full yes, one your whole being can stand behind.</p>
+<p style="font-style: italic;">We’ll meet you there.</p>
+</div>
+<div class="btns"><a class="btn" href="Apply.dc.html">I’m ready to be held</a></div>
+</div>
+</div>
+</section>
+
+<section class="sec paper" id="investment">
+<div class="wrap">
+<div class="frame split" style="align-items: start;">
+<div class="stack-lg">
+<div class="stack" style="gap: 8px;">
+<p class="lede" style="font-style: italic;">The investment</p>
+<h2 style="font-size: clamp(30px, 3vw, 42px); line-height: 1.1;">Liberate, a 3-month group coaching experience</h2>
+</div>
+<p class="price">₱70,000</p>
+<p class="soft" style="max-width: 46ch;">[Payment plan terms go here once you decide them: how many payments, how much, and when each is due.]</p>
+<div class="stack" style="gap: 14px;">
+<div class="btns"><a class="btn btn-solid" href="Apply.dc.html">I’m ready to Liberate</a></div>
+<p class="soft" style="font-size: 14px; max-width: 46ch;">This takes you to a short application, then a call with me. No payment is taken until we both know it’s the right space for you.</p>
+</div>
+</div>
+<ul class="incl">
+<li>12-week group experience</li>
+<li>Weekly live sessions</li>
+<li>Subconscious work</li>
+<li>Shadow work</li>
+<li>Somatic practices</li>
+<li>Breathwork</li>
+<li>Energetic exploration</li>
+<li>Guided meditations</li>
+<li>Private community</li>
+<li>Online resource portal</li>
+<li style="grid-column: 1 / -1; border-bottom: 1px solid #C9BFAD;">Celebratory overnight retreat, in person</li>
+</ul>
+</div>
+</div>
+</section>
+
+<section class="sec">
+<div class="wrap split" style="align-items: start;">
+<div class="stack">
+<h2 class="display">Honest answers for the ones who feel the pull</h2>
+</div>
+<div>
+<details><summary>What if I can’t make the live sessions?</summary><p>[Your answer from the current page goes here.]</p></details>
+<details><summary>I’ve done a lot of inner work. How is this different?</summary><p>[Your answer from the current page goes here.]</p></details>
+<details><summary>Is this a safe space for LGBTQ+, neurodivergent, or non-traditional paths?</summary><p>[Your answer from the current page goes here.]</p></details>
+<details><summary>How much access do I get to Libni?</summary><p>[Your answer from the current page goes here.]</p></details>
+</div>
+</div>
+</section>
+
+<section class="sec closing" id="apply" style="background: #2A2329; color: #EEE7DA;">
+<div class="wrap">
+<div class="stack-lg center" style="max-width: 980px; margin: 0 auto;">
+<div class="orn orn-light"><i></i></div>
+<h2 class="display" style="font-size: clamp(34px, 4.6vw, 68px);">You don’t need to become someone else. You need the freedom to be yourself.</h2>
+<div class="narrow stack" style="color: #E4DBCB;">
+<p>Break free from the emotional weight you’ve been carrying. From the people-pleasing, the patterns, the quiet exhaustion that’s become your normal.</p>
+<p>Liberate is your space to unravel, rebuild, and rise. This is your next chapter, and it doesn’t have to be written in pain.</p>
+</div>
+<p class="intake" style="border-top: 0; padding-top: 0;">We begin October 2026. Spots are limited and held with intention.</p>
+<div class="btns" style="justify-content: center;">
+<a class="btn btn-cream" href="Apply.dc.html">I’m ready to Liberate</a>
+<a class="btn btn-light" href="Apply.dc.html">Book a call</a>
+</div>
+</div>
+</div>
+</section>
+
+<footer>
+<div class="wrap">
+<div class="foot" style="border-top: 0;">
+<p style="font-family: 'Cormorant Garamond', Georgia, serif; font-style: italic; font-size: 22px; color: #1B1815;">Come home to yourself.</p>
+<nav aria-label="Footer">
+<a href="#top">Instagram</a>
+<a href="#top">TikTok</a>
+<a href="#top">Spotify</a>
+<a href="#top">Substack</a>
+<a href="mailto:hello@libni.co">hello@libni.co</a>
+</nav>
+<p>© 2026 Libni Fortuna</p>
+</div>
+</div>
+</footer>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+renderVals() {
+return {};
+}
+}
+</script>
+</body>
+</html>
