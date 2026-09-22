@@ -46,7 +46,8 @@ if (mode === "file") {
       projectId: process.env.FIREBASE_PROJECT_ID,
     });
     const db = getFirestore();
-    const ref = db.collection("lf_orders").doc("__healthcheck__");
+    // Firestore reserves ids wrapped in double underscores.
+    const ref = db.collection("lf_orders").doc("healthcheck-probe");
     await ref.set({ at: new Date().toISOString(), probe: true });
     const snap = await ref.get();
     await ref.delete();
