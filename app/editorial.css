@@ -357,6 +357,7 @@
   .ed-hero-media { order: -1; min-height: 62svh; max-height: 640px; }
   .ed-hero-media::after { background: linear-gradient(180deg, rgba(36,28,42,.5) 0%, rgba(36,28,42,0) 30%, rgba(36,28,42,0) 62%, var(--ed-night) 100%); }
   .ed-hero-panel { padding: 8px 20px 48px; margin-top: -60px; background: none; }
+  .ed-hero-cred { position: static; }
   .ed-hero-title { font-size: clamp(42px, 10.5vw, 72px); margin: 16px 0 18px; }
   .ed-hero-title.xl { font-size: clamp(76px, 24vw, 130px); }
   .ed-hero-simple { padding-top: 130px; }
