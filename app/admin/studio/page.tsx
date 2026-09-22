@@ -1,10 +1,13 @@
 import { SLOT_GROUPS } from "@/config/site-slots";
 import { getContent } from "@/lib/content";
+import { isLoggedIn } from "@/lib/auth";
+import DeskLogin from "@/app/desk/DeskLogin";
 import StudioClient from "./StudioClient";
 
 export const dynamic = "force-dynamic";
 
 export default async function StudioPage() {
+  if (!(await isLoggedIn())) return <DeskLogin />;
   const content = await getContent();
   const storage = process.env.BLOB_READ_WRITE_TOKEN
     ? "Vercel Blob — uploads survive every deploy."
