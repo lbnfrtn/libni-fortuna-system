@@ -29,7 +29,9 @@ export async function putUpload(slotId: string, type: string, bytes: Buffer): Pr
     const pkg = "@vercel/blob";
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     const blob: any = await import(/* webpackIgnore: true */ pkg);
+    // Site photos are rendered via <img src>, so the store must be PUBLIC.
     const res = await blob.put(`site/${name}`, bytes, {
+      access: "public",
       contentType: type,
       token: process.env.BLOB_READ_WRITE_TOKEN,
     });
