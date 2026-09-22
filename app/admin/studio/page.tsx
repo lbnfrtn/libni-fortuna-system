@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 export default async function StudioPage() {
   if (!(await isLoggedIn())) return <DeskLogin />;
   const content = await getContent();
-  const storage = process.env.BLOB_READ_WRITE_TOKEN
+  const storage = process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID
     ? "Vercel Blob — uploads survive every deploy."
     : "This computer (public/uploads) — fine for trying it out. Add BLOB_READ_WRITE_TOKEN before go-live so photos survive deploys.";
 
