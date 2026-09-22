@@ -106,6 +106,10 @@
 .sitefooter-inner { max-width: 1280px; padding: clamp(64px, 8vw, 110px) clamp(20px, 5vw, 64px) 48px; }
 .sitefooter .big { font-family: var(--ed-serif); font-weight: 400; font-size: clamp(30px, 3.4vw, 44px); line-height: 1.1; }
 .sitefooter .muted { color: rgba(251,249,246,.55); }
+.sitefooter .ed-social { display: flex; gap: 22px; margin-top: 26px; }
+.sitefooter .ed-social a { display: inline-flex; color: rgba(251,249,246,.62); transition: color .3s, transform .3s; }
+.sitefooter .ed-social a:hover { color: var(--ed-gold-soft); transform: translateY(-2px); }
+.sitefooter .ed-social svg { width: 22px; height: 22px; fill: currentColor; }
 .footcols { grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; }
 .footcols h4 { font-family: var(--ed-sans); font-size: 10px; letter-spacing: .28em; color: var(--ed-gold); font-weight: 600; margin-bottom: 14px; }
 .footcols a { font-size: 15px; padding: 5px 0; color: rgba(251,249,246,.8); }
@@ -603,26 +607,12 @@ a.ed-talk:hover h4 { color: var(--ed-plum); }
 .nav-login { font-size: 12px !important; letter-spacing: .14em; text-transform: uppercase; opacity: .78; }
 .nav-login:hover { opacity: 1; }
 
-/* ---- Instagram strip (above the footer, every page) ---- */
-.ed-ig { background: var(--ed-ivory); border-top: 1px solid var(--ed-line); padding: clamp(44px, 6vw, 80px) 0; }
-.ed-ig-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; margin-bottom: 26px; }
-.ed-ig-feature { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(16px, 2.5vw, 36px); align-items: stretch; }
-.ed-ig-latest { position: relative; display: block; aspect-ratio: 4 / 5; overflow: hidden; background: var(--ed-linen); }
-.ed-ig-latest img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.2,.7,.2,1); }
-.ed-ig-latest:hover img { transform: scale(1.03); }
-.ed-ig-tag { position: absolute; left: 16px; bottom: 16px; background: rgba(20,14,26,.72); color: #fff; font-family: var(--ed-sans); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; font-weight: 600; padding: 9px 12px; }
-.ed-ig-side { display: flex; flex-direction: column; gap: 22px; justify-content: space-between; }
-.ed-ig-caption { font-family: var(--ed-serif); font-size: clamp(19px, 1.7vw, 24px); line-height: 1.45; color: var(--ed-ink); }
-.ed-ig-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
 .pt-pick { display: grid; gap: 12px; }
 .pt-pick a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 20px; align-items: center; padding: 22px 24px; border: 1px solid var(--ed-line); text-decoration: none; color: var(--ed-ink); background: var(--ed-ivory); transition: border-color .25s, background .25s; }
 .pt-pick a:hover { border-color: var(--ed-gold); background: var(--ed-linen); }
 .pt-pick b { font-family: var(--ed-serif); font-weight: 400; font-size: 26px; line-height: 1.1; }
 .pt-pick span { grid-column: 1; font-family: var(--ed-sans); font-size: 13px; color: var(--ed-muted); }
 .pt-pick i { grid-column: 2; grid-row: 1 / span 2; font-style: normal; font-family: var(--ed-sans); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--ed-gold); font-weight: 600; white-space: nowrap; }
-.ed-ig-grid a { display: block; aspect-ratio: 1 / 1; overflow: hidden; background: var(--ed-linen); }
-.ed-ig-grid img { width: 100%; height: 100%; object-fit: cover; transition: transform .7s cubic-bezier(.2,.7,.2,1); }
-.ed-ig-grid a:hover img { transform: scale(1.04); }
 
 /* ---- /links (Instagram bio page) ---- */
 .ed-bio { background: var(--ed-ivory); min-height: 100vh; }
@@ -644,10 +634,6 @@ a.ed-talk:hover h4 { color: var(--ed-plum); }
 @media (max-width: 960px) {
   .ed-oneone, .ed-oneone.rev { grid-template-columns: 1fr; }
   .ed-oneone.rev > :first-child { order: 0; }
-  .ed-ig-feature { grid-template-columns: 1fr; }
-  .ed-ig-latest { aspect-ratio: 1 / 1; }
-  .ed-ig-grid { grid-template-columns: repeat(5, 1fr); gap: 4px; }
-  .ed-ig-head { flex-direction: column; align-items: flex-start; }
   .ed-bio-row { grid-template-columns: 40px 1fr auto; }
 }
 

@@ -74,19 +74,6 @@ export const SLOT_GROUPS: SlotGroup[] = [
     ],
   },
   {
-    key: "instagram",
-    title: "Instagram strip (bottom of every page)",
-    where: "Above the footer, site-wide. Once INSTAGRAM_ACCESS_TOKEN is set, live posts replace these automatically.",
-    slots: [
-      { id: "ig_1", label: "Post 1", hint: "Square crop.", aspect: "1/1", fallback: "/photos/libni-portrait.jpg" },
-      { id: "ig_2", label: "Post 2", hint: "Square crop.", aspect: "1/1", fallback: "/photos/stage-tedx.jpg" },
-      { id: "ig_3", label: "Post 3", hint: "Square crop.", aspect: "1/1", fallback: "/photos/liberate-libni-table.jpg" },
-      { id: "ig_4", label: "Post 4", hint: "Square crop.", aspect: "1/1", fallback: "/photos/stage-goalgetters.jpg" },
-      { id: "ig_5", label: "Post 5", hint: "Square crop.", aspect: "1/1", fallback: "/photos/liberate-libni-dark.jpg" },
-      { id: "ig_6", label: "Post 6", hint: "Square crop.", aspect: "1/1", fallback: "/photos/stage-retreat.jpg" },
-    ],
-  },
-  {
     key: "speaking",
     title: "Speaking — video proof & stage photos",
     where: "/speaking (the link you send to organisers)",
