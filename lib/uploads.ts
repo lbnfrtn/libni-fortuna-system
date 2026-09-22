@@ -24,7 +24,9 @@ export async function putUpload(slotId: string, type: string, bytes: Buffer): Pr
   const safeSlot = slotId.replace(/[^a-z0-9_-]/gi, "").slice(0, 60) || "photo";
   const name = `${safeSlot}-${Date.now()}.${TYPES[type] ?? "jpg"}`;
 
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
+  // A connected store authenticates either by OIDC (BLOB_STORE_ID, which the
+  // SDK pairs with a rotating token it manages) or by a static read-write token.
+  if (process.env.BLOB_READ_WRITE_TOKEN || process.env.BLOB_STORE_ID) {
     // Variable specifier: @vercel/blob is an optional production-only dep.
     const pkg = "@vercel/blob";
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
@@ -33,7 +35,7 @@ export async function putUpload(slotId: string, type: string, bytes: Buffer): Pr
     const res = await blob.put(`site/${name}`, bytes, {
       access: "public",
       contentType: type,
-      token: process.env.BLOB_READ_WRITE_TOKEN,
+      ...(process.env.BLOB_READ_WRITE_TOKEN ? { token: process.env.BLOB_READ_WRITE_TOKEN } : {}),
     });
     return res.url as string;
   }
