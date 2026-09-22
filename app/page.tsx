@@ -3,7 +3,7 @@ import { SitePage } from "@/app/components/Chrome";
 import { EdHero, EdFinal, EdOffer, EdCtas, EdCircle, EdGuideCover, EdLogos } from "@/app/components/Editorial";
 import NewsletterForm from "@/app/components/NewsletterForm";
 import { getContent, storyPhoto } from "@/lib/content";
-import { photoFor, embedUrl, spotifyEmbed } from "@/config/site-slots";
+import { photoFor, embedUrl } from "@/config/site-slots";
 import { getPodcast, getWritings, fmtDate } from "@/lib/feeds";
 import { CHANNELS } from "@/config/channels";
 import { previewMap } from "@/lib/preview";
@@ -32,7 +32,6 @@ export default async function Home() {
     .slice(0, 3);
   const [podcast, writings] = await Promise.all([getPodcast(), getWritings()]);
   const spotifyUrl = content.links.spotify || CHANNELS.spotify;
-  const spotify = spotifyEmbed(spotifyUrl);
   const substack = content.links.substack || CHANNELS.substack;
   const episodes = podcast.items.slice(0, 4);
   const posts = writings.items.slice(0, 4);
@@ -250,7 +249,6 @@ export default async function Home() {
           <div className="ed-pod ed-reveal">
             <div>
               {podcastArt || podcast.image ? <img className="ed-pod-art" src={podcastArt || podcast.image} alt="Anyway, Moving Forward" /> : null}
-              {spotify && <div className="ed-spotify" style={{ marginTop: 14 }}><iframe src={spotify} title="Anyway, Moving Forward on Spotify" allow="clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" style={{ height: 232 }} /></div>}
             </div>
             <div>
               <p className="ed-eyebrow" style={{ marginBottom: 6 }}>Latest episodes</p>
