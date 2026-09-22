@@ -30,7 +30,6 @@ export async function putUpload(slotId: string, type: string, bytes: Buffer): Pr
     /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     const blob: any = await import(/* webpackIgnore: true */ pkg);
     const res = await blob.put(`site/${name}`, bytes, {
-      access: "public",
       contentType: type,
       token: process.env.BLOB_READ_WRITE_TOKEN,
     });
