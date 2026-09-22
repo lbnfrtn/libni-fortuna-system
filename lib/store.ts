@@ -79,6 +79,7 @@ class FirestoreStore implements OrderStore {
         ? cert(raw.trim().startsWith("{") ? JSON.parse(raw) : raw)
         : undefined;
       initializeApp({ credential, projectId: process.env.FIREBASE_PROJECT_ID });
+      getFirestore().settings({ ignoreUndefinedProperties: true });
     }
     this.col = getFirestore().collection("lf_orders");
     return this.col;

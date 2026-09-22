@@ -34,6 +34,7 @@ async function firestoreCol(): Promise<any> {
       credential: raw ? appMod.cert(raw.trim().startsWith("{") ? JSON.parse(raw) : raw) : undefined,
       projectId: process.env.FIREBASE_PROJECT_ID,
     });
+    fsMod.getFirestore().settings({ ignoreUndefinedProperties: true });
   }
   return fsMod.getFirestore().collection("lf_leads");
 }

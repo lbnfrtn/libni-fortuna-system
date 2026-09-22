@@ -373,6 +373,8 @@ async function firestoreDoc(): Promise<any> {
     const raw = process.env.FIREBASE_SERVICE_ACCOUNT;
     const credential = raw ? cert(raw.trim().startsWith("{") ? JSON.parse(raw) : raw) : undefined;
     initializeApp({ credential, projectId: process.env.FIREBASE_PROJECT_ID });
+    // Optional fields left blank in the Studio arrive as undefined, which Firestore rejects by default.
+    getFirestore().settings({ ignoreUndefinedProperties: true });
   }
   return getFirestore().collection("lf_content").doc("site");
 }
