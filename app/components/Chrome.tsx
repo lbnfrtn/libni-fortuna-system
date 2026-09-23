@@ -7,7 +7,15 @@ type NavItem = NavLink & { children?: NavLink[] };
 
 const NAV: NavItem[] = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
+  {
+    label: "About", href: "/about", children: [
+      { label: "About me", href: "/about" },
+      { label: "Media & press · features", href: "/features" },
+      { label: "Blogs", href: "/writings" },
+      { label: "Podcast", href: "/podcast" },
+      { label: "Subscribe to my newsletter", href: "/resources#newsletter" },
+    ],
+  },
   {
     label: "Work with me", href: "/work-with-me", children: [
       { label: "1:1 mentorship", href: "/one-on-one" },
