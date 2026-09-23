@@ -79,7 +79,7 @@ export const OFFERS: Record<string, Offer> = {
     track: "consumer",
     journey: "B",
     pricePHP: 250000,
-    priceUnit: "3 months · by application",
+    hidePrice: true, // never shown on the site; qualified only through the application
     allowPayInFull: true,
     allowInstalments: true,
     instalmentCount: 3, // default per Section 12.1; first due at signing
@@ -155,7 +155,7 @@ export const OFFERS: Record<string, Offer> = {
     blurb: "The membership app — daily practice, breathwork and The Circle.",
     track: "consumer",
     journey: "E",
-    pricePHP: 1299,
+    pricePHP: 1499,
     priceUnit: "per 3 months",
     allowPayInFull: false,
     allowInstalments: false,

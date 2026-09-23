@@ -70,6 +70,9 @@
 .ed-btn-ink:hover { background: var(--ed-plum); border-color: var(--ed-plum); color: #fff; }
 .ed-btn-ghost { color: var(--ed-ink); border-color: var(--ed-ink); }
 .ed-btn-ghost:hover { background: var(--ed-ink); color: var(--ed-ivory); }
+/* Solid, vivid secondary — a filled plum with no transparency, readable on the dark hero. */
+.ed-btn-solid { background: var(--ed-plum); border-color: var(--ed-plum); color: #fff; }
+.ed-btn-solid:hover { background: var(--ed-plum-deep); border-color: var(--ed-plum-deep); color: #fff; }
 .ed-btn-sm { min-height: 46px; padding: 0 22px; font-size: 11px; }
 .ed-ctas { display: flex; flex-wrap: wrap; gap: 14px; }
 .ed-link { font-family: var(--ed-sans); font-size: 12px; letter-spacing: .2em; text-transform: uppercase; font-weight: 600; border-bottom: 1px solid var(--ed-gold); padding-bottom: 4px; }
@@ -246,7 +249,7 @@
 /* ---- image band ---- */
 .ed-band { position: relative; min-height: min(80vh, 720px); display: flex; align-items: flex-end; overflow: hidden; color: var(--ed-ivory); background: var(--ed-night); }
 .ed-band > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-.ed-band::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(36,28,42,.15) 0%, rgba(36,28,42,.35) 50%, rgba(36,28,42,.85) 100%); }
+.ed-band::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(20,14,26,.5) 0%, rgba(20,14,26,.55) 45%, rgba(20,14,26,.9) 100%); }
 .ed-band .ed-wrap { position: relative; z-index: 2; width: 100%; padding-top: clamp(80px, 10vw, 140px); padding-bottom: clamp(56px, 7vw, 96px); }
 .ed-band h2 { font-size: clamp(32px, 4.2vw, 60px); line-height: 1.04; max-width: 18ch; }
 
@@ -472,7 +475,7 @@
 .ed-phone { position: relative; width: min(100%, 240px); aspect-ratio: 9 / 18.6; margin: 0 auto; border-radius: 42px; background: #17121b; padding: 9px; box-shadow: 0 34px 60px -30px rgba(36,28,42,.6), inset 0 0 0 1.5px rgba(255,255,255,.08); }
 .ed-phone::after { content: ""; position: absolute; inset: 0; border-radius: 42px; box-shadow: inset 0 0 0 2px #2a2230, inset 0 0 0 3px rgba(255,255,255,.04); pointer-events: none; }
 .ed-phone-island { position: absolute; top: 19px; left: 50%; transform: translateX(-50%); width: 74px; height: 21px; border-radius: 12px; background: #17121b; z-index: 2; }
-.ed-phone img, .ed-offer .ed-phone img { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; object-position: 50% 0; border-radius: 33px; background: #fbf9f6; margin: 0; }
+.ed-phone img, .ed-offer .ed-phone img { width: 100%; height: 100%; aspect-ratio: auto; object-fit: cover; object-position: 50% 8%; border-radius: 33px; background: #fbf9f6; padding: 8px 7px; box-sizing: border-box; margin: 0; }
 
 /* ---- circular portraits / monograms ---- */
 .ed-circle { border-radius: 50%; object-fit: cover; object-position: 50% 20%; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center; }
@@ -594,9 +597,11 @@ a.ed-talk:hover h4 { color: var(--ed-plum); }
 .ed-press { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(18px, 2.5vw, 32px); }
 .ed-press-card { text-decoration: none; display: grid; gap: 12px; align-content: start; }
 /* Home strip: the first (hand-picked) feature leads at full width, the rest fill even rows. */
-.ed-press-lead > :first-child { grid-column: 1 / -1; }
-.ed-press-lead > :first-child .ed-press-thumb { aspect-ratio: 21 / 9; }
-.ed-press-lead > :first-child h4 { font-size: clamp(24px, 2.4vw, 34px); max-width: 28ch; }
+/* Featured strip: the first (hand-picked) feature leads across two columns, kept modest in height. */
+.ed-press-lead > :first-child { grid-column: span 2; display: grid; grid-template-columns: 1fr 1fr; gap: clamp(16px, 2vw, 28px); align-items: center; }
+.ed-press-lead > :first-child .ed-press-thumb { aspect-ratio: 16 / 10; }
+.ed-press-lead > :first-child h4 { font-size: clamp(20px, 1.8vw, 26px); max-width: 22ch; }
+@media (max-width: 760px) { .ed-press-lead > :first-child { grid-column: auto; grid-template-columns: 1fr; } }
 .ed-press-thumb { aspect-ratio: 16 / 9; background: var(--ed-linen); border: 1px solid var(--ed-line); overflow: hidden; display: flex; align-items: flex-end; padding: 18px; }
 .ed-press-thumb.has-img { padding: 0; }
 .ed-press-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.2,.7,.2,1); }

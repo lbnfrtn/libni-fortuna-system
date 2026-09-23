@@ -3,7 +3,7 @@ import { SitePage } from "@/app/components/Chrome";
 import { EdHero, EdFinal, EdOffer, EdCtas, EdCircle, EdGuideCover, EdLogos } from "@/app/components/Editorial";
 import NewsletterForm from "@/app/components/NewsletterForm";
 import { getContent, storyPhoto, byDateDesc } from "@/lib/content";
-import { photoFor } from "@/config/site-slots";
+import { photoFor, embedUrl } from "@/config/site-slots";
 import { getPodcast, fmtDate } from "@/lib/feeds";
 import { CHANNELS } from "@/config/channels";
 import { previewMap } from "@/lib/preview";
@@ -35,6 +35,8 @@ export default async function Home() {
   const prev = await previewMap(featuredIn.map((p) => p.url));
   const picked = content.stories.filter((s) => s.featured);
   const [featured, ...restWords] = (picked.length ? picked : content.stories).slice(0, 3);
+  // Video testimonies — appear here once Libni pastes YouTube/Vimeo links in the Studio.
+  const videos = ["video_1", "video_2", "video_3"].map((id) => embedUrl(content.videos[id] ?? "")).filter((v): v is string => Boolean(v));
 
   const heroCredentials = [
     { num: "1,000+", label: "People guided" },
@@ -52,7 +54,7 @@ export default async function Home() {
         title="Come home to yourself."
         lede="You’ve held everyone together. Who’s been holding you?"
         sub="There’s a version of you — whole, free, fully alive — beneath everything you carry. I’ve guided 1,000+ people back to her. There are different ways in; let’s find yours."
-        ctas={[{ label: "Find your path", href: "/start", variant: "gold" }, { label: "Work with me 1:1", href: "/one-on-one", variant: "light" }]}
+        ctas={[{ label: "Work with me 1:1", href: "/programs/the-becoming", variant: "gold" }, { label: "Find your path", href: "/start", variant: "solid" }]}
         image={photo("home_hero")!}
         alt="Libni Fortuna"
         credentials={heroCredentials}
@@ -154,6 +156,17 @@ export default async function Home() {
               </div>
             ))}
           </div>
+
+          {videos.length > 0 && (
+            <div className="ed-videos ed-reveal" style={{ marginTop: "clamp(40px, 5vw, 64px)" }}>
+              {videos.map((v, i) => (
+                <div key={v}>
+                  <div className="ed-video"><iframe src={v} title={`Video testimony ${i + 1}`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div>
+                  <p className="ed-video-cap">In their own words</p>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="ed-ctas" style={{ marginTop: 40, gap: 28 }}>
             <Link href="/client-love" className="ed-link">More client stories — videos and messages</Link>

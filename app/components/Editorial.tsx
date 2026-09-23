@@ -7,7 +7,7 @@ import { LOGOS } from "@/config/logos";
 // Shared editorial building blocks (server components). Pages compose these
 // with the `ed-*` classes in app/editorial.css.
 
-export type Cta = { label: string; href: string; variant?: "gold" | "light" | "ink" | "ghost"; external?: boolean };
+export type Cta = { label: string; href: string; variant?: "gold" | "light" | "ink" | "ghost" | "solid"; external?: boolean };
 
 export function EdBtn({ href, variant = "ink", external, children, small }: { href: string; variant?: Cta["variant"]; external?: boolean; children: ReactNode; small?: boolean }) {
   const cls = `ed-btn ed-btn-${variant}${small ? " ed-btn-sm" : ""}`;
