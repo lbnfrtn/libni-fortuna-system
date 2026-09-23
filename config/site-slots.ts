@@ -66,6 +66,17 @@ export const SLOT_GROUPS: SlotGroup[] = [
     ],
   },
   {
+    key: "about",
+    title: "About page",
+    where: "/about — the portrait, the sticky photo beside your story, the stage shot and the “beyond the work” photo",
+    slots: [
+      { id: "about_hero", label: "Hero portrait", hint: "Full-height portrait beside “Come home to yourself”. Leave room on the left.", aspect: "4/5", fallback: "/photos/liberate-libni-table.jpg" },
+      { id: "about_portrait", label: "Story portrait", hint: "Sits beside “I’ve been a lot of people”. Quieter, candid.", aspect: "3/4", fallback: "/photos/liberate-libni-thought.jpg" },
+      { id: "about_stage", label: "On stage", hint: "Beside “What I believe”.", aspect: "4/5", fallback: "/photos/stage-tedx.jpg" },
+      { id: "about_life", label: "Beyond the work", hint: "Something personal — travel, the ocean, a table with people.", aspect: "4/5", fallback: "/photos/liberate-libni-warm.jpg" },
+    ],
+  },
+  {
     key: "links",
     title: "Link in bio (/links)",
     where: "/links — the page behind your Instagram bio link",

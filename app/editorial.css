@@ -673,6 +673,24 @@ a.ed-talk:hover h4 { color: var(--ed-plum); }
 .pt-pick span { grid-column: 1; font-family: var(--ed-sans); font-size: 13px; color: var(--ed-muted); }
 .pt-pick i { grid-column: 2; grid-row: 1 / span 2; font-style: normal; font-family: var(--ed-sans); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--ed-gold); font-weight: 600; white-space: nowrap; }
 
+/* ---- /about: stanzas, questions, the life grid, beliefs ---- */
+.ab-lines { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.ab-lines li { font-family: var(--ed-sans); font-size: clamp(16px, 1.25vw, 18px); line-height: 1.7; color: var(--ed-ink); max-width: 52ch; padding-left: 22px; position: relative; }
+.ab-lines li::before { content: ""; position: absolute; left: 0; top: .95em; width: 10px; height: 1px; background: var(--ed-gold); }
+.ab-lines-serif li { font-family: var(--ed-serif); font-size: clamp(20px, 1.9vw, 26px); line-height: 1.35; padding-left: 0; }
+.ab-lines-serif li::before { display: none; }
+.ab-muted li { color: var(--ed-muted); }
+.ab-questions { list-style: none; margin: 0; padding: 0; display: grid; }
+.ab-questions li { font-family: var(--ed-serif); font-style: italic; font-size: clamp(20px, 2vw, 27px); line-height: 1.3; color: var(--ed-plum); padding: 16px 0; border-top: 1px solid var(--ed-line); }
+.ab-questions li:last-child { border-bottom: 1px solid var(--ed-line); }
+.ab-grid { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0; border-top: 1px solid var(--ed-line); border-left: 1px solid var(--ed-line); }
+.ab-grid li { font-family: var(--ed-serif); font-size: clamp(19px, 1.6vw, 23px); line-height: 1.25; padding: clamp(22px, 2.4vw, 34px) clamp(16px, 1.8vw, 26px); border-right: 1px solid var(--ed-line); border-bottom: 1px solid var(--ed-line); }
+.ab-beliefs { list-style: none; margin: 0; padding: 0; }
+.ab-beliefs li { font-family: var(--ed-serif); font-size: clamp(20px, 1.9vw, 26px); line-height: 1.35; padding: 20px 0; border-top: 1px solid var(--ed-line); }
+.ab-beliefs li:last-child { border-bottom: 1px solid var(--ed-line); }
+@media (max-width: 960px) { .ab-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .ab-grid { grid-template-columns: 1fr; } }
+
 /* ---- /links (Instagram bio page) ---- */
 .ed-bio { background: var(--ed-ivory); min-height: 100vh; }
 .ed-bio-hero { position: relative; height: min(88vh, 760px); display: grid; place-items: center; overflow: hidden; background: var(--ed-night); }
