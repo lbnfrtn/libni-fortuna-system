@@ -53,24 +53,40 @@ export default function StudioClient({ groups, initial, storage, direct }: { gro
       if (kind === "photo" && isVideo) throw new Error("This slot takes a photo. Video slots are in the Videos group.");
 
       let url: string;
+      // Files the server route can still swallow if the direct path is unavailable (Vercel's request limit is 4.5MB).
+      const smallEnoughForServer = file.size <= 4 * 1024 * 1024;
+      let viaDirect = direct;
+      let directError = "";
       if (direct) {
-        const { upload: blobUpload } = await import("@vercel/blob/client");
-        const ext = (file.name.split(".").pop() || (isVideo ? "mp4" : "jpg")).toLowerCase().replace(/[^a-z0-9]/g, "");
-        const blob = await blobUpload(`site/${slotId}-${Date.now()}.${ext}`, file, {
-          access: "public",
-          handleUploadUrl: "/api/content/upload/client",
-          clientPayload: JSON.stringify({ slotId }),
-          contentType: file.type,
-          multipart: file.size > 10 * 1024 * 1024,
-          onUploadProgress: (p) => setProgress(Math.round(p.percentage)),
-        });
-        url = blob.url;
-        const res = await fetch("/api/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "setUpload", slotId, url, kind }) });
-        if (res.status === 401) expired();
-        const j = await res.json();
-        if (!j.ok) throw new Error(j.error || "Upload saved to storage but not to the site. Try again.");
-        setContent(j.content);
-      } else {
+        try {
+          // First ask our route whether it is signed in — a plain 401 here means the session expired, not a storage problem.
+          const probe = await fetch("/api/content/upload/client", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ type: "probe" }) });
+          if (probe.status === 401) expired();
+          const { uploadPresigned } = await import("@vercel/blob/client");
+          const ext = (file.name.split(".").pop() || (isVideo ? "mp4" : "jpg")).toLowerCase().replace(/[^a-z0-9]/g, "");
+          const blob = await uploadPresigned(`site/${slotId}-${Date.now()}.${ext}`, file, {
+            access: "public",
+            handleUploadUrl: "/api/content/upload/client",
+            clientPayload: JSON.stringify({ slotId }),
+            contentType: file.type,
+            onUploadProgress: (p) => setProgress(Math.round(p.percentage)),
+          });
+          url = blob.url;
+          const res = await fetch("/api/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "setUpload", slotId, url, kind }) });
+          if (res.status === 401) expired();
+          const j = await res.json();
+          if (!j.ok) throw new Error(j.error || "Upload saved to storage but not to the site. Try again.");
+          setContent(j.content);
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          if (msg === "Signed out") throw e;
+          if (!smallEnoughForServer) throw new Error(`Direct upload failed (${msg}). Please tell Libni's developer this exact message.`);
+          // Small file: fall back to the server route so the photo still lands.
+          viaDirect = false;
+          directError = msg;
+        }
+      }
+      if (!viaDirect) {
         const fd = new FormData();
         fd.append("slotId", slotId);
         fd.append("file", file);
@@ -82,6 +98,7 @@ export default function StudioClient({ groups, initial, storage, direct }: { gro
         url = j.url;
         setContent((c) => kind === "video" ? { ...c, videos: { ...c.videos, [slotId]: url } } : { ...c, photos: { ...c.photos, [slotId]: url } });
       }
+      if (directError) console.warn("Direct upload fell back to the server route:", directError);
       flash("ok", kind === "video" ? "Video uploaded." : "Photo uploaded.");
     } catch (e) {
       const msg = e instanceof Error ? e.message : String(e);
