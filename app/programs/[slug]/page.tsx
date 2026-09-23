@@ -5,6 +5,7 @@ import { getOffer, isSellable } from "@/config/offers";
 import { getProgram } from "@/config/programs";
 import { img } from "@/config/media";
 import { peso } from "@/lib/util";
+import { getContent, storyPhoto } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,15 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
   const priceLabel = offer.hidePrice ? "By application" : sellable ? `${peso(offer.pricePHP!)}${offer.priceUnit ? " · " + offer.priceUnit : ""}` : offer.journey === "D" ? "By proposal" : "By application";
   const photo = REAL_PHOTO[slug] ?? img(p.photo, 1400);
   const paras = (p.longCopy ?? []).map(tx);
+  const ctaLabel = p.notice && waitlist ? "Join the waitlist" : cta.label;
+
+  // Real words for this program from the Studio (stories whose Program mentions its name); the config quote is the fallback.
+  const content = await getContent();
+  const key = offer.name.split(" ")[0];
+  const tagged = content.stories.filter((s) => new RegExp(key, "i").test(s.program ?? ""));
+  const words = tagged.length
+    ? tagged.map((s) => ({ q: s.quote, who: s.name, role: s.role, photo: storyPhoto(content.photos, s.id) }))
+    : p.testimonial ? [p.testimonial] : [];
 
   return (
     <SitePage navOverlay>
@@ -48,11 +58,31 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
         lede={tx(p.tagline)}
         sub={tx(p.intro)}
         meta={{ label: "Investment", value: priceLabel }}
-        ctas={[{ label: cta.label, href: cta.href, variant: "gold" }, { label: "Talk to me first", href: "/contact", variant: "light" }]}
+        ctas={[{ label: ctaLabel, href: cta.href, variant: "gold" }, { label: "Talk to me first", href: "/contact", variant: "light" }]}
         image={photo}
         alt={offer.name}
         objectPosition={slug === "speaking" || slug === "organizations" ? "50% 40%" : undefined}
       />
+
+      {p.notice && (
+        <section className="ed-sec ed-plum">
+          <div className="ed-wrap ed-split ed-split-top">
+            <div className="ed-c4 ed-reveal">
+              <p className="ed-eyebrow">{p.notice.eyebrow}</p>
+              <h2 className="ed-display-md" style={{ marginTop: 14 }}>{tx(p.notice.title)}</h2>
+            </div>
+            <div className="ed-off1 ed-copy ed-reveal" style={{ transitionDelay: ".15s", color: "rgba(251,249,246,.86)" }}>
+              {p.notice.body.map((para, i) => <p key={i} style={{ fontSize: "clamp(17px, 1.9vw, 20px)" }}>{tx(para)}</p>)}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {words.length > 0 && p.notice && (
+        <section className="ed-sec ed-ivory">
+          <div className="ed-wrap"><EdWords eyebrow="From the people who were there" items={words} /></div>
+        </section>
+      )}
 
       {paras.length > 0 && (
         <section className="ed-sec ed-ivory">
@@ -68,9 +98,9 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
         </section>
       )}
 
-      {p.testimonial && (
+      {words.length > 0 && !p.notice && (
         <section className="ed-sec ed-linen">
-          <div className="ed-wrap"><EdWords eyebrow="In their words" items={[p.testimonial]} /></div>
+          <div className="ed-wrap"><EdWords eyebrow="In their words" items={words} /></div>
         </section>
       )}
 
@@ -144,7 +174,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
         title={offer.name + "."}
         gold="Ready when you are."
         meta={[["Investment", priceLabel]]}
-        ctas={[{ label: cta.label, href: cta.href, variant: "gold" }, { label: "Say hello first", href: "/contact", variant: "light" }]}
+        ctas={[{ label: ctaLabel, href: cta.href, variant: "gold" }, { label: "Say hello first", href: "/contact", variant: "light" }]}
       />
     </SitePage>
   );

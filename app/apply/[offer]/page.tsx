@@ -9,7 +9,7 @@ export default async function ApplyPage({ params }: { params: Promise<{ offer: s
   const { offer: slug } = await params;
   const offer = getOffer(slug);
   if (!offer) notFound();
-  const { track, heading, sub, questions } = questionsFor(slug);
+  const { track, heading, sub, questions, phone } = questionsFor(slug);
   const waitlist = offer.waitlistOnly || offer.pricePHP == null;
 
   return (
@@ -28,7 +28,7 @@ export default async function ApplyPage({ params }: { params: Promise<{ offer: s
         </p>
       )}
       <div style={{ marginTop: 16 }}>
-        <LeadForm offerSlug={slug} track={track} questions={questions} />
+        <LeadForm offerSlug={slug} track={track} questions={questions} phone={phone} />
       </div>
     </div>
   );

@@ -58,14 +58,15 @@ export async function POST(req: NextRequest) {
       const url = String(body.url ?? "").trim();
       return NextResponse.json({ ok: true, content: await setLink(String(body.key), url || null) });
     }
-    if (action === "setStories" || action === "setSpeakingWords") {
+    if (action === "setStories" || action === "setSpeakingWords" || action === "setLiberateWords") {
       const rows: Story[] = (Array.isArray(body.items) ? body.items : []).map((s: Partial<Story>) => ({
         id: slug(String(s.id || s.name || "")),
         name: str(s.name, 120), role: opt(s.role, 120), program: opt(s.program, 80),
         quote: str(s.quote, 1200), before: opt(s.before, 1200), during: opt(s.during, 1200), after: opt(s.after, 1200),
         featured: Boolean(s.featured),
       })).filter((s: Story) => s.id && s.name && s.quote);
-      return NextResponse.json({ ok: true, content: await saveContent(action === "setStories" ? { stories: rows } : { speakingWords: rows }) });
+      const patch = action === "setStories" ? { stories: rows } : action === "setLiberateWords" ? { liberateWords: rows } : { speakingWords: rows };
+      return NextResponse.json({ ok: true, content: await saveContent(patch) });
     }
     if (action === "setBecomingStories") {
       const rows: CaseStudy[] = (Array.isArray(body.items) ? body.items : []).map((s: Partial<CaseStudy>) => ({

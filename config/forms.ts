@@ -39,6 +39,24 @@ const TRACK_B: Question[] = [
   SOURCE_Q,
 ];
 
+// The Becoming: Libni's own application. WhatsApp is required (she calls), and the
+// investment question is the filter — the price is asked here and nowhere on the site.
+const BECOMING_Q: Question[] = [
+  { id: "instagram", label: "Your Instagram", type: "text", placeholder: "@yourname" },
+  { id: "location", label: "Where are you based?", type: "text", placeholder: "City, country", required: true },
+  { id: "where_now", label: "Where are you right now — in your life, your work, yourself?", type: "textarea", required: true },
+  { id: "what_shift", label: "What would you love to be different by the end of our work together?", type: "textarea", required: true },
+  {
+    id: "investment",
+    label: "The investment to work with me one-on-one starts at ₱250,000. Is this within reach for you right now?",
+    type: "select",
+    required: true,
+    options: ["Yes, I am ready to invest", "Yes, with a payment plan", "I would like more details first", "Not right now — are there other options?"],
+  },
+  { id: "call_time", label: "When is the best time for me to call you on WhatsApp?", type: "select", required: true, options: ["Morning (8–11 am)", "Midday (11 am–2 pm)", "Afternoon (2–5 pm)", "Evening (5–8 pm)"] },
+  SOURCE_Q,
+];
+
 // Track C (Retreat): application + a gentle health/consent note.
 const TRACK_C: Question[] = [
   { id: "where_now", label: "What's calling you to this retreat?", type: "textarea", required: true },
@@ -69,9 +87,18 @@ const TRACK_D_BRAND: Question[] = [
   SOURCE_Q,
 ];
 
-export function questionsFor(offerSlug: string): { track: Track; heading: string; sub: string; questions: Question[] } {
+export interface PhoneField { label: string; required: boolean }
+
+export function questionsFor(offerSlug: string): { track: Track; heading: string; sub: string; questions: Question[]; phone?: PhoneField } {
   const offer = getOffer(offerSlug);
   if (!offer) return { track: "consumer", heading: "Get in touch", sub: "", questions: TRACK_A };
+
+  if (offerSlug === "the-becoming")
+    return {
+      track: "consumer", heading: `Apply — ${offer.name}`,
+      sub: "This is an application, not a checkout. Take your time — your answers shape our first conversation, and I will call you on WhatsApp.",
+      questions: BECOMING_Q, phone: { label: "WhatsApp number", required: true },
+    };
 
   if (offer.track === "corporate")
     return { track: "corporate", heading: `Enquire — ${offer.name}`, sub: "Tell me about your organization and what you're hoping to create. I reply within one business day.", questions: TRACK_D_CORP };

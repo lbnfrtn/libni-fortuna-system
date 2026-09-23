@@ -5,6 +5,7 @@ import { getOffer } from "@/config/offers";
 import { getProgram } from "@/config/programs";
 import { getContent, storyPhoto } from "@/lib/content";
 import { photoFor, embedUrl } from "@/config/site-slots";
+import BecomingWords from "./BecomingWords";
 
 export const dynamic = "force-dynamic";
 
@@ -119,18 +120,17 @@ export default async function TheBecoming() {
             <div><p className="ed-eyebrow">What you get</p><h2 className="ed-display">Held for the whole season, not just the hour.</h2></div>
             <p className="ed-lede ed-muted">Everything inside the container, from the first session to the last.</p>
           </div>
-          <div className={`bk-gets${portal ? " has-portal" : ""}`}>
-            <ul className="bk-get-list ed-reveal">
-              {(p.includes ?? []).map((inc, i) => (
-                <li key={i}><span className="bk-get-n">{String(i + 1).padStart(2, "0")}</span><span>{tx(inc)}</span></li>
-              ))}
-            </ul>
-            {portal && (
-              <figure className="bk-portal ed-reveal" style={{ transitionDelay: ".15s" }}>
-                <img src={portal} alt="Your online meditation portal" />
-                <figcaption>Your online meditation portal</figcaption>
-              </figure>
-            )}
+          <div className="bk-get-grid">
+            {(p.includes ?? []).map((inc, i) => {
+              // Card 2 is the portal: her mock-up wins over the stock photo once uploaded.
+              const src = (i === 1 && portal) || photo(`becoming_get_${i + 1}`, "");
+              return (
+                <figure key={i} className="bk-get-card ed-reveal" style={{ transitionDelay: `${(i % 3) * 0.1}s` }}>
+                  {src && <img src={src} alt="" loading="lazy" />}
+                  <figcaption><span className="bk-get-n">{String(i + 1).padStart(2, "0")}</span><span>{tx(inc)}</span></figcaption>
+                </figure>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -197,55 +197,10 @@ export default async function TheBecoming() {
               <p className="ed-lede ed-muted">Real people who did this exact work, one to one. Where they started, what we did, and where they are now — in their own words.</p>
             </div>
 
-            {cases.length > 0 && (
-              <div className="bk-cases">
-                {cases.map((c, i) => {
-                  const src = casePhoto(c.id);
-                  const vid = embedUrl(c.video ?? "");
-                  const arc: [string, string | undefined][] = [["Where she started", c.before], ["The work", c.during], ["Where she is now", c.after]];
-                  return (
-                    <article key={c.id} className={`bk-case ed-reveal${i % 2 ? " flip" : ""}${src ? "" : " noimg"}`}>
-                      <div className="bk-case-media">
-                        {src ? <div className="ed-figure"><img src={src} alt={c.name} loading="lazy" /></div> : null}
-                        <div className="bk-case-who">
-                          {!src && <EdCircle src={undefined} name={c.name} size={56} />}
-                          <p className="ed-who">{c.name}{c.role && <span>{c.role}</span>}</p>
-                        </div>
-                      </div>
-                      <div className="bk-case-body">
-                        <small className="bk-case-n">Case {String(i + 1).padStart(2, "0")}</small>
-                        {c.headline && <h3 className="bk-case-h">{c.headline}</h3>}
-                        <div className="bk-case-arc">
-                          {arc.filter(([, v]) => v).map(([label, v]) => (
-                            <div key={label}><small>{label}</small><p>{v}</p></div>
-                          ))}
-                        </div>
-                        <p className="ed-quote bk-case-q">{c.quote}</p>
-                        {vid && <div className="ed-video bk-case-video"><iframe src={vid} title={`${c.name} — in her own words`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div>}
-                      </div>
-                    </article>
-                  );
-                })}
-              </div>
-            )}
-
-            {wall.length > 0 && (
-              <div className="bk-wall-wrap">
-                <p className="ed-eyebrow ed-reveal">{cases.length ? "And more, in their words" : "In their words"}</p>
-                <div className="bk-wall">
-                  {wall.map((w, i) => {
-                    const vid = embedUrl(w.video ?? "");
-                    return (
-                      <figure key={w.id} className="bk-wall-item ed-reveal" style={{ transitionDelay: `${(i % 3) * 0.1}s` }}>
-                        {vid && <div className="ed-video"><iframe src={vid} title={`${w.name} — video testimony`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div>}
-                        <blockquote>{w.quote}</blockquote>
-                        <figcaption><EdCircle src={casePhoto(w.id)} name={w.name} size={44} /><p className="ed-who">{w.name}{w.role && <span>{w.role}</span>}</p></figcaption>
-                      </figure>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
+            <BecomingWords
+              cases={cases.map((c) => ({ ...c, photo: casePhoto(c.id), embed: embedUrl(c.video ?? "") }))}
+              wall={wall.map((c) => ({ ...c, photo: casePhoto(c.id), embed: embedUrl(c.video ?? "") }))}
+            />
           </div>
         </section>
       )}

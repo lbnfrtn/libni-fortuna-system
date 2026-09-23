@@ -20,7 +20,7 @@ export const LIBERATE_PHOTO_SLOTS: LiberatePhotoSlot[] = [
   { id: "bath_portrait", label: "Bath portrait • vulnerability and grounding", section: "Section 3", aspectRatio: "4/5", required: false },
 
   // Section 4: "Introducing Liberate"
-  { id: "zoom_screenshot", label: "Zoom screenshot • group at work", section: "Section 4", aspectRatio: "16/9", required: false },
+  { id: "zoom_screenshot", label: "Mock-up call photo • under “Introducing Liberate”", section: "Section 4", aspectRatio: "16/9", required: false },
 
   // Section 5: "What you'll experience inside" (8 photos)
   { id: "inside_1", label: "Inside experience 1", section: "Section 5", aspectRatio: "1/1", required: false },
@@ -39,6 +39,16 @@ export const LIBERATE_PHOTO_SLOTS: LiberatePhotoSlot[] = [
   { id: "moments_4", label: "People in Liberate • together", section: "Section 5 · gallery", aspectRatio: "1/1", required: false },
   { id: "moments_5", label: "People in Liberate • the retreat", section: "Section 5 · gallery", aspectRatio: "1/1", required: false },
   { id: "moments_6", label: "People in Liberate • after", section: "Section 5 · gallery", aspectRatio: "1/1", required: false },
+
+  // Section 9: Testimonial screenshots — messages from Liberate students, shown as a strip under their words
+  { id: "shots_1", label: "Testimonial screenshot 1", section: "Section 9 · screenshots", aspectRatio: "9/16", required: false },
+  { id: "shots_2", label: "Testimonial screenshot 2", section: "Section 9 · screenshots", aspectRatio: "9/16", required: false },
+  { id: "shots_3", label: "Testimonial screenshot 3", section: "Section 9 · screenshots", aspectRatio: "9/16", required: false },
+  { id: "shots_4", label: "Testimonial screenshot 4", section: "Section 9 · screenshots", aspectRatio: "9/16", required: false },
+  { id: "shots_5", label: "Testimonial screenshot 5", section: "Section 9 · screenshots", aspectRatio: "9/16", required: false },
+  { id: "shots_6", label: "Testimonial screenshot 6", section: "Section 9 · screenshots", aspectRatio: "9/16", required: false },
+  { id: "shots_7", label: "Testimonial screenshot 7", section: "Section 9 · screenshots", aspectRatio: "9/16", required: false },
+  { id: "shots_8", label: "Testimonial screenshot 8", section: "Section 9 · screenshots", aspectRatio: "9/16", required: false },
 
   // Section 7: Retreat
   { id: "retreat_hero", label: "Retreat • wide shot, Manila", section: "Section 7", aspectRatio: "16/9", required: false },

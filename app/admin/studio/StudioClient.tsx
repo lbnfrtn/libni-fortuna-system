@@ -59,7 +59,7 @@ export default function StudioClient({ groups, initial, storage }: { groups: Slo
         <strong>Where photos are stored:</strong> {storage}
       </p>
       <nav className="row" style={{ gap: 8, marginBottom: 34, flexWrap: "wrap" }}>
-        {[["#photos", "Photos & videos"], ["#stories", "Client stories"], ["#becoming", "The Becoming · case studies"], ["#talks", "Events & stages"], ["#press", "Television"], ["#podcasts", "Podcast features"], ["#writeups", "Write-ups"], ["#brands", "Brands & logos"], ["#keynotes", "Signature keynotes"], ["#speakwords", "Organiser words"], ["#mediakit", "Media kit"], ["#biolinks", "Link in bio"], ["#links", "Links"], ["#events", "Events"]].map(([h, l]) => (
+        {[["/", "↖ Site home"], ["#photos", "Photos & videos"], ["#stories", "Client stories"], ["#becoming", "The Becoming · case studies"], ["#liberatewords", "Liberate · testimonials"], ["#talks", "Events & stages"], ["#press", "Television"], ["#podcasts", "Podcast features"], ["#writeups", "Write-ups"], ["#brands", "Brands & logos"], ["#keynotes", "Signature keynotes"], ["#speakwords", "Organiser words"], ["#mediakit", "Media kit"], ["#biolinks", "Link in bio"], ["#links", "Links"], ["#events", "Events"]].map(([h, l]) => (
           <a key={h} href={h} className="chip" style={{ textDecoration: "none" }}>{l}</a>
         ))}
       </nav>
@@ -125,6 +125,22 @@ export default function StudioClient({ groups, initial, storage }: { groups: Slo
         ]}
         busy={busy === "becoming"}
         onSave={(items) => post({ action: "setBecomingStories", items }, "becoming")}
+        onUpload={upload}
+        onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
+      />
+
+      <RowsEditor<Story>
+        id="liberatewords"
+        title="Liberate · testimonials"
+        hint="Only on the Liberate page, from real Liberate students. The quote shows in the words section; the photo can be their portrait or a screenshot of their message. Whole-screen screenshots of messages go in the Liberate photo group above (“Testimonial screenshots”)."
+        rows={content.liberateWords}
+        photos={content.photos}
+        photoPrefix="libw"
+        photoHint="Their portrait, or a screenshot of their message."
+        blank={() => ({ id: `lw-${Date.now().toString(36)}`, name: "", quote: "" })}
+        fields={[{ key: "name", label: "Name" }, { key: "role", label: "Who they are · which Liberate cohort" }, { key: "quote", label: "Their words", type: "textarea" }]}
+        busy={busy === "liberatewords"}
+        onSave={(items) => post({ action: "setLiberateWords", items }, "liberatewords")}
         onUpload={upload}
         onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
       />

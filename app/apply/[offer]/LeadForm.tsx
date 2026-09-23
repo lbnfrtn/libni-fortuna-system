@@ -1,15 +1,17 @@
 "use client";
 import { useEffect, useState } from "react";
-import type { Question } from "@/config/forms";
+import type { Question, PhoneField } from "@/config/forms";
 
 export default function LeadForm({
   offerSlug,
   track,
   questions,
+  phone: phoneField,
 }: {
   offerSlug: string;
   track: string;
   questions: Question[];
+  phone?: PhoneField;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -85,8 +87,8 @@ export default function LeadForm({
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
         </div>
       </div>
-      <label>Phone / WhatsApp (optional)</label>
-      <input value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+63…" />
+      <label>{phoneField ? `${phoneField.label}${phoneField.required ? " *" : ""}` : "Phone / WhatsApp (optional)"}</label>
+      <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+63…" required={phoneField?.required} />
 
       {questions.map((q) => (
         <div key={q.id}>

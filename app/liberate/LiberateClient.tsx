@@ -6,13 +6,13 @@ import { OFFERS } from "@/config/offers";
 type Photos = Record<string, string>;
 
 const INSIDE = [
-  ["Live sessions, twice a week", "A check-in circle to be heard, then a workshop to go deeper — guided coaching, shadow work and somatic practices on Zoom. Twenty-four sessions across three months.", "inside_1"],
+  ["Live sessions, twice a week", "A check-in circle to be heard, then a workshop to go deeper — guided coaching, shadow work and somatic practices on Zoom. Twenty-four sessions across three months, and every one is recorded, so if you miss a night the replay is waiting for you.", "inside_1"],
   ["Subconscious reprogramming", "Release old beliefs and patterns stored deep within, and create new ones rooted in self-trust and truth.", "inside_2"],
   ["Energetic exploration and chakra alignment", "Understand your energy body and return to balance through breathwork and gentle practices.", "inside_3"],
   ["Spiritual tools and intuitive activation", "Deepen your connection with intuition, inner knowing, and your spiritual path.", "inside_4"],
   ["Journaling and breakthrough exercises", "Process each layer of your transformation with clarity and intention, guided every step of the way.", "inside_5"],
   ["Private community", "You’re not doing this alone. You’ll be surrounded by like-hearted people walking this path with you.", "inside_6"],
-  ["Online portal", "A library of guided meditations, workshops, practices, and resources to support you throughout.", "inside_7"],
+  ["Your own online portal", "Your private home for the whole journey — the replays of every session, a library of guided meditations, workshops, practices and resources to support you throughout.", "inside_7"],
   ["In-person celebratory retreat", "Anchor everything you’ve integrated in a closing retreat designed to help you ground your growth and embody your liberation.", "inside_8"],
 ] as const;
 
@@ -49,11 +49,24 @@ const WORDS = [
 ];
 
 const INCLUDED = [
-  "3-month group experience", "24 live sessions — twice a week", "A weekly check-in circle", "A weekly workshop", "Subconscious work", "Shadow work", "Somatic practices", "Breathwork",
-  "Energetic exploration", "Guided meditations", "Private community", "Online resource portal", "Celebratory overnight retreat, in person",
+  "3-month group experience", "24 live sessions — twice a week", "Replays of every session", "A weekly check-in circle", "A weekly workshop", "Subconscious work", "Shadow work", "Somatic practices", "Breathwork",
+  "Energetic exploration", "Guided meditations", "Private community", "Your own online portal", "Celebratory overnight retreat, in person",
 ];
 
-type Word = { q: string; who: string; role?: string };
+type Word = { q: string; who: string; role?: string; photo?: string };
+
+// Stock photos (Unsplash, free licence) stand in until Libni uploads her own to each “inside” slot.
+const INSIDE_STOCK: Record<string, string> = {
+  inside_1: "https://images.unsplash.com/photo-1612832164313-ac0d7e07b5ce?auto=format&fit=crop&w=1200&q=75",
+  inside_2: "https://images.unsplash.com/photo-1518708909080-704599b19972?auto=format&fit=crop&w=1200&q=75",
+  inside_3: "https://images.unsplash.com/photo-1561190401-ff2c4b95cd29?auto=format&fit=crop&w=1200&q=75",
+  inside_4: "https://images.unsplash.com/photo-1585059896947-f99dd6c80101?auto=format&fit=crop&w=1200&q=75",
+  inside_5: "https://images.unsplash.com/photo-1660324197196-69580168711e?auto=format&fit=crop&w=1200&q=75",
+  inside_6: "https://images.unsplash.com/photo-1622352496174-9e1d969b1945?auto=format&fit=crop&w=1200&q=75",
+  inside_7: "https://images.unsplash.com/photo-1758876201548-ade1eff8b169?auto=format&fit=crop&w=1200&q=75",
+  inside_8: "https://images.unsplash.com/photo-1758599670008-f18f47042e46?auto=format&fit=crop&w=1200&q=75",
+};
+const SHOT_SLOTS = ["shots_1", "shots_2", "shots_3", "shots_4", "shots_5", "shots_6", "shots_7", "shots_8"];
 
 const MOMENT_SLOTS = [
   ["moments_1", "In session"], ["moments_2", "The circle"], ["moments_3", "The work"],
@@ -65,6 +78,7 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
   // Client words come from the Studio (“Client stories”); the published quotes are the fallback.
   const WORDS_SHOWN: Word[] = incoming && incoming.length ? incoming : WORDS;
   const momentPhotos = MOMENT_SLOTS.filter(([id]) => photos[id]);
+  const shots = SHOT_SLOTS.map((id) => photos[id]).filter(Boolean);
   const price = offer.pricePHP ? `₱${offer.pricePHP.toLocaleString("en-PH")}` : "TBA";
 
   const heroImg = photos.hero_portrait || "/photos/libni-hero.jpg";
@@ -222,6 +236,11 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
         .lb-who span { display: block; color: var(--lb-muted); font-weight: 500; margin-top: 4px; }
         .lb-words { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 80px); padding-top: clamp(40px, 5vw, 64px); }
         .lb-words .lb-quote { font-size: clamp(22px, 2vw, 28px); }
+        .lb-word { display: grid; gap: 18px; }
+        .lb-word-img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: 50% 20%; }
+        .lb-shots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .lb-shots figure { margin: 0; background: var(--lb-ivory); border: 1px solid var(--lb-line); padding: 8px; }
+        .lb-shots img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; object-position: top; display: block; }
 
         /* 10 investment */
         .lb-invest { display: grid; grid-template-columns: 6fr 5fr; gap: clamp(40px, 6vw, 110px); align-items: start; }
@@ -261,6 +280,7 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
           .lb-road { gap: 48px; }
           .lb-story-img { position: static; }
           .lb-mosaic { grid-template-columns: 1fr 1fr; }
+          .lb-shots { grid-template-columns: 1fr 1fr; }
           .lb-mosaic figure, .lb-mosaic figure:first-child { grid-column: span 2; grid-row: auto; }
           .lb-ctas { flex-direction: column; } .lb-ctas .lb-btn { width: 100%; }
         }
@@ -344,7 +364,7 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
           <div className="lb-index">
             {INSIDE.map(([title, body, slot], i) => (
               <div className="lb-item lb-reveal" key={slot} style={{ transitionDelay: `${(i % 2) * 0.1}s` }}>
-                {photos[slot] && <img src={photos[slot]} alt={title} />}
+                <img src={photos[slot] || INSIDE_STOCK[slot]} alt={title} loading="lazy" />
                 <div className="lb-item-n">{String(i + 1).padStart(2, "0")}</div>
                 <div><h3>{title}</h3><p>{body}</p></div>
               </div>
@@ -352,6 +372,7 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
           </div>
           {momentPhotos.length > 0 && (
             <div className="lb-mosaic lb-reveal" style={{ marginTop: "clamp(48px, 6vw, 84px)" }}>
+              <p className="lb-eyebrow" style={{ gridColumn: "1 / -1", marginBottom: 6 }}>Moments from Liberate</p>
               {momentPhotos.map(([id, label]) => (
                 <figure key={id}><img src={photos[id]} alt={label} /><figcaption>{label}</figcaption></figure>
               ))}
@@ -442,20 +463,26 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
         <div className="lb-wrap">
           <div className="lb-feature lb-reveal">
             <div>
-              <p className="lb-eyebrow" style={{ marginBottom: 24 }}>Real people. Real shifts.</p>
+              <p className="lb-eyebrow" style={{ marginBottom: 24 }}>From the people of Liberate</p>
               <p className="lb-quote">{WORDS_SHOWN[0].q}</p>
               <p className="lb-who">{WORDS_SHOWN[0].who}{WORDS_SHOWN[0].role && <span>{WORDS_SHOWN[0].role}</span>}</p>
             </div>
-            <p className="lb-lede lb-muted" style={{ maxWidth: "24ch" }}>Words from people who have done this work with Libni. Not reviews. Turning points.</p>
+            <p className="lb-lede lb-muted" style={{ maxWidth: "24ch" }}>Words from people who have sat in this circle. Not reviews. Turning points.</p>
           </div>
           <div className="lb-words">
             {WORDS_SHOWN.slice(1).map((w, i) => (
-              <div key={w.who} className="lb-reveal" style={{ transitionDelay: `${i * 0.12}s` }}>
-                <p className="lb-quote">{w.q}</p>
-                <p className="lb-who">{w.who}{w.role && <span>{w.role}</span>}</p>
+              <div key={w.who + i} className="lb-reveal lb-word" style={{ transitionDelay: `${i * 0.12}s` }}>
+                {w.photo && <img className="lb-word-img" src={w.photo} alt={w.who} loading="lazy" />}
+                <div><p className="lb-quote">{w.q}</p><p className="lb-who">{w.who}{w.role && <span>{w.role}</span>}</p></div>
               </div>
             ))}
           </div>
+          {shots.length > 0 && (
+            <div className="lb-reveal" style={{ marginTop: "clamp(48px, 6vw, 84px)" }}>
+              <p className="lb-eyebrow" style={{ marginBottom: 18 }}>In their own words — straight from their messages</p>
+              <div className="lb-shots">{shots.map((src, i) => <figure key={i}><img src={src} alt={`A message from a Liberate student, ${i + 1}`} loading="lazy" /></figure>)}</div>
+            </div>
+          )}
         </div>
       </section>
 
@@ -467,7 +494,7 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
             <h2 className="lb-display" style={{ marginTop: 14, maxWidth: "14ch" }}>Liberate, a 3-month group coaching experience.</h2>
             <p className="lb-price">{price}</p>
             {offer.allowInstalments && offer.instalmentCount && (
-              <p className="lb-plan">Pay in full, or in {offer.instalmentCount} instalments.</p>
+              <p className="lb-plan">Pay in full, or in {offer.instalmentCount} instalments. Other payment plans are available — just ask me on the call.</p>
             )}
             <div className="lb-ctas" style={{ marginTop: 30 }}>
               <Link href="/liberate/apply" className="lb-btn lb-btn-ink">I’m ready to Liberate</Link>

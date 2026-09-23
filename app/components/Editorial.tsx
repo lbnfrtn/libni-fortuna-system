@@ -79,7 +79,7 @@ export function EdHeroSimple({ eyebrow, title, lede, ctas, aside }: { eyebrow: s
   );
 }
 
-export type Word = { q: string; who: string; role?: string };
+export type Word = { q: string; who: string; role?: string; photo?: string };
 
 export function EdWords({ eyebrow = "Real people. Real shifts.", items, note }: { eyebrow?: string; items: Word[]; note?: ReactNode }) {
   const [first, ...rest] = items;
@@ -89,16 +89,20 @@ export function EdWords({ eyebrow = "Real people. Real shifts.", items, note }: 
         <div>
           <p className="ed-eyebrow" style={{ marginBottom: 24 }}>{eyebrow}</p>
           <p className="ed-quote">{first.q}</p>
-          <p className="ed-who">{first.who}{first.role && <span>{first.role}</span>}</p>
+          {first.photo ? (
+            <div className="ed-who-row"><EdCircle src={first.photo} name={first.who} size={64} /><p className="ed-who">{first.who}{first.role && <span>{first.role}</span>}</p></div>
+          ) : (
+            <p className="ed-who">{first.who}{first.role && <span>{first.role}</span>}</p>
+          )}
         </div>
         {note && <p className="ed-lede ed-muted" style={{ maxWidth: "24ch" }}>{note}</p>}
       </div>
       {rest.length > 0 && (
         <div className="ed-words">
           {rest.map((w, i) => (
-            <div key={w.who} className="ed-reveal" style={{ transitionDelay: `${i * 0.12}s` }}>
-              <p className="ed-quote">{w.q}</p>
-              <p className="ed-who">{w.who}{w.role && <span>{w.role}</span>}</p>
+            <div key={w.who + i} className={`ed-reveal${w.photo ? " ed-word" : ""}`} style={{ transitionDelay: `${i * 0.12}s` }}>
+              {w.photo && <EdCircle src={w.photo} name={w.who} />}
+              <div><p className="ed-quote">{w.q}</p><p className="ed-who">{w.who}{w.role && <span>{w.role}</span>}</p></div>
             </div>
           ))}
         </div>

@@ -143,6 +143,8 @@ export interface SiteContent {
   stories: Story[];
   /** Case studies and testimonies shown only on /programs/the-becoming. */
   becomingStories: CaseStudy[];
+  /** Words from Liberate students, shown only on /liberate. Photo (or a screenshot) in photos[`libw_${id}`]. */
+  liberateWords: Story[];
   talks: Talk[];
   press: PressItem[];
   mediaKit: MediaKit;
@@ -303,7 +305,7 @@ export const DEFAULT_LIBERATE: LiberateHQ = {
 
 export const EMPTY_CONTENT: SiteContent = {
   photos: {}, videos: {}, links: {}, podcast: [], writings: [], events: [], liberate: DEFAULT_LIBERATE,
-  stories: DEFAULT_STORIES, becomingStories: [], talks: DEFAULT_TALKS, press: DEFAULT_PRESS, mediaKit: DEFAULT_MEDIA_KIT,
+  stories: DEFAULT_STORIES, becomingStories: [], liberateWords: [], talks: DEFAULT_TALKS, press: DEFAULT_PRESS, mediaKit: DEFAULT_MEDIA_KIT,
   brands: DEFAULT_BRANDS, keynotes: DEFAULT_KEYNOTES, speakingWords: [], bioLinks: DEFAULT_BIO_LINKS,
 };
 
@@ -323,6 +325,7 @@ function normalise(raw: Partial<SiteContent> | null | undefined): SiteContent {
     // Undefined = never edited → the real defaults. An empty array = she cleared it on purpose.
     stories: Array.isArray(raw?.stories) ? raw!.stories : DEFAULT_STORIES,
     becomingStories: Array.isArray(raw?.becomingStories) ? raw!.becomingStories : [],
+    liberateWords: Array.isArray(raw?.liberateWords) ? raw!.liberateWords : [],
     talks: Array.isArray(raw?.talks) ? raw!.talks : DEFAULT_TALKS,
     press: Array.isArray(raw?.press) ? raw!.press : DEFAULT_PRESS,
     mediaKit: mk,

@@ -17,6 +17,8 @@ export interface Program {
   how?: { t: string; d: string }[];
   details?: { label: string; value: string }[];
   faq?: { q: string; a: string }[];
+  /** A season note shown under the hero, e.g. when a retreat has concluded. One string per paragraph. */
+  notice?: { eyebrow: string; title: string; body: string[] };
 }
 
 export const PROGRAMS: Record<string, Program> = {
@@ -77,9 +79,9 @@ export const PROGRAMS: Record<string, Program> = {
       "Weekly 1:1 sessions with Libni across 12 weeks",
       "Your own online meditation portal — practices to hold you between sessions",
       "24/7 personal support with real-time replies, so you&rsquo;re never carrying it alone",
+      "Access to the private community of Libni&rsquo;s 1:1 clients",
       "Free access to Libni&rsquo;s workshops while you&rsquo;re in the container",
-      "Work with subconscious patterns, the nervous system and the body",
-      "A personalised path — no two journeys are the same",
+      "A personalised path through the subconscious, the nervous system and the body — no two journeys are the same",
     ],
     how: [
       { t: "Apply", d: "Share where you are. Your answers shape our first conversation." },
@@ -99,6 +101,15 @@ export const PROGRAMS: Record<string, Program> = {
 
   "essence-retreat": {
     tagline: "Four days in Siargao to come all the way home.",
+    notice: {
+      eyebrow: "A note from Libni",
+      title: "Essence Retreat has concluded.",
+      body: [
+        "To everyone who came, who breathed, who cried on the second day and laughed on the third — thank you. You trusted me with something tender, and I don&rsquo;t take that lightly. What happened in that room stays with me.",
+        "I&rsquo;m grateful beyond words to my team, to the island, and to every person who chose themselves for four days. The next dates aren&rsquo;t set yet. If Essence is calling you, leave your name on the waitlist and you&rsquo;ll be the first to know when the doors open again.",
+        "Below are the words of the people who were there.",
+      ],
+    },
     intro:
       "Step away from the noise of your life and meet yourself on the other side of it. A small, held container — maximum twenty people — of breathwork, somatic work, rest and remembering. 200+ lives transformed since 2023.",
     photo: PHOTOS.essence,
