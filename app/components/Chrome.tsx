@@ -8,34 +8,30 @@ type NavItem = NavLink & { children?: NavLink[] };
 const NAV: NavItem[] = [
   { label: "Home", href: "/" },
   {
-    label: "About", href: "/about", children: [
-      { label: "About me", href: "/about" },
-      { label: "Media & press · features", href: "/features" },
-      { label: "Blogs", href: "/writings" },
-      { label: "Podcast", href: "/podcast" },
-      { label: "Subscribe to my newsletter", href: "/resources#newsletter" },
-    ],
-  },
-  {
     label: "Work with me", href: "/work-with-me", children: [
       { label: "1:1 mentorship", href: "/one-on-one" },
-      { label: "Group mentorship · Liberate", href: "/liberate" },
-      { label: "Essence retreat", href: "/programs/essence-retreat" },
+      { label: "Liberate · group coaching", href: "/liberate" },
+      { label: "Essence Retreat", href: "/programs/essence-retreat" },
       { label: "Founders Circle", href: "/programs/founders-circle" },
+      { label: "Workshops & trainings", href: "/programs/workshops" },
       { label: "Curate an experience", href: "/experiences" },
       { label: "For your company", href: "/programs/organizations" },
-      { label: "As a speaker", href: "/speaking" },
-      { label: "All pathways", href: "/work-with-me" },
-    ],
-  },
-  {
-    label: "Resources", href: "/resources", children: [
-      { label: "Project Me · membership", href: "https://projectme.libni.co", external: true },
-      { label: "Free guide & ebooks", href: "/resources" },
-      { label: "Workshops & trainings", href: "/programs/workshops" },
+      { label: "Speaking & stages", href: "/speaking" },
+      { label: "Project Me · the app", href: "https://projectme.libni.co", external: true },
+      { label: "See all pathways", href: "/work-with-me" },
     ],
   },
   { label: "Client Stories", href: "/client-love" },
+  {
+    label: "About", href: "/about", children: [
+      { label: "About me", href: "/about" },
+      { label: "Media, press & features", href: "/features" },
+      { label: "Letters & blog", href: "/writings" },
+      { label: "The podcast", href: "/podcast" },
+      { label: "Free guide & resources", href: "/resources" },
+      { label: "Subscribe to my newsletter", href: "/resources#newsletter" },
+    ],
+  },
   { label: "Contact", href: "/contact" },
 ];
 
@@ -82,7 +78,6 @@ export function SiteNav({ overlay }: { overlay?: boolean }) {
           ) : (
             <Link key={item.href} href={item.href}>{item.label}</Link>
           ))}
-          <Link href="/book" className="btn small">Book a call</Link>
         </nav>
 
         <details className="navmenu">
@@ -97,7 +92,6 @@ export function SiteNav({ overlay }: { overlay?: boolean }) {
               <Link key={item.href} href={item.href}>{item.label}</Link>
             ))}
             <Link href="/portal">Member log in</Link>
-            <Link href="/book" className="btn small">Book a call</Link>
           </div>
         </details>
       </div>
