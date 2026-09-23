@@ -79,7 +79,7 @@ export const OFFERS: Record<string, Offer> = {
     track: "consumer",
     journey: "B",
     pricePHP: 250000,
-    hidePrice: true, // shared after the questionnaire/call, never on the site
+    priceUnit: "3 months · by application",
     allowPayInFull: true,
     allowInstalments: true,
     instalmentCount: 3, // default per Section 12.1; first due at signing

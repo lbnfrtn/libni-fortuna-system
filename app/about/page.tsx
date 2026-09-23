@@ -77,7 +77,7 @@ export default function About() {
                 <li key={i} className="ed-lede" style={{ padding: "22px 0", borderTop: "1px solid var(--ed-line-light)" }}>{b}</li>
               ))}
             </ul>
-            <p className="ed-creds" style={{ color: "rgba(251,249,246,.55)" }}>US-certified master NLP practitioner · Certified hypnotherapist · Breathwork &amp; meditation practitioner · Reiki practitioner · Trauma-informed coach · TEDx speaker</p>
+            <p className="ed-creds" style={{ color: "rgba(251,249,246,.55)" }}>Master NLP practitioner · Certified hypnotherapist · Breathwork &amp; somatic facilitator · TEDx speaker</p>
             <EdCtas ctas={[{ label: "Invite me to speak", href: "/programs/speaking", variant: "light" }]} />
           </div>
         </div>

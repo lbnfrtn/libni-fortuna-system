@@ -4,12 +4,11 @@ import { CHANNELS } from "@/config/channels";
 
 const NAV: [string, string][] = [
   ["Home", "/"],
-  ["Work with me", "/work-with-me"],
-  ["1:1", "/one-on-one"],
-  ["Experiences", "/experiences"],
-  ["Speaking", "/speaking"],
   ["About", "/about"],
-  ["Client Love", "/client-love"],
+  ["Pathways", "/work-with-me"],
+  ["Client Stories", "/client-love"],
+  ["Featured", "/features"],
+  ["Contact", "/contact"],
 ];
 
 // Site-wide announcement. It sits in normal flow above the nav and scrolls
@@ -42,8 +41,7 @@ export function SiteNav({ overlay }: { overlay?: boolean }) {
           {NAV.map(([label, href]) => (
             <Link key={href} href={href}>{label}</Link>
           ))}
-          <Link href="/portal" className="nav-login">Log in</Link>
-          <Link href="/start" className="btn small">Find your path</Link>
+          <Link href="/book" className="btn small">Book a call</Link>
         </nav>
 
         <details className="navmenu">
@@ -52,9 +50,8 @@ export function SiteNav({ overlay }: { overlay?: boolean }) {
             {NAV.map(([label, href]) => (
               <Link key={href} href={href}>{label}</Link>
             ))}
-            <Link href="/contact">Contact</Link>
             <Link href="/portal">Member log in</Link>
-            <Link href="/start" className="btn small">Find your path</Link>
+            <Link href="/book" className="btn small">Book a call</Link>
           </div>
         </details>
       </div>
@@ -73,49 +70,38 @@ export function SiteFooter() {
               Transformational mentoring, retreats and speaking — for the version of you beneath the roles.
             </p>
             <p style={{ marginTop: 22 }}><a href="mailto:hello@libni.co">hello@libni.co</a></p>
-            <p className="ed-social">
-              <a href={CHANNELS.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" title="Instagram">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2M12 0C8.7 0 8.3 0 7.1.1 5.8.1 4.9.3 4.1.6c-.8.3-1.5.7-2.2 1.4C1.3 2.7.9 3.4.6 4.2.3 5 .1 5.8.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.1 1.3.3 2.1.6 2.9.3.8.7 1.5 1.4 2.2.7.7 1.3 1.1 2.2 1.4.8.3 1.6.5 2.9.6 1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c1.3-.1 2.1-.3 2.9-.6.8-.3 1.5-.7 2.2-1.4.7-.7 1.1-1.3 1.4-2.2.3-.8.5-1.6.6-2.9.1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.1-1.3-.3-2.1-.6-2.9-.3-.8-.7-1.5-1.4-2.2C21.3 1.3 20.6.9 19.8.6 19 .3 18.2.1 16.9.1 15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.8a1.4 1.4 0 1 0 0 2.9 1.4 1.4 0 0 0 0-2.9z"/></svg>
-              </a>
-              <a href={CHANNELS.tiktok} target="_blank" rel="noreferrer" aria-label="TikTok" title="TikTok">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.8c-1-.7-1.7-1.8-1.9-3.1V2h-3.4v13.7c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9 1.3-2.9 2.9-2.9c.3 0 .6 0 .9.1V9.4c-.3 0-.6-.1-.9-.1-3.5 0-6.3 2.8-6.3 6.3S4.9 22 8.4 22s6.3-2.8 6.3-6.3V8.6c1.4 1 3 1.5 4.8 1.5V6.7c-1.1 0-2.1-.3-2.9-.9z"/></svg>
-              </a>
-              <a href={CHANNELS.spotify} target="_blank" rel="noreferrer" aria-label="Spotify" title="Spotify">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm5.5 17.3c-.2.4-.7.5-1 .3-2.8-1.7-6.4-2.1-10.6-1.2-.4.1-.8-.2-.9-.6-.1-.4.2-.8.6-.9 4.6-1 8.5-.6 11.7 1.3.3.3.4.8.2 1.1zm1.5-3.3c-.3.4-.8.6-1.3.3-3.2-2-8.2-2.6-12-1.4-.5.1-1-.1-1.2-.6-.1-.5.1-1 .6-1.2 4.4-1.3 9.8-.7 13.5 1.6.5.3.6.9.4 1.3zm.1-3.4C15.2 8.3 8.9 8.1 5.2 9.2c-.6.2-1.2-.2-1.4-.8-.2-.6.2-1.2.8-1.4 4.3-1.3 11.3-1 15.7 1.6.5.3.7 1 .4 1.5-.3.6-1 .8-1.6.5z"/></svg>
-              </a>
-              <a href={CHANNELS.youtube} target="_blank" rel="noreferrer" aria-label="YouTube" title="YouTube">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>
-              </a>
-            </p>
-          </div>
-          <div>
-            <h4>Work with me</h4>
-            <Link href="/one-on-one">1:1 support</Link>
-            <Link href="/programs/the-becoming">The Becoming</Link>
-            <Link href="/programs/ignite">Power Hour</Link>
-            <Link href="/liberate">Liberate</Link>
-            <Link href="/programs/essence-retreat">Essence Retreat</Link>
-            <Link href="/programs/brands">For brands</Link>
-            <Link href="/work-with-me">All offers</Link>
-          </div>
-          <div>
-            <h4>Explore</h4>
-            <Link href="/start">Find your path</Link>
-            <Link href="/experiences">Experiences</Link>
-            <Link href="/client-love">Client Love</Link>
-            <Link href="/stories">Client stories</Link>
-            <Link href="/about">About</Link>
-            <Link href="/contact">Contact</Link>
-            <Link href="/portal">Member log in</Link>
           </div>
           <div>
             <h4>Listen &amp; read</h4>
-            <Link href="/podcast">Podcast</Link>
-            <Link href="/writings">Write-ups</Link>
-            <Link href="/speaking">Speaking &amp; stages</Link>
-            <Link href="/features">Features &amp; press</Link>
-            <Link href="/media-kit">Media kit</Link>
-            <Link href="/resources">Free guide</Link>
+            <Link href="/podcast">Anyway, Moving Forward</Link>
+            <Link href="/writings">Letters &amp; blog</Link>
+          </div>
+          <div className="foot-connect">
+            <h4>Connect</h4>
+            <a href={CHANNELS.instagram} target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.2.1-1.6.1-4.8.1s-3.6 0-4.8-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.8c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2M12 0C8.7 0 8.3 0 7.1.1 5.8.1 4.9.3 4.1.6c-.8.3-1.5.7-2.2 1.4C1.3 2.7.9 3.4.6 4.2.3 5 .1 5.8.1 7.1 0 8.3 0 8.7 0 12s0 3.7.1 4.9c.1 1.3.3 2.1.6 2.9.3.8.7 1.5 1.4 2.2.7.7 1.3 1.1 2.2 1.4.8.3 1.6.5 2.9.6 1.2.1 1.6.1 4.9.1s3.7 0 4.9-.1c1.3-.1 2.1-.3 2.9-.6.8-.3 1.5-.7 2.2-1.4.7-.7 1.1-1.3 1.4-2.2.3-.8.5-1.6.6-2.9.1-1.2.1-1.6.1-4.9s0-3.7-.1-4.9c-.1-1.3-.3-2.1-.6-2.9-.3-.8-.7-1.5-1.4-2.2C21.3 1.3 20.6.9 19.8.6 19 .3 18.2.1 16.9.1 15.7 0 15.3 0 12 0zm0 5.8a6.2 6.2 0 1 0 0 12.4 6.2 6.2 0 0 0 0-12.4zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.4-11.8a1.4 1.4 0 1 0 0 2.9 1.4 1.4 0 0 0 0-2.9z"/></svg>
+              Instagram
+            </a>
+            <a href={CHANNELS.tiktok} target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16.6 5.8c-1-.7-1.7-1.8-1.9-3.1V2h-3.4v13.7c0 1.6-1.3 2.9-2.9 2.9s-2.9-1.3-2.9-2.9 1.3-2.9 2.9-2.9c.3 0 .6 0 .9.1V9.4c-.3 0-.6-.1-.9-.1-3.5 0-6.3 2.8-6.3 6.3S4.9 22 8.4 22s6.3-2.8 6.3-6.3V8.6c1.4 1 3 1.5 4.8 1.5V6.7c-1.1 0-2.1-.3-2.9-.9z"/></svg>
+              TikTok
+            </a>
+            <a href={CHANNELS.youtube} target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2C0 8.1 0 12 0 12s0 3.9.5 5.8a3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1c.5-1.9.5-5.8.5-5.8s0-3.9-.5-5.8zM9.6 15.6V8.4l6.2 3.6-6.2 3.6z"/></svg>
+              YouTube
+            </a>
+            <a href={CHANNELS.spotify} target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0a12 12 0 1 0 0 24 12 12 0 0 0 0-24zm5.5 17.3c-.2.4-.7.5-1 .3-2.8-1.7-6.4-2.1-10.6-1.2-.4.1-.8-.2-.9-.6-.1-.4.2-.8.6-.9 4.6-1 8.5-.6 11.7 1.3.3.3.4.8.2 1.1zm1.5-3.3c-.3.4-.8.6-1.3.3-3.2-2-8.2-2.6-12-1.4-.5.1-1-.1-1.2-.6-.1-.5.1-1 .6-1.2 4.4-1.3 9.8-.7 13.5 1.6.5.3.6.9.4 1.3zm.1-3.4C15.2 8.3 8.9 8.1 5.2 9.2c-.6.2-1.2-.2-1.4-.8-.2-.6.2-1.2.8-1.4 4.3-1.3 11.3-1 15.7 1.6.5.3.7 1 .4 1.5-.3.6-1 .8-1.6.5z"/></svg>
+              Spotify
+            </a>
+            <a href={CHANNELS.substack} target="_blank" rel="noreferrer">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 3H2v2.5h20V3zm0 5.2H2v2.5h20V8.2zM2 13.4V21l10-5.6L22 21v-7.6H2z"/></svg>
+              Substack
+            </a>
+          </div>
+          <div>
+            <h4>Member access</h4>
+            <Link href="/portal">Member log in</Link>
             <a href="https://projectme.libni.co" target="_blank" rel="noreferrer">Project Me</a>
           </div>
         </div>

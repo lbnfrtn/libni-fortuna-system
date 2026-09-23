@@ -49,7 +49,7 @@ export default async function MediaKit() {
             <p className="ed-eyebrow">One line</p>
             <p className="ed-lede">{kit.oneLiner}</p>
             <p className="ed-eyebrow" style={{ marginTop: 20 }}>Credentials</p>
-            <p className="ed-creds">US-certified master NLP practitioner · Certified hypnotherapist · Breathwork &amp; somatic facilitator · Reiki · Trauma-informed</p>
+            <p className="ed-creds">Master NLP practitioner · Certified hypnotherapist · Breathwork &amp; somatic facilitator · TEDx speaker</p>
           </div>
           <div className="ed-off1 ed-stack ed-reveal ed-bio" style={{ transitionDelay: ".15s" }}>
             <p className="ed-eyebrow">Short bio</p>
