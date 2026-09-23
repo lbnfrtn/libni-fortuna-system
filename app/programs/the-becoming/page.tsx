@@ -41,6 +41,12 @@ export default async function TheBecoming() {
   const words = becoming.length ? becoming : content.stories.filter((s) => s.featured);
   const wordsAreBecoming = becoming.length > 0;
   const videos = ["video_1", "video_2", "video_3"].map((id) => embedUrl(content.videos[id] ?? "")).filter((v): v is string => Boolean(v));
+
+  // The Becoming's own series — case studies (with an arc) and shorter testimonies (quote only). Separate from the shared stories.
+  const cases = content.becomingStories.filter((c) => c.before || c.during || c.after);
+  const wall = content.becomingStories.filter((c) => !(c.before || c.during || c.after));
+  const hasSeries = content.becomingStories.length > 0;
+  const casePhoto = (id: string) => content.photos[`case_${id}`];
   const gallery = ["becoming_gallery_1", "becoming_gallery_2", "becoming_gallery_3", "becoming_gallery_4"].map((id) => content.photos[id]).filter(Boolean);
   const portal = content.photos.becoming_portal;
 
@@ -182,8 +188,70 @@ export default async function TheBecoming() {
         </div>
       </section>
 
-      {/* WORDS */}
-      {words.length > 0 && (
+      {/* CASE STUDIES — The Becoming's own series, added in the Studio */}
+      {hasSeries && (
+        <section className="ed-sec ed-ivory">
+          <div className="ed-wrap">
+            <div className="ed-head ed-reveal">
+              <div><p className="ed-eyebrow">Case studies</p><h2 className="ed-display">What actually <span className="ed-gold">changed.</span></h2></div>
+              <p className="ed-lede ed-muted">Real people who did this exact work, one to one. Where they started, what we did, and where they are now — in their own words.</p>
+            </div>
+
+            {cases.length > 0 && (
+              <div className="bk-cases">
+                {cases.map((c, i) => {
+                  const src = casePhoto(c.id);
+                  const vid = embedUrl(c.video ?? "");
+                  const arc: [string, string | undefined][] = [["Where she started", c.before], ["The work", c.during], ["Where she is now", c.after]];
+                  return (
+                    <article key={c.id} className={`bk-case ed-reveal${i % 2 ? " flip" : ""}${src ? "" : " noimg"}`}>
+                      <div className="bk-case-media">
+                        {src ? <div className="ed-figure"><img src={src} alt={c.name} loading="lazy" /></div> : null}
+                        <div className="bk-case-who">
+                          {!src && <EdCircle src={undefined} name={c.name} size={56} />}
+                          <p className="ed-who">{c.name}{c.role && <span>{c.role}</span>}</p>
+                        </div>
+                      </div>
+                      <div className="bk-case-body">
+                        <small className="bk-case-n">Case {String(i + 1).padStart(2, "0")}</small>
+                        {c.headline && <h3 className="bk-case-h">{c.headline}</h3>}
+                        <div className="bk-case-arc">
+                          {arc.filter(([, v]) => v).map(([label, v]) => (
+                            <div key={label}><small>{label}</small><p>{v}</p></div>
+                          ))}
+                        </div>
+                        <p className="ed-quote bk-case-q">{c.quote}</p>
+                        {vid && <div className="ed-video bk-case-video"><iframe src={vid} title={`${c.name} — in her own words`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div>}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            )}
+
+            {wall.length > 0 && (
+              <div className="bk-wall-wrap">
+                <p className="ed-eyebrow ed-reveal">{cases.length ? "And more, in their words" : "In their words"}</p>
+                <div className="bk-wall">
+                  {wall.map((w, i) => {
+                    const vid = embedUrl(w.video ?? "");
+                    return (
+                      <figure key={w.id} className="bk-wall-item ed-reveal" style={{ transitionDelay: `${(i % 3) * 0.1}s` }}>
+                        {vid && <div className="ed-video"><iframe src={vid} title={`${w.name} — video testimony`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div>}
+                        <blockquote>{w.quote}</blockquote>
+                        <figcaption><EdCircle src={casePhoto(w.id)} name={w.name} size={44} /><p className="ed-who">{w.name}{w.role && <span>{w.role}</span>}</p></figcaption>
+                      </figure>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </section>
+      )}
+
+      {/* WORDS — the shared stories, only until The Becoming has its own series */}
+      {!hasSeries && words.length > 0 && (
         <section className="ed-sec ed-ivory">
           <div className="ed-wrap">
             <div className="ed-feature ed-reveal">

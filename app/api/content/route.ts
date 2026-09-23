@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isLoggedIn } from "@/lib/auth";
-import { getContent, saveContent, setPhoto, setVideo, setLink, type MediaLink, type Story, type Talk, type PressItem, type MediaKit, type Brand, type Keynote, type BioLink } from "@/lib/content";
+import { getContent, saveContent, setPhoto, setVideo, setLink, type MediaLink, type Story, type CaseStudy, type Talk, type PressItem, type MediaKit, type Brand, type Keynote, type BioLink } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -66,6 +66,15 @@ export async function POST(req: NextRequest) {
         featured: Boolean(s.featured),
       })).filter((s: Story) => s.id && s.name && s.quote);
       return NextResponse.json({ ok: true, content: await saveContent(action === "setStories" ? { stories: rows } : { speakingWords: rows }) });
+    }
+    if (action === "setBecomingStories") {
+      const rows: CaseStudy[] = (Array.isArray(body.items) ? body.items : []).map((s: Partial<CaseStudy>) => ({
+        id: slug(String(s.id || s.name || "")),
+        name: str(s.name, 120), role: opt(s.role, 120), headline: opt(s.headline, 160),
+        quote: str(s.quote, 1600), before: opt(s.before, 2000), during: opt(s.during, 2000), after: opt(s.after, 2000),
+        video: opt(s.video, 500),
+      })).filter((s: CaseStudy) => s.id && s.name && s.quote);
+      return NextResponse.json({ ok: true, content: await saveContent({ becomingStories: rows }) });
     }
     if (action === "setBrands") {
       const brands: Brand[] = (Array.isArray(body.items) ? body.items : []).map((b: Partial<Brand>) => ({

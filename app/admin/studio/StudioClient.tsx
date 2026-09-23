@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import type { SiteContent, MediaLink, Story, Talk, PressItem, MediaKit, Brand, Keynote, BioLink } from "@/lib/content";
+import type { SiteContent, MediaLink, Story, CaseStudy, Talk, PressItem, MediaKit, Brand, Keynote, BioLink } from "@/lib/content";
 import { LINK_FIELDS, type SlotGroup, type Slot } from "@/config/site-slots";
 
 export default function StudioClient({ groups, initial, storage }: { groups: SlotGroup[]; initial: SiteContent; storage: string }) {
@@ -59,7 +59,7 @@ export default function StudioClient({ groups, initial, storage }: { groups: Slo
         <strong>Where photos are stored:</strong> {storage}
       </p>
       <nav className="row" style={{ gap: 8, marginBottom: 34, flexWrap: "wrap" }}>
-        {[["#photos", "Photos & videos"], ["#stories", "Client stories"], ["#talks", "Events & stages"], ["#press", "Television"], ["#podcasts", "Podcast features"], ["#writeups", "Write-ups"], ["#brands", "Brands & logos"], ["#keynotes", "Signature keynotes"], ["#speakwords", "Organiser words"], ["#mediakit", "Media kit"], ["#biolinks", "Link in bio"], ["#links", "Links"], ["#events", "Events"]].map(([h, l]) => (
+        {[["#photos", "Photos & videos"], ["#stories", "Client stories"], ["#becoming", "The Becoming · case studies"], ["#talks", "Events & stages"], ["#press", "Television"], ["#podcasts", "Podcast features"], ["#writeups", "Write-ups"], ["#brands", "Brands & logos"], ["#keynotes", "Signature keynotes"], ["#speakwords", "Organiser words"], ["#mediakit", "Media kit"], ["#biolinks", "Link in bio"], ["#links", "Links"], ["#events", "Events"]].map(([h, l]) => (
           <a key={h} href={h} className="chip" style={{ textDecoration: "none" }}>{l}</a>
         ))}
       </nav>
@@ -103,6 +103,28 @@ export default function StudioClient({ groups, initial, storage }: { groups: Slo
         ]}
         busy={busy === "stories"}
         onSave={(items) => post({ action: "setStories", items }, "stories")}
+        onUpload={upload}
+        onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
+      />
+
+      <RowsEditor<CaseStudy>
+        id="becoming"
+        title="The Becoming · case studies & testimonies"
+        hint="Only on the Becoming page, separate from the client stories above. Fill in “Where she started”, “The work” and “Where she is now” and it becomes a full case-study chapter with the photo, the headline and the quote. Leave those three empty and it joins the testimony wall underneath. Rows show in this order — put your strongest first. Paste a YouTube link and their video plays inside their chapter."
+        rows={content.becomingStories}
+        photos={content.photos}
+        photoPrefix="case"
+        photoHint="Their portrait — 4:5, at least 1200px wide. Shown large in the chapter, small on the wall."
+        blank={() => ({ id: `c-${Date.now().toString(36)}`, name: "", quote: "" })}
+        fields={[
+          { key: "name", label: "Name" }, { key: "role", label: "Who they are (e.g. Founder · Mother of two)" },
+          { key: "headline", label: "The result in one line (e.g. From panic attacks to leading her own team)", full: true },
+          { key: "quote", label: "Their words", type: "textarea", full: true },
+          { key: "before", label: "Where she started", type: "textarea" }, { key: "during", label: "The work we did", type: "textarea" }, { key: "after", label: "Where she is now", type: "textarea" },
+          { key: "video", label: "Video testimony (YouTube or Vimeo link, optional)", placeholder: "https://youtube.com/watch?v=…", full: true },
+        ]}
+        busy={busy === "becoming"}
+        onSave={(items) => post({ action: "setBecomingStories", items }, "becoming")}
         onUpload={upload}
         onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
       />

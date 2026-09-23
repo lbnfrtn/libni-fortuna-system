@@ -54,6 +54,24 @@ export interface Story {
   featured?: boolean;
 }
 
+/**
+ * A case study or testimony from inside The Becoming — its own list, separate from the shared client stories.
+ * With before / during / after filled it renders as a full chapter; with only a quote it joins the testimony wall.
+ * Photo in photos[`case_${id}`]; `video` is a YouTube / Vimeo link.
+ */
+export interface CaseStudy {
+  id: string;
+  name: string;
+  role?: string;
+  /** The one-line result, e.g. “From panic attacks to leading her own team.” */
+  headline?: string;
+  quote: string;
+  before?: string;
+  during?: string;
+  after?: string;
+  video?: string;
+}
+
 /** A stage: keynote, workshop, panel, TV, summit… Photo in photos[`talk_${id}`]. */
 export interface Talk {
   id: string;
@@ -123,6 +141,8 @@ export interface SiteContent {
   events: MediaLink[];
   liberate: LiberateHQ;
   stories: Story[];
+  /** Case studies and testimonies shown only on /programs/the-becoming. */
+  becomingStories: CaseStudy[];
   talks: Talk[];
   press: PressItem[];
   mediaKit: MediaKit;
@@ -283,7 +303,7 @@ export const DEFAULT_LIBERATE: LiberateHQ = {
 
 export const EMPTY_CONTENT: SiteContent = {
   photos: {}, videos: {}, links: {}, podcast: [], writings: [], events: [], liberate: DEFAULT_LIBERATE,
-  stories: DEFAULT_STORIES, talks: DEFAULT_TALKS, press: DEFAULT_PRESS, mediaKit: DEFAULT_MEDIA_KIT,
+  stories: DEFAULT_STORIES, becomingStories: [], talks: DEFAULT_TALKS, press: DEFAULT_PRESS, mediaKit: DEFAULT_MEDIA_KIT,
   brands: DEFAULT_BRANDS, keynotes: DEFAULT_KEYNOTES, speakingWords: [], bioLinks: DEFAULT_BIO_LINKS,
 };
 
@@ -302,6 +322,7 @@ function normalise(raw: Partial<SiteContent> | null | undefined): SiteContent {
     liberate: lib,
     // Undefined = never edited → the real defaults. An empty array = she cleared it on purpose.
     stories: Array.isArray(raw?.stories) ? raw!.stories : DEFAULT_STORIES,
+    becomingStories: Array.isArray(raw?.becomingStories) ? raw!.becomingStories : [],
     talks: Array.isArray(raw?.talks) ? raw!.talks : DEFAULT_TALKS,
     press: Array.isArray(raw?.press) ? raw!.press : DEFAULT_PRESS,
     mediaKit: mk,
