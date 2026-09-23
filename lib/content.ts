@@ -75,6 +75,8 @@ export interface PressItem {
   date?: string;
   kind: "podcast" | "tv" | "article" | "video";
   blurb?: string;
+  /** Position on the home page's featured strip ("1", "2", …); blank = not shown there. */
+  featured?: string;
 }
 
 /** An organisation, brand or outlet she has worked with. Logo upload in photos[`brand_${id}`]; `logo` is a shipped fallback. */

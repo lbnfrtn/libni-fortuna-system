@@ -149,6 +149,7 @@ export default function StudioClient({ groups, initial, storage }: { groups: Slo
             { key: "url", label: "Link", placeholder: "https://…" }, { key: "date", label: "Date (YYYY-MM-DD)", placeholder: "2026-03-14" },
             ...(sec.kinds.length > 1 ? [{ key: "kind" as const, label: "Type", type: "select" as const, options: [["tv", "TV"], ["video", "Video"]] as [string, string][] }] : []),
             { key: "blurb", label: "One line about it" },
+            { key: "featured", label: "Home page order (1, 2, 3… · blank = not on the home page)", placeholder: "e.g. 1" },
           ]}
           busy={busy === sec.id}
           onSave={(items) => post({ action: "setPress", items: [...content.press.filter((p) => !sec.kinds.includes(p.kind)), ...items] }, sec.id)}

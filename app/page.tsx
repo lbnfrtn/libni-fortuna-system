@@ -29,8 +29,9 @@ export default async function Home() {
   const spotifyUrl = content.links.spotify || CHANNELS.spotify;
   const substack = content.links.substack || CHANNELS.substack;
   const episodes = podcast.items.slice(0, 3);
-  // The six most recent places she has been featured — TV, guest podcasts, print — with link previews.
-  const featuredIn = [...content.press].sort(byDateDesc).slice(0, 6);
+  // Libni picks and orders these in the Studio ("Home page order"); until she does, the six most recent.
+  const handPicked = content.press.filter((p) => Number(p.featured) > 0).sort((a, b) => Number(a.featured) - Number(b.featured));
+  const featuredIn = handPicked.length ? handPicked : [...content.press].sort(byDateDesc).slice(0, 6);
   const prev = await previewMap(featuredIn.map((p) => p.url));
   const picked = content.stories.filter((s) => s.featured);
   const [featured, ...restWords] = (picked.length ? picked : content.stories).slice(0, 3);
@@ -223,7 +224,7 @@ export default async function Home() {
                 <EdCtas ctas={[{ label: "See all features", href: "/features", variant: "ghost" }]} />
               </div>
             </div>
-            <div className="ed-press ed-reveal">{featuredIn.map((p) => <PressCard key={p.id} p={p} photos={content.photos} prev={prev} />)}</div>
+            <div className="ed-press ed-press-lead ed-reveal">{featuredIn.map((p) => <PressCard key={p.id} p={p} photos={content.photos} prev={prev} />)}</div>
           </div>
         </section>
       )}
