@@ -51,7 +51,7 @@ export default async function Home() {
         title="Come home to yourself."
         lede="You’ve held everyone together. Who’s been holding you?"
         sub="There’s a version of you — whole, free, fully alive — beneath everything you carry. I’ve guided 1,000+ people back to her. There are different ways in; let’s find yours."
-        ctas={[{ label: "Find your path", href: "/start", variant: "gold" }, { label: "Say hello", href: "/contact", variant: "light" }]}
+        ctas={[{ label: "Find your path", href: "/start", variant: "gold" }, { label: "Work with me 1:1", href: "/one-on-one", variant: "light" }]}
         image={photo("home_hero")!}
         alt="Libni Fortuna"
         credentials={heroCredentials}
