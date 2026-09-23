@@ -33,13 +33,9 @@ const NAV: NavItem[] = [
       { label: "Project Me · membership", href: "https://projectme.libni.co", external: true },
       { label: "Free guide & ebooks", href: "/resources" },
       { label: "Workshops & trainings", href: "/programs/workshops" },
-      { label: "Newsletter", href: "/resources#newsletter" },
-      { label: "Podcast", href: "/podcast" },
-      { label: "Letters & blog", href: "/writings" },
     ],
   },
   { label: "Client Stories", href: "/client-love" },
-  { label: "Featured", href: "/features" },
   { label: "Contact", href: "/contact" },
 ];
 
