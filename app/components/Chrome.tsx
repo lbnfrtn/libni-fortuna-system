@@ -2,14 +2,44 @@ import Link from "next/link";
 import EditorialFx from "./EditorialFx";
 import { CHANNELS } from "@/config/channels";
 
-const NAV: [string, string][] = [
-  ["Home", "/"],
-  ["About", "/about"],
-  ["Pathways", "/work-with-me"],
-  ["Client Stories", "/client-love"],
-  ["Featured", "/features"],
-  ["Contact", "/contact"],
+type NavLink = { label: string; href: string; external?: boolean };
+type NavItem = NavLink & { children?: NavLink[] };
+
+const NAV: NavItem[] = [
+  { label: "Home", href: "/" },
+  { label: "About", href: "/about" },
+  {
+    label: "Work with me", href: "/work-with-me", children: [
+      { label: "1:1 mentorship", href: "/one-on-one" },
+      { label: "Group mentorship · Liberate", href: "/liberate" },
+      { label: "Essence retreat", href: "/programs/essence-retreat" },
+      { label: "Founders Circle", href: "/programs/founders-circle" },
+      { label: "Curate an experience", href: "/experiences" },
+      { label: "For your company", href: "/programs/organizations" },
+      { label: "As a speaker", href: "/speaking" },
+      { label: "All pathways", href: "/work-with-me" },
+    ],
+  },
+  {
+    label: "Resources", href: "/resources", children: [
+      { label: "Project Me · membership", href: "https://projectme.libni.co", external: true },
+      { label: "Free guide & ebooks", href: "/resources" },
+      { label: "Workshops & trainings", href: "/programs/workshops" },
+      { label: "Newsletter", href: "/resources#newsletter" },
+      { label: "Podcast", href: "/podcast" },
+      { label: "Letters & blog", href: "/writings" },
+    ],
+  },
+  { label: "Client Stories", href: "/client-love" },
+  { label: "Featured", href: "/features" },
+  { label: "Contact", href: "/contact" },
 ];
+
+function NavA({ item, className }: { item: NavLink; className?: string }) {
+  return item.external
+    ? <a href={item.href} className={className} target="_blank" rel="noreferrer">{item.label}</a>
+    : <Link href={item.href} className={className}>{item.label}</Link>;
+}
 
 // Site-wide announcement. It sits in normal flow above the nav and scrolls
 // away, so the nav can pin to the top on its own.
@@ -38,8 +68,15 @@ export function SiteNav({ overlay }: { overlay?: boolean }) {
         </Link>
 
         <nav className="navlinks navlinks-desktop">
-          {NAV.map(([label, href]) => (
-            <Link key={href} href={href}>{label}</Link>
+          {NAV.map((item) => item.children ? (
+            <div key={item.href} className="navdrop">
+              <Link href={item.href} aria-haspopup="true">{item.label}</Link>
+              <div className="navdrop-menu">
+                {item.children.map((c) => <NavA key={c.href + c.label} item={c} />)}
+              </div>
+            </div>
+          ) : (
+            <Link key={item.href} href={item.href}>{item.label}</Link>
           ))}
           <Link href="/book" className="btn small">Book a call</Link>
         </nav>
@@ -47,8 +84,13 @@ export function SiteNav({ overlay }: { overlay?: boolean }) {
         <details className="navmenu">
           <summary aria-label="Menu">Menu</summary>
           <div className="menu-panel">
-            {NAV.map(([label, href]) => (
-              <Link key={href} href={href}>{label}</Link>
+            {NAV.map((item) => item.children ? (
+              <div key={item.href} className="menu-group">
+                <b>{item.label}</b>
+                {item.children.map((c) => <NavA key={c.href + c.label} item={c} />)}
+              </div>
+            ) : (
+              <Link key={item.href} href={item.href}>{item.label}</Link>
             ))}
             <Link href="/portal">Member log in</Link>
             <Link href="/book" className="btn small">Book a call</Link>

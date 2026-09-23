@@ -56,7 +56,7 @@ export default function Resources() {
         </div>
       </section>
 
-      <section className="ed-sec ed-night">
+      <section className="ed-sec ed-night" id="newsletter">
         <div className="ed-wrap ed-split">
           <div className="ed-c6 ed-stack ed-reveal">
             <p className="ed-eyebrow">Letters from Libni</p>

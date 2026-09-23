@@ -165,7 +165,7 @@ th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: 
 .navlinks a.btn { color: #fff; }
 
 .navmenu { display: none; }
-@media (max-width: 860px) {
+@media (max-width: 980px) {
   .navlinks-desktop { display: none; }
   .navmenu { display: block; position: relative; }
 }
