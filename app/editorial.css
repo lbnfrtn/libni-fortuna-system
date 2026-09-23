@@ -607,6 +607,48 @@ a.ed-talk:hover h4 { color: var(--ed-plum); }
 .nav-login { font-size: 12px !important; letter-spacing: .14em; text-transform: uppercase; opacity: .78; }
 .nav-login:hover { opacity: 1; }
 
+/* ---- /work-with-me: the map ---- */
+.ed-ways { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 8px; max-width: 36ch; }
+.ed-ways li { font-family: var(--ed-serif); font-size: clamp(19px, 1.8vw, 24px); line-height: 1.35; color: var(--ed-muted); }
+.ed-map { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.ed-map a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 20px; align-items: center; padding: clamp(24px, 2.6vw, 34px) clamp(22px, 2.4vw, 30px); border: 1px solid var(--ed-line); text-decoration: none; color: var(--ed-ink); background: var(--ed-ivory); transition: border-color .25s, background .25s; }
+.ed-map a:hover { border-color: var(--ed-gold); background: var(--ed-linen); }
+.ed-map b { font-family: var(--ed-serif); font-weight: 400; font-size: clamp(22px, 2.2vw, 30px); line-height: 1.1; }
+.ed-map span { grid-column: 1; font-family: var(--ed-sans); font-size: 13px; color: var(--ed-muted); }
+.ed-map i { grid-column: 2; grid-row: 1 / span 2; font-style: normal; font-family: var(--ed-sans); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--ed-gold); font-weight: 600; white-space: nowrap; }
+.ed-path-feature { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: clamp(28px, 5vw, 80px); align-items: center; padding: clamp(40px, 4.5vw, 64px) 0; border-top: 1px solid var(--ed-line); }
+.ed-path-feature.flip > :first-child { order: 2; }
+.ed-path-feature.noimg { grid-template-columns: minmax(0, 1fr); }
+.ed-path-feature.noimg > div { max-width: 64ch; }
+.ed-path-feature img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 15%; }
+.ed-path-feature h3 { font-size: clamp(36px, 4.4vw, 62px); line-height: 1.02; margin-top: 12px; }
+.ed-path-feature.sm h3 { font-size: clamp(28px, 3vw, 44px); }
+/* `.ed .…` so these outrank the global `.ed p { margin: 0 }` reset. */
+.ed .ed-path-desc { font-family: var(--ed-serif); font-style: italic; font-size: clamp(20px, 2vw, 26px); line-height: 1.3; margin-top: 14px; color: var(--ed-plum); }
+.ed .ed-path-for { font-size: 15.5px; color: var(--ed-muted); margin-top: 26px; max-width: 44ch; line-height: 1.7; }
+.ed-path-for b { display: block; font-family: var(--ed-sans); font-weight: 600; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--ed-gold); margin-bottom: 8px; }
+.ed .ed-path-cta { margin-top: 30px; }
+.ed-path-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ed-path-grid-3 { grid-template-columns: repeat(3, 1fr); }
+.ed-path-card { border: 1px solid var(--ed-line); padding: clamp(26px, 3vw, 40px); background: var(--ed-ivory); display: flex; flex-direction: column; }
+.ed-path-card h3 { font-size: clamp(24px, 2.2vw, 32px); line-height: 1.1; margin-top: 10px; }
+.ed-path-card .ed-path-desc { font-size: clamp(17px, 1.5vw, 20px); }
+.ed-path-card .ed-path-cta { margin-top: auto; padding-top: 24px; }
+.ed-night .ed-path-card { background: transparent; border-color: var(--ed-line-light); }
+.ed-night .ed-path-desc { color: var(--ed-gold-soft); }
+.ed-night .ed-path-for { color: rgba(251,249,246,.7); }
+.ed-night .ed-path-card .ed-link { color: var(--ed-ivory); }
+.ed-self { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px 48px; align-items: center; border: 1px solid var(--ed-line); padding: clamp(28px, 3.5vw, 48px); }
+.ed-self h3 { font-size: clamp(26px, 2.4vw, 34px); margin-top: 10px; }
+.ed-self .ed-path-desc { font-size: clamp(18px, 1.6vw, 22px); }
+.ed-self .ed-path-for { margin-top: 10px; }
+@media (max-width: 960px) {
+  .ed-map, .ed-path-grid, .ed-path-grid-3, .ed-self { grid-template-columns: 1fr; }
+  .ed-path-feature { grid-template-columns: 1fr; gap: 24px; }
+  .ed-path-feature.flip > :first-child { order: 0; }
+  .ed-path-feature img { aspect-ratio: 4 / 3; }
+}
+
 .pt-pick { display: grid; gap: 12px; }
 .pt-pick a { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 20px; align-items: center; padding: 22px 24px; border: 1px solid var(--ed-line); text-decoration: none; color: var(--ed-ink); background: var(--ed-ivory); transition: border-color .25s, background .25s; }
 .pt-pick a:hover { border-color: var(--ed-gold); background: var(--ed-linen); }
