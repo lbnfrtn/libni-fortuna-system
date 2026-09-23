@@ -30,7 +30,7 @@ export default async function OneOnOne() {
         title={<>1:1 <span className="ed-gold">support.</span></>}
         lede="I take a handful of people into private work at a time."
         sub="Two doors. Ninety minutes to move what’s been stuck — or twelve weeks to go to the root and stay there until it’s done. Both are just you and me."
-        ctas={[{ label: "Apply for The Becoming", href: "/apply/the-becoming", variant: "gold" }, { label: "Book a Power Hour", href: "/programs/ignite", variant: "light" }]}
+        ctas={[{ label: "Explore The Becoming", href: "/programs/the-becoming", variant: "gold" }, { label: "Book a Power Hour", href: "/programs/ignite", variant: "light" }]}
         image={photo("oneonone_hero")}
         alt="Libni Fortuna"
       />
@@ -61,7 +61,7 @@ export default async function OneOnOne() {
               </>
             )}
             <p className="ed-oneone-price"><span>Investment</span><b>By application</b><em>12 weeks · weekly 1:1 sessions · support between</em></p>
-            <EdCtas ctas={[{ label: "Apply for The Becoming", href: "/apply/the-becoming", variant: "ink" }, { label: "Read the full page", href: "/programs/the-becoming", variant: "ghost" }]} />
+            <EdCtas ctas={[{ label: "Explore The Becoming", href: "/programs/the-becoming", variant: "ink" }]} />
           </div>
         </div>
       </section>
@@ -112,7 +112,7 @@ export default async function OneOnOne() {
         title="Ready to be met?"
         gold="Let’s begin, one to one."
         copy={["Apply for The Becoming and we’ll talk first. Or book a Power Hour and I’ll see you in ninety minutes."]}
-        ctas={[{ label: "Apply for The Becoming", href: "/apply/the-becoming", variant: "gold" }, { label: "Book a Power Hour", href: "/programs/ignite", variant: "light" }]}
+        ctas={[{ label: "Explore The Becoming", href: "/programs/the-becoming", variant: "gold" }, { label: "Book a Power Hour", href: "/programs/ignite", variant: "light" }]}
       />
     </SitePage>
   );

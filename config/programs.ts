@@ -74,9 +74,11 @@ export const PROGRAMS: Record<string, Program> = {
       "You want a space that can hold all of you for a full season.",
     ],
     includes: [
-      "Weekly 1:1 mentoring sessions across 12 weeks",
-      "Work with subconscious patterns, nervous system and body",
-      "Support and integration between sessions",
+      "Weekly 1:1 sessions with Libni across 12 weeks",
+      "Your own online meditation portal — practices to hold you between sessions",
+      "24/7 personal support with real-time replies, so you&rsquo;re never carrying it alone",
+      "Free access to Libni&rsquo;s workshops while you&rsquo;re in the container",
+      "Work with subconscious patterns, the nervous system and the body",
       "A personalised path — no two journeys are the same",
     ],
     how: [

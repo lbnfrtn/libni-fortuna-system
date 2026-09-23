@@ -82,6 +82,23 @@ export const SLOT_GROUPS: SlotGroup[] = [
       { id: "about_study_australia", label: "Student of life · retreats in Australia", hint: "You holding a room or a circle there.", aspect: "3/2" },
       { id: "about_study_travel", label: "Student of life · on the road", hint: "A country, a teacher, a moment that taught you something.", aspect: "3/2" },
       { id: "about_study_room", label: "Student of life · in the room", hint: "An experience you curated — the room, the breath, the table.", aspect: "4/5" },
+      { id: "about_who", label: "Who is Libni · portrait", hint: "Sits under the “many versions of myself” list. A candid, unposed you.", aspect: "3/4", fallback: "/photos/libni-portrait.jpg" },
+      { id: "about_clients", label: "Who I work with · in session", hint: "You with a client or a circle — the work, not a headshot.", aspect: "4/5", fallback: "/photos/liberate-libni-dark.jpg" },
+      { id: "about_why", label: "Why I do this work · portrait", hint: "Under the “tell the truth” list. Warm, close, present.", aspect: "3/4", fallback: "/photos/libni-hero.jpg" },
+    ],
+  },
+  {
+    key: "becoming",
+    title: "The Becoming (/programs/the-becoming)",
+    where: "The 1:1 mentorship landing page — hero, story portrait, the meditation-portal mock-up, and a gallery of moments from the work",
+    slots: [
+      { id: "becoming_hero", label: "Hero portrait", hint: "Full-height portrait beside “The Becoming”. Leave room on the left.", aspect: "4/5", fallback: "/photos/liberate-libni-warm.jpg" },
+      { id: "becoming_portrait", label: "Story portrait", hint: "Beside the long story. Quieter, close.", aspect: "3/4", fallback: "/photos/liberate-libni-thought.jpg" },
+      { id: "becoming_portal", label: "Meditation portal mock-up", hint: "A screenshot or mock-up of the online portal clients get. Appears beside “What you get” once uploaded.", aspect: "4/3" },
+      { id: "becoming_gallery_1", label: "Moments · 1", hint: "The gallery appears once any of these four are uploaded — sessions, notes, a client’s space, you at work.", aspect: "4/5" },
+      { id: "becoming_gallery_2", label: "Moments · 2", hint: "", aspect: "4/5" },
+      { id: "becoming_gallery_3", label: "Moments · 3", hint: "", aspect: "4/5" },
+      { id: "becoming_gallery_4", label: "Moments · 4", hint: "", aspect: "4/5" },
     ],
   },
   {

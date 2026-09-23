@@ -124,6 +124,7 @@ export default async function About() {
             <ul className="ab-lines ab-lines-serif">
               {SELVES.map((s) => <li key={s}>{s}</li>)}
             </ul>
+            <div className="ed-figure ed-figure-34" style={{ marginTop: 12 }}><img src={photo("about_who", "/photos/libni-portrait.jpg")} alt="Libni Fortuna" /></div>
           </div>
           <div className="ed-off1 ed-stack ed-reveal" style={{ transitionDelay: ".15s" }}>
             <div className="ed-copy">
@@ -292,6 +293,7 @@ export default async function About() {
               <p>Founders, leaders, creatives, entrepreneurs, parents, professionals — of any gender, in any season — people who are changing.</p>
               <p>Many of them have already built extraordinary lives. Success isn’t the problem. Honesty is the next level.</p>
             </div>
+            <div className="ed-figure" style={{ marginTop: 12 }}><img src={photo("about_clients", "/photos/liberate-libni-dark.jpg")} alt="Libni Fortuna in a session" /></div>
           </div>
           <div className="ed-off1 ed-stack ed-reveal" style={{ transitionDelay: ".15s" }}>
             <div className="ed-copy">
@@ -345,6 +347,7 @@ export default async function About() {
             <ul className="ab-lines ab-lines-serif ab-muted">
               {TRUTHS.map((t) => <li key={t}>{t}</li>)}
             </ul>
+            <div className="ed-figure ed-figure-34" style={{ marginTop: 12 }}><img src={photo("about_why", "/photos/libni-hero.jpg")} alt="Libni Fortuna" /></div>
           </div>
           <div className="ed-off1 ed-stack ed-reveal" style={{ transitionDelay: ".15s" }}>
             <div className="ed-copy">

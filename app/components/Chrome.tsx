@@ -32,6 +32,7 @@ const NAV: NavItem[] = [
       { label: "Subscribe to my newsletter", href: "/resources#newsletter" },
     ],
   },
+  { label: "Project Me", href: "https://projectme.libni.co", external: true },
   { label: "Contact", href: "/contact" },
 ];
 

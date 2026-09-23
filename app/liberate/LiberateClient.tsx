@@ -6,7 +6,7 @@ import { OFFERS } from "@/config/offers";
 type Photos = Record<string, string>;
 
 const INSIDE = [
-  ["Weekly live group sessions", "Guided coaching, shadow work, and somatic healing practices in a safe, intimate setting on Zoom.", "inside_1"],
+  ["Live sessions, twice a week", "A check-in circle to be heard, then a workshop to go deeper — guided coaching, shadow work and somatic practices on Zoom. Twenty-four sessions across three months.", "inside_1"],
   ["Subconscious reprogramming", "Release old beliefs and patterns stored deep within, and create new ones rooted in self-trust and truth.", "inside_2"],
   ["Energetic exploration and chakra alignment", "Understand your energy body and return to balance through breathwork and gentle practices.", "inside_3"],
   ["Spiritual tools and intuitive activation", "Deepen your connection with intuition, inner knowing, and your spiritual path.", "inside_4"],
@@ -49,12 +49,22 @@ const WORDS = [
 ];
 
 const INCLUDED = [
-  "12-week group experience", "Weekly live sessions", "Subconscious work", "Shadow work", "Somatic practices", "Breathwork",
+  "3-month group experience", "24 live sessions — twice a week", "A weekly check-in circle", "A weekly workshop", "Subconscious work", "Shadow work", "Somatic practices", "Breathwork",
   "Energetic exploration", "Guided meditations", "Private community", "Online resource portal", "Celebratory overnight retreat, in person",
 ];
 
-export default function LiberateClient({ photos = {} }: { photos?: Photos }) {
+type Word = { q: string; who: string; role?: string };
+
+const MOMENT_SLOTS = [
+  ["moments_1", "In session"], ["moments_2", "The circle"], ["moments_3", "The work"],
+  ["moments_4", "Together"], ["moments_5", "The retreat"], ["moments_6", "After"],
+] as const;
+
+export default function LiberateClient({ photos = {}, words: incoming }: { photos?: Photos; words?: Word[] }) {
   const offer = OFFERS.liberate;
+  // Client words come from the Studio (“Client stories”); the published quotes are the fallback.
+  const WORDS_SHOWN: Word[] = incoming && incoming.length ? incoming : WORDS;
+  const momentPhotos = MOMENT_SLOTS.filter(([id]) => photos[id]);
   const price = offer.pricePHP ? `₱${offer.pricePHP.toLocaleString("en-PH")}` : "TBA";
 
   const heroImg = photos.hero_portrait || "/photos/libni-hero.jpg";
@@ -262,8 +272,8 @@ export default function LiberateClient({ photos = {} }: { photos?: Photos }) {
           <p className="lb-eyebrow lb-hero-who"><strong>Libni Fortuna</strong>Life Strategist · Transformational mentor · Experience curator</p>
           <h1 className="lb-hero-title">Liberate</h1>
           <p className="lb-hero-lede">For the soul-led ones ready to let go of the weight and come home to their power.</p>
-          <p className="lb-hero-sub">A 3-month transformational experience for people ready to break free from emotional patterns, people-pleasing, overthinking, and the quiet exhaustion of holding it all together.</p>
-          <p className="lb-hero-meta"><span>Next intake</span><strong>October 2026</strong></p>
+          <p className="lb-hero-sub">A 3-month transformational experience for people ready to break free from emotional patterns, people-pleasing, overthinking, and the quiet exhaustion of holding it all together. We meet twice a week — twenty-four live sessions, held together.</p>
+          <p className="lb-hero-meta"><span>We begin</span><strong>October 12, 2026 · 7 pm</strong></p>
           <div className="lb-ctas">
             <Link href="/liberate/apply" className="lb-btn lb-btn-gold">I’m ready to Liberate</Link>
             <a href="#lb-for-me" className="lb-btn lb-btn-light">Is this for me?</a>
@@ -340,6 +350,13 @@ export default function LiberateClient({ photos = {} }: { photos?: Photos }) {
               </div>
             ))}
           </div>
+          {momentPhotos.length > 0 && (
+            <div className="lb-mosaic lb-reveal" style={{ marginTop: "clamp(48px, 6vw, 84px)" }}>
+              {momentPhotos.map(([id, label]) => (
+                <figure key={id}><img src={photos[id]} alt={label} /><figcaption>{label}</figcaption></figure>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -348,7 +365,7 @@ export default function LiberateClient({ photos = {} }: { photos?: Photos }) {
         <div className="lb-wrap">
           <div className="lb-head lb-reveal">
             <div><p className="lb-eyebrow">The roadmap</p><h2 className="lb-display" style={{ marginTop: 14 }}>Your 12-week journey.</h2></div>
-            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Each week goes a little deeper than the last. You start by seeing the pattern. You end by living without it.</p>
+            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Twice a week: a check-in circle, then a workshop. Each week goes a little deeper than the last. You start by seeing the pattern. You end by living without it.</p>
           </div>
           <div className="lb-road lb-reveal">
             {ROADMAP.map((m) => (
@@ -426,16 +443,16 @@ export default function LiberateClient({ photos = {} }: { photos?: Photos }) {
           <div className="lb-feature lb-reveal">
             <div>
               <p className="lb-eyebrow" style={{ marginBottom: 24 }}>Real people. Real shifts.</p>
-              <p className="lb-quote">{WORDS[0].q}</p>
-              <p className="lb-who">{WORDS[0].who}<span>{WORDS[0].role}</span></p>
+              <p className="lb-quote">{WORDS_SHOWN[0].q}</p>
+              <p className="lb-who">{WORDS_SHOWN[0].who}{WORDS_SHOWN[0].role && <span>{WORDS_SHOWN[0].role}</span>}</p>
             </div>
             <p className="lb-lede lb-muted" style={{ maxWidth: "24ch" }}>Words from people who have done this work with Libni. Not reviews. Turning points.</p>
           </div>
           <div className="lb-words">
-            {WORDS.slice(1).map((w, i) => (
+            {WORDS_SHOWN.slice(1).map((w, i) => (
               <div key={w.who} className="lb-reveal" style={{ transitionDelay: `${i * 0.12}s` }}>
                 <p className="lb-quote">{w.q}</p>
-                <p className="lb-who">{w.who}<span>{w.role}</span></p>
+                <p className="lb-who">{w.who}{w.role && <span>{w.role}</span>}</p>
               </div>
             ))}
           </div>
@@ -495,11 +512,11 @@ export default function LiberateClient({ photos = {} }: { photos?: Photos }) {
           <div className="lb-copy lb-reveal" style={{ transitionDelay: ".15s" }}>
             <p>Break free from the emotional weight you’ve been carrying. From the people-pleasing, the patterns, the quiet exhaustion that’s become your normal.</p>
             <p>Liberate is your space to unravel, rebuild, and rise. This is your next chapter, and it doesn’t have to be written in pain.</p>
-            <p style={{ color: "var(--lb-ivory)" }}>We begin October 2026. Spots are limited and held with intention.</p>
+            <p style={{ color: "var(--lb-ivory)" }}>We begin October 12, 2026, at 7 pm. Spots are limited and held with intention.</p>
           </div>
           <div className="lb-final-meta lb-reveal" style={{ transitionDelay: ".25s" }}>
-            <div>Liberate<b>3-month group experience</b></div>
-            <div>Next intake<b>October 2026</b></div>
+            <div>Liberate<b>3 months · 24 live sessions</b></div>
+            <div>We begin<b>October 12, 2026</b></div>
             <div>Investment<b>{price}</b></div>
           </div>
           <div className="lb-ctas lb-reveal" style={{ transitionDelay: ".35s" }}>

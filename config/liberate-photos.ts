@@ -32,6 +32,14 @@ export const LIBERATE_PHOTO_SLOTS: LiberatePhotoSlot[] = [
   { id: "inside_7", label: "Inside experience 7", section: "Section 5", aspectRatio: "1/1", required: false },
   { id: "inside_8", label: "Inside experience 8", section: "Section 5", aspectRatio: "1/1", required: false },
 
+  // Section 5b: People in Liberate — a gallery under “What happens inside”, shown once any are uploaded
+  { id: "moments_1", label: "People in Liberate • in session", section: "Section 5 · gallery", aspectRatio: "1/1", required: false },
+  { id: "moments_2", label: "People in Liberate • the circle", section: "Section 5 · gallery", aspectRatio: "1/1", required: false },
+  { id: "moments_3", label: "People in Liberate • the work", section: "Section 5 · gallery", aspectRatio: "1/1", required: false },
+  { id: "moments_4", label: "People in Liberate • together", section: "Section 5 · gallery", aspectRatio: "1/1", required: false },
+  { id: "moments_5", label: "People in Liberate • the retreat", section: "Section 5 · gallery", aspectRatio: "1/1", required: false },
+  { id: "moments_6", label: "People in Liberate • after", section: "Section 5 · gallery", aspectRatio: "1/1", required: false },
+
   // Section 7: Retreat
   { id: "retreat_hero", label: "Retreat • wide shot, Manila", section: "Section 7", aspectRatio: "16/9", required: false },
   { id: "retreat_1", label: "Retreat mosaic photo 1", section: "Section 7", aspectRatio: "1/1", required: false },
