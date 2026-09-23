@@ -47,7 +47,7 @@ export const SLOT_GROUPS: SlotGroup[] = [
     key: "videos",
     title: "Video testimonies",
     where: "Home page, /client-love and /stories",
-    slots: [1, 2, 3, 4, 5, 6].map((n) => ({ id: `video_${n}`, label: `Video testimony ${n}`, hint: "Paste a YouTube or Vimeo link. Shown in the order you fill them.", aspect: "16/9", kind: "video" as const })),
+    slots: [1, 2, 3, 4, 5, 6].map((n) => ({ id: `video_${n}`, label: `Video testimony ${n}`, hint: "Upload an MP4 / MOV straight from your phone, or paste a YouTube / Vimeo link. Shown in the order you fill them.", aspect: "16/9", kind: "video" as const })),
   },
   {
     key: "screenshots",
@@ -163,7 +163,21 @@ export const ALL_SLOTS: Slot[] = SLOT_GROUPS.flatMap((g) => g.slots);
 
 /** Fixed slots above, plus the per-row photos of stories, talks and press (story_<id> …). */
 export function isValidSlot(id: string): boolean {
-  return ALL_SLOTS.some((s) => s.id === id) || /^(story|talk|press|brand|speak)_[a-z0-9-]{1,60}$/.test(id);
+  return ALL_SLOTS.some((s) => s.id === id) || /^(story|talk|press|brand|speak|case|libw)_[a-z0-9-]{1,60}$/.test(id);
+}
+
+/** A video slot holds either a YouTube / Vimeo link (embedded) or an uploaded file (played directly). */
+export function resolveVideo(url: string): { embed: string } | { file: string } | null {
+  if (!url) return null;
+  const embed = embedUrl(url);
+  if (embed) return { embed };
+  try {
+    const u = new URL(url);
+    if (/\.(mp4|webm|mov|m4v)$/i.test(u.pathname) || u.hostname.endsWith(".blob.vercel-storage.com")) return { file: url };
+  } catch {
+    if (/^\/uploads\/.+\.(mp4|webm|mov|m4v)$/i.test(url)) return { file: url };
+  }
+  return null;
 }
 
 /** The image to render for a slot: her upload, else the real photo already shipped, else nothing. */

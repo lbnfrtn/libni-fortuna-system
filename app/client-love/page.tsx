@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { SitePage } from "@/app/components/Chrome";
-import { EdHeroSimple, EdStats, EdFinal, EdCtas, EdCircle } from "@/app/components/Editorial";
+import { EdHeroSimple, EdStats, EdFinal, EdCtas, EdCircle, EdVideo } from "@/app/components/Editorial";
 import { getContent, storyPhoto } from "@/lib/content";
-import { embedUrl, photoFor } from "@/config/site-slots";
+import { resolveVideo, photoFor } from "@/config/site-slots";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +12,7 @@ export default async function ClientLove() {
   const content = await getContent();
   const stories = [...content.stories].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
   const [first, ...rest] = stories;
-  const videos = ["video_1", "video_2", "video_3", "video_4", "video_5", "video_6"].map((id) => embedUrl(content.videos[id] ?? "")).filter((v): v is string => Boolean(v));
+  const videos = ["video_1", "video_2", "video_3", "video_4", "video_5", "video_6"].map((id) => content.videos[id] ?? "").filter((u) => resolveVideo(u));
   const shots = ["screenshot_1", "screenshot_2", "screenshot_3", "screenshot_4", "screenshot_5", "screenshot_6"].map((id) => content.photos[id]).filter(Boolean);
 
   return (
@@ -68,7 +68,7 @@ export default async function ClientLove() {
             </div>
             <div className="ed-videos ed-reveal" style={{ marginTop: 0 }}>
               {videos.map((v, i) => (
-                <div key={v}><div className="ed-video"><iframe src={v} title={`Video testimony ${i + 1}`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div></div>
+                <div key={v}><EdVideo url={v} title={`Video testimony ${i + 1}`} /></div>
               ))}
             </div>
           </div>

@@ -25,9 +25,9 @@ export default function DeskLogin() {
 
   return (
     <div className="wrap">
-      <p className="kicker">Payment Desk</p>
+      <p className="kicker">Studio &amp; Payment Desk</p>
       <h1>Sign in</h1>
-      <p className="muted">For Libni and the team only.</p>
+      <p className="muted">For Libni and the team only. You stay signed in for 30 days on this device.</p>
       <form onSubmit={submit} className="card" style={{ marginTop: 16 }}>
         <label>Email</label>
         <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="username" />

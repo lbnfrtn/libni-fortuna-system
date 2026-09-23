@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import type { CaseStudy } from "@/lib/content";
-import { EdCircle } from "@/app/components/Editorial";
+import { EdCircle, EdVideo } from "@/app/components/Editorial";
 
-type Item = CaseStudy & { photo?: string; embed?: string | null };
+type Item = CaseStudy & { photo?: string };
 
 /**
  * The Becoming's own words, kept compact: two tabs (Case Studies · Testimonials).
@@ -52,7 +52,7 @@ export default function BecomingWords({ cases, wall }: { cases: Item[]; wall: It
         <div className="bk-wall ed-reveal">
           {wall.map((w) => (
             <figure key={w.id} className="bk-wall-item">
-              {w.embed && <div className="ed-video"><iframe src={w.embed} title={`${w.name} — video testimony`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div>}
+              {w.video && <EdVideo url={w.video} title={`${w.name} — video testimony`} />}
               <blockquote>{w.quote}</blockquote>
               <figcaption><EdCircle src={w.photo} name={w.name} size={44} /><p className="ed-who">{w.name}{w.role && <span>{w.role}</span>}</p></figcaption>
             </figure>
@@ -81,7 +81,7 @@ export default function BecomingWords({ cases, wall }: { cases: Item[]; wall: It
                     .map(([label, v]) => <div key={label}><small>{label}</small><p>{v}</p></div>)}
                 </div>
                 <p className="ed-quote bk-case-q">{open.quote}</p>
-                {open.embed && <div className="ed-video bk-case-video"><iframe src={open.embed} title={`${open.name} — in her own words`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div>}
+                {open.video && <div className="bk-case-video"><EdVideo url={open.video} title={`${open.name} — in her own words`} /></div>}
               </div>
             </div>
           </div>

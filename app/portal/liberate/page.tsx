@@ -2,7 +2,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentMember } from "@/lib/portal-auth";
 import { getContent } from "@/lib/content";
-import { embedUrl } from "@/config/site-slots";
+import { resolveVideo } from "@/config/site-slots";
+import { EdVideo } from "@/app/components/Editorial";
 import PortalSignOut from "./PortalSignOut";
 import EditorialFx from "@/app/components/EditorialFx";
 
@@ -70,7 +71,7 @@ export default async function PortalHome() {
               <div className="pt-month-head"><p className="ed-eyebrow">{month}</p><h3>{theme}</h3></div>
               <div>
                 {liberate.weeks.slice(m * 4, m * 4 + 4).map((w) => {
-                  const replay = w.replayUrl ? embedUrl(w.replayUrl) : null;
+                  const replay = w.replayUrl && resolveVideo(w.replayUrl) ? w.replayUrl : null;
                   const isNow = w.n === current.n;
                   return (
                     <details key={w.n} className={`pt-week${isNow ? " is-now" : ""}`} open={isNow}>
@@ -82,7 +83,7 @@ export default async function PortalHome() {
                       <div className="pt-week-body">
                         {w.notes && <div className="ed-copy"><p>{w.notes}</p></div>}
                         {replay ? (
-                          <div className="ed-video" style={{ maxWidth: 720 }}><iframe src={replay} title={`Week ${w.n} replay`} allow="encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div>
+                          <EdVideo url={replay} title={`Week ${w.n} replay`} style={{ maxWidth: 720 }} />
                         ) : w.replayUrl ? (
                           <a className="ed-link" href={w.replayUrl} target="_blank" rel="noreferrer">Watch the replay</a>
                         ) : null}

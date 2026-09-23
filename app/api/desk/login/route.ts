@@ -25,7 +25,8 @@ export async function POST(req: Request) {
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
-    maxAge: 60 * 60 * 12,
+    // Thirty days: two people, one passcode, and the Studio is used in long sittings.
+    maxAge: 60 * 60 * 24 * 30,
   });
   return res;
 }

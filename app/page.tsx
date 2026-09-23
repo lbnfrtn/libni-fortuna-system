@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { SitePage } from "@/app/components/Chrome";
-import { EdHero, EdFinal, EdOffer, EdCtas, EdCircle, EdGuideCover, EdLogos } from "@/app/components/Editorial";
+import { EdHero, EdFinal, EdOffer, EdCtas, EdCircle, EdGuideCover, EdLogos, EdVideo } from "@/app/components/Editorial";
 import NewsletterForm from "@/app/components/NewsletterForm";
 import { getContent, storyPhoto, byDateDesc } from "@/lib/content";
-import { photoFor, embedUrl } from "@/config/site-slots";
+import { photoFor, resolveVideo } from "@/config/site-slots";
 import { getPodcast, fmtDate } from "@/lib/feeds";
 import { CHANNELS } from "@/config/channels";
 import { previewMap } from "@/lib/preview";
@@ -36,7 +36,7 @@ export default async function Home() {
   const picked = content.stories.filter((s) => s.featured);
   const [featured, ...restWords] = (picked.length ? picked : content.stories).slice(0, 3);
   // Video testimonies — appear here once Libni pastes YouTube/Vimeo links in the Studio.
-  const videos = ["video_1", "video_2", "video_3"].map((id) => embedUrl(content.videos[id] ?? "")).filter((v): v is string => Boolean(v));
+  const videos = ["video_1", "video_2", "video_3"].map((id) => content.videos[id] ?? "").filter((u) => resolveVideo(u));
 
   const heroCredentials = [
     { num: "1,000+", label: "People guided" },
@@ -161,7 +161,7 @@ export default async function Home() {
             <div className="ed-videos ed-reveal" style={{ marginTop: "clamp(40px, 5vw, 64px)" }}>
               {videos.map((v, i) => (
                 <div key={v}>
-                  <div className="ed-video"><iframe src={v} title={`Video testimony ${i + 1}`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div>
+                  <EdVideo url={v} title={`Video testimony ${i + 1}`} />
                   <p className="ed-video-cap">In their own words</p>
                 </div>
               ))}

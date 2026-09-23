@@ -4,46 +4,93 @@ import { useRef, useState } from "react";
 import type { SiteContent, MediaLink, Story, CaseStudy, Talk, PressItem, MediaKit, Brand, Keynote, BioLink } from "@/lib/content";
 import { LINK_FIELDS, type SlotGroup, type Slot } from "@/config/site-slots";
 
-export default function StudioClient({ groups, initial, storage }: { groups: SlotGroup[]; initial: SiteContent; storage: string }) {
+const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/heic";
+const VIDEO_ACCEPT = "video/mp4,video/webm,video/quicktime,video/x-m4v";
+
+export default function StudioClient({ groups, initial, storage, direct }: { groups: SlotGroup[]; initial: SiteContent; storage: string; direct: boolean }) {
   const [content, setContent] = useState<SiteContent>(initial);
   const [busy, setBusy] = useState<string>("");
+  const [progress, setProgress] = useState<number | null>(null);
   const [note, setNote] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
 
-  function flash(kind: "ok" | "err", text: string) {
+  function flash(kind: "ok" | "err", text: string, ms = 4000) {
     setNote({ kind, text });
-    window.setTimeout(() => setNote(null), 4000);
+    window.setTimeout(() => setNote(null), ms);
+  }
+
+  // A 401 means the sign-in cookie has expired (the page can stay open longer than the session).
+  function expired(): never {
+    flash("err", "Your sign-in has expired. Taking you back to the sign-in screen…", 8000);
+    window.setTimeout(() => window.location.reload(), 1500);
+    throw new Error("Signed out");
   }
 
   async function post(body: Record<string, unknown>, label: string) {
     setBusy(label);
     try {
       const res = await fetch("/api/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (res.status === 401) expired();
       const j = await res.json();
       if (!j.ok) throw new Error(j.error || "Something went wrong");
       setContent(j.content);
       flash("ok", "Saved.");
     } catch (e) {
-      flash("err", String(e instanceof Error ? e.message : e));
+      if (!(e instanceof Error && e.message === "Signed out")) flash("err", String(e instanceof Error ? e.message : e));
     } finally {
       setBusy("");
     }
   }
 
-  async function upload(slotId: string, file: File) {
+  /** Photos and video files. In production the file goes straight from the browser to Vercel Blob, so size isn't capped by the server. */
+  async function upload(slotId: string, file: File, kind: "photo" | "video" = "photo") {
     setBusy(slotId);
+    setProgress(0);
     try {
-      const fd = new FormData();
-      fd.append("slotId", slotId);
-      fd.append("file", file);
-      const res = await fetch("/api/content/upload", { method: "POST", body: fd });
-      const j = await res.json();
-      if (!j.ok) throw new Error(j.error || "Upload failed");
-      setContent((c) => ({ ...c, photos: { ...c.photos, [slotId]: j.url } }));
-      flash("ok", "Photo uploaded.");
+      const isVideo = file.type.startsWith("video/");
+      const maxMB = isVideo ? 500 : 25;
+      if (file.size > maxMB * 1024 * 1024) throw new Error(`That file is larger than ${maxMB}MB. Please export a smaller version.`);
+      if (kind === "video" && !isVideo) throw new Error("Please choose an MP4 or MOV video file.");
+      if (kind === "photo" && isVideo) throw new Error("This slot takes a photo. Video slots are in the Videos group.");
+
+      let url: string;
+      if (direct) {
+        const { upload: blobUpload } = await import("@vercel/blob/client");
+        const ext = (file.name.split(".").pop() || (isVideo ? "mp4" : "jpg")).toLowerCase().replace(/[^a-z0-9]/g, "");
+        const blob = await blobUpload(`site/${slotId}-${Date.now()}.${ext}`, file, {
+          access: "public",
+          handleUploadUrl: "/api/content/upload/client",
+          clientPayload: JSON.stringify({ slotId }),
+          contentType: file.type,
+          multipart: file.size > 10 * 1024 * 1024,
+          onUploadProgress: (p) => setProgress(Math.round(p.percentage)),
+        });
+        url = blob.url;
+        const res = await fetch("/api/content", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action: "setUpload", slotId, url, kind }) });
+        if (res.status === 401) expired();
+        const j = await res.json();
+        if (!j.ok) throw new Error(j.error || "Upload saved to storage but not to the site. Try again.");
+        setContent(j.content);
+      } else {
+        const fd = new FormData();
+        fd.append("slotId", slotId);
+        fd.append("file", file);
+        const res = await fetch("/api/content/upload", { method: "POST", body: fd });
+        if (res.status === 401) expired();
+        if (res.status === 413) throw new Error("That file is too large for this connection. Try a smaller export.");
+        const j = await res.json();
+        if (!j.ok) throw new Error(j.error || "Upload failed");
+        url = j.url;
+        setContent((c) => kind === "video" ? { ...c, videos: { ...c.videos, [slotId]: url } } : { ...c, photos: { ...c.photos, [slotId]: url } });
+      }
+      flash("ok", kind === "video" ? "Video uploaded." : "Photo uploaded.");
     } catch (e) {
-      flash("err", String(e instanceof Error ? e.message : e));
+      const msg = e instanceof Error ? e.message : String(e);
+      if (msg === "Signed out") return;
+      if (/unauthori[sz]ed|401/i.test(msg)) { try { expired(); } catch { /* already handled */ } return; }
+      flash("err", msg, 8000);
     } finally {
       setBusy("");
+      setProgress(null);
     }
   }
 
@@ -77,7 +124,8 @@ export default function StudioClient({ groups, initial, storage }: { groups: Slo
                 photo={content.photos[s.id]}
                 video={content.videos[s.id]}
                 busy={busy === s.id}
-                onUpload={(f) => upload(s.id, f)}
+                progress={busy === s.id ? progress : null}
+                onUpload={(f) => upload(s.id, f, s.kind === "video" ? "video" : "photo")}
                 onClear={() => post({ action: "clearPhoto", slotId: s.id }, s.id)}
                 onVideo={(url) => post({ action: "setVideo", slotId: s.id, url }, s.id)}
               />
@@ -379,7 +427,7 @@ function RowPhoto({ slotId, photo, hint, onUpload, onClear }: { slotId: string; 
   return (
     <div className="row" style={{ marginTop: 14, alignItems: "center" }}>
       {photo ? <img src={photo} alt="" style={{ width: 56, height: 56, borderRadius: "50%", objectFit: "cover" }} /> : <span style={{ width: 56, height: 56, borderRadius: "50%", background: "var(--linen)", display: "inline-block" }} />}
-      <input ref={ref} type="file" accept="image/jpeg,image/png,image/webp,image/avif" style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); e.target.value = ""; }} />
+      <input ref={ref} type="file" accept={IMAGE_ACCEPT} style={{ display: "none" }} onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); e.target.value = ""; }} />
       <button type="button" className="btn small ghost" onClick={() => ref.current?.click()}>{photo ? "Replace photo" : "Add photo"}</button>
       {photo && <button type="button" className="btn small ghost" onClick={onClear}>Remove photo</button>}
       <span className="muted" style={{ fontSize: 12 }}>{hint} <code style={{ fontSize: 10 }}>{slotId}</code></span>
@@ -407,20 +455,26 @@ function MediaKitEditor({ initial, busy, onSave }: { initial: MediaKit; busy: bo
   );
 }
 
-function SlotCard({ slot, photo, video, busy, onUpload, onClear, onVideo }: {
-  slot: Slot; photo?: string; video?: string; busy: boolean;
+function SlotCard({ slot, photo, video, busy, progress, onUpload, onClear, onVideo }: {
+  slot: Slot; photo?: string; video?: string; busy: boolean; progress: number | null;
   onUpload: (f: File) => void; onClear: () => void; onVideo: (url: string) => void;
 }) {
   const fileRef = useRef<HTMLInputElement>(null);
   const [url, setUrl] = useState(video ?? "");
   const isVideo = slot.kind === "video";
   const shown = photo || slot.fallback;
+  const videoFile = video && /\.(mp4|webm|mov|m4v)(\?|$)|blob\.vercel-storage\.com/i.test(video) ? video : "";
+  const busyLabel = progress != null && progress < 100 ? `Uploading… ${progress}%` : progress === 100 ? "Saving…" : "Uploading…";
 
   return (
     <div className="card" style={{ padding: 16 }}>
       <div style={{ aspectRatio: slot.aspect, background: "var(--linen)", marginBottom: 12, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
         {isVideo ? (
-          <span className="muted" style={{ fontSize: 12, textAlign: "center", padding: 10 }}>{video ? "Video link set" : "No video yet"}</span>
+          videoFile ? (
+            <video src={videoFile} controls playsInline preload="metadata" style={{ width: "100%", height: "100%", background: "#000" }} />
+          ) : (
+            <span className="muted" style={{ fontSize: 12, textAlign: "center", padding: 10 }}>{video ? "Video link set" : "No video yet"}</span>
+          )
         ) : shown ? (
           /* eslint-disable-next-line @next/next/no-img-element */
           <img src={shown} alt={slot.label} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
@@ -434,10 +488,23 @@ function SlotCard({ slot, photo, video, busy, onUpload, onClear, onVideo }: {
 
       {isVideo ? (
         <>
+          <input
+            ref={fileRef}
+            type="file"
+            accept={VIDEO_ACCEPT}
+            style={{ display: "none" }}
+            onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); e.target.value = ""; }}
+          />
+          <div className="row" style={{ marginBottom: 10 }}>
+            <button className="btn small" disabled={busy} onClick={() => fileRef.current?.click()}>
+              {busy ? busyLabel : videoFile ? "Replace video file" : "Upload a video file"}
+            </button>
+            {video && <button className="btn small ghost" disabled={busy} onClick={() => { setUrl(""); onVideo(""); }}>Remove</button>}
+          </div>
+          <p className="muted" style={{ fontSize: 12, margin: "0 0 6px" }}>MP4 or MOV, up to 500MB — or paste a YouTube / Vimeo link:</p>
           <input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://youtube.com/watch?v=…" style={{ fontSize: 13 }} />
           <div className="row" style={{ marginTop: 10 }}>
-            <button className="btn small" disabled={busy} onClick={() => onVideo(url)}>{busy ? "Saving…" : "Save link"}</button>
-            {video && <button className="btn small ghost" disabled={busy} onClick={() => { setUrl(""); onVideo(""); }}>Remove</button>}
+            <button className="btn small ghost" disabled={busy || !url.trim()} onClick={() => onVideo(url)}>{busy ? "Saving…" : "Save link"}</button>
           </div>
         </>
       ) : (
@@ -445,13 +512,13 @@ function SlotCard({ slot, photo, video, busy, onUpload, onClear, onVideo }: {
           <input
             ref={fileRef}
             type="file"
-            accept="image/jpeg,image/png,image/webp,image/avif"
+            accept={IMAGE_ACCEPT}
             style={{ display: "none" }}
             onChange={(e) => { const f = e.target.files?.[0]; if (f) onUpload(f); e.target.value = ""; }}
           />
           <div className="row">
             <button className="btn small" disabled={busy} onClick={() => fileRef.current?.click()}>
-              {busy ? "Uploading…" : photo ? "Replace photo" : "Upload photo"}
+              {busy ? busyLabel : photo ? "Replace photo" : "Upload photo"}
             </button>
             {photo && <button className="btn small ghost" disabled={busy} onClick={onClear}>Remove</button>}
           </div>

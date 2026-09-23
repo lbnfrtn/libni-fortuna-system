@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { OFFERS, isSellable } from "@/config/offers";
 import { peso } from "@/lib/util";
 import { LOGOS } from "@/config/logos";
+import { resolveVideo } from "@/config/site-slots";
 
 // Shared editorial building blocks (server components). Pages compose these
 // with the `ed-*` classes in app/editorial.css.
@@ -80,6 +81,19 @@ export function EdHeroSimple({ eyebrow, title, lede, ctas, aside }: { eyebrow: s
 }
 
 export type Word = { q: string; who: string; role?: string; photo?: string };
+
+/** One video: a YouTube / Vimeo embed, or an uploaded file played in place. Renders nothing for anything else. */
+export function EdVideo({ url, title, style }: { url: string; title: string; style?: React.CSSProperties }) {
+  const v = resolveVideo(url);
+  if (!v) return null;
+  return (
+    <div className="ed-video" style={style}>
+      {"embed" in v
+        ? <iframe src={v.embed} title={title} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" />
+        : <video src={v.file} title={title} controls playsInline preload="metadata" style={{ position: "absolute", inset: 0, width: "100%", height: "100%", background: "#000" }} />}
+    </div>
+  );
+}
 
 export function EdWords({ eyebrow = "Real people. Real shifts.", items, note }: { eyebrow?: string; items: Word[]; note?: ReactNode }) {
   const [first, ...rest] = items;

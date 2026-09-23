@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { SitePage } from "@/app/components/Chrome";
-import { EdHeroSimple, EdFinal, EdCircle, EdCtas } from "@/app/components/Editorial";
+import { EdHeroSimple, EdFinal, EdCircle, EdCtas, EdVideo } from "@/app/components/Editorial";
 import { getContent, storyPhoto } from "@/lib/content";
-import { embedUrl } from "@/config/site-slots";
+import { resolveVideo } from "@/config/site-slots";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +11,7 @@ export const metadata = { title: "Client stories · Libni Fortuna" };
 export default async function Stories() {
   const content = await getContent();
   const stories = [...content.stories].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
-  const videos = ["video_1", "video_2", "video_3", "video_4", "video_5", "video_6"].map((id) => embedUrl(content.videos[id] ?? "")).filter((v): v is string => Boolean(v));
+  const videos = ["video_1", "video_2", "video_3", "video_4", "video_5", "video_6"].map((id) => content.videos[id] ?? "").filter((u) => resolveVideo(u));
 
   return (
     <SitePage>
@@ -53,7 +53,7 @@ export default async function Stories() {
             </div>
             <div className="ed-videos ed-reveal" style={{ marginTop: 0 }}>
               {videos.map((v, i) => (
-                <div key={v}><div className="ed-video"><iframe src={v} title={`Video testimony ${i + 1}`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div></div>
+                <div key={v}><EdVideo url={v} title={`Video testimony ${i + 1}`} /></div>
               ))}
             </div>
           </div>

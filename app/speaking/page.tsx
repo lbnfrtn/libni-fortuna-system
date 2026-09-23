@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { SitePage } from "@/app/components/Chrome";
-import { EdHero, EdFinal, EdCtas, EdCircle } from "@/app/components/Editorial";
+import { EdHero, EdFinal, EdCtas, EdCircle, EdVideo } from "@/app/components/Editorial";
 import { getContent, byDateDesc, isUpcoming, brandLogo, storyPhoto } from "@/lib/content";
-import { photoFor, embedUrl } from "@/config/site-slots";
+import { photoFor, resolveVideo } from "@/config/site-slots";
 import { CHANNELS } from "@/config/channels";
 import { LOGOS } from "@/config/logos";
 import { previewMap } from "@/lib/preview";
@@ -45,7 +45,7 @@ export default async function Speaking() {
   const past = talks.filter((t) => !isUpcoming(t.date));
   const years = [...new Set(past.map((t) => (t.date ?? "").slice(0, 4) || "Earlier"))];
 
-  const videos = ["speak_video_1", "speak_video_2", "speak_video_3", "speak_video_4"].map((id, i) => embedUrl(content.videos[id] || (i === 0 ? CHANNELS.tedx : ""))).filter((v): v is string => Boolean(v));
+  const videos = ["speak_video_1", "speak_video_2", "speak_video_3", "speak_video_4"].map((id, i) => content.videos[id] || (i === 0 ? CHANNELS.tedx : "")).filter((u) => resolveVideo(u));
   const stages = ["stage_1", "stage_2", "stage_3", "stage_4", "stage_5", "stage_6", "stage_7", "stage_8"].map(photo).filter((u): u is string => Boolean(u));
   const withLogo = content.brands.map((b) => ({ b, logo: brandLogo(content.photos, b) })).filter((x) => x.logo);
   const wordmarks = content.brands.filter((b) => !brandLogo(content.photos, b));
@@ -120,10 +120,10 @@ export default async function Speaking() {
             <p className="ed-lede" style={{ color: "rgba(251,249,246,.75)" }}>From the TEDx stage to boardrooms, ballrooms and retreats.</p>
           </div>
           {videos.length === 1 ? (
-            <div className="ed-video-hero ed-reveal"><div className="ed-video"><iframe src={videos[0]} title="Libni Fortuna speaking" allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div></div>
+            <div className="ed-video-hero ed-reveal"><EdVideo url={videos[0]} title="Libni Fortuna speaking" /></div>
           ) : (
             <div className="ed-videos ed-reveal" style={{ marginTop: 0, gridTemplateColumns: videos.length === 2 ? "1fr 1fr" : undefined }}>
-              {videos.map((v, i) => <div key={v}><div className="ed-video"><iframe src={v} title={`Libni Fortuna speaking ${i + 1}`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div></div>)}
+              {videos.map((v, i) => <div key={v}><EdVideo url={v} title={`Libni Fortuna speaking ${i + 1}`} /></div>)}
             </div>
           )}
           {stages.length > 0 && (

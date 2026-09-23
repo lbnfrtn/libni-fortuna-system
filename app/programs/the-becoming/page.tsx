@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { SitePage } from "@/app/components/Chrome";
-import { EdHero, EdCtas, EdCircle, EdFinal, tx } from "@/app/components/Editorial";
+import { EdHero, EdCtas, EdCircle, EdFinal, EdVideo, tx } from "@/app/components/Editorial";
 import { getOffer } from "@/config/offers";
 import { getProgram } from "@/config/programs";
 import { getContent, storyPhoto } from "@/lib/content";
-import { photoFor, embedUrl } from "@/config/site-slots";
+import { photoFor, resolveVideo } from "@/config/site-slots";
 import BecomingWords from "./BecomingWords";
 
 export const dynamic = "force-dynamic";
@@ -41,7 +41,7 @@ export default async function TheBecoming() {
   const becoming = content.stories.filter((s) => /becoming/i.test(s.program ?? ""));
   const words = becoming.length ? becoming : content.stories.filter((s) => s.featured);
   const wordsAreBecoming = becoming.length > 0;
-  const videos = ["video_1", "video_2", "video_3"].map((id) => embedUrl(content.videos[id] ?? "")).filter((v): v is string => Boolean(v));
+  const videos = ["video_1", "video_2", "video_3"].map((id) => content.videos[id] ?? "").filter((u) => resolveVideo(u));
 
   // The Becoming's own series — case studies (with an arc) and shorter testimonies (quote only). Separate from the shared stories.
   const cases = content.becomingStories.filter((c) => c.before || c.during || c.after);
@@ -198,8 +198,8 @@ export default async function TheBecoming() {
             </div>
 
             <BecomingWords
-              cases={cases.map((c) => ({ ...c, photo: casePhoto(c.id), embed: embedUrl(c.video ?? "") }))}
-              wall={wall.map((c) => ({ ...c, photo: casePhoto(c.id), embed: embedUrl(c.video ?? "") }))}
+              cases={cases.map((c) => ({ ...c, photo: casePhoto(c.id) }))}
+              wall={wall.map((c) => ({ ...c, photo: casePhoto(c.id) }))}
             />
           </div>
         </section>
@@ -233,7 +233,7 @@ export default async function TheBecoming() {
             {videos.length > 0 && (
               <div className="ed-videos ed-reveal" style={{ marginTop: "clamp(40px, 5vw, 64px)" }}>
                 {videos.map((v, i) => (
-                  <div key={v}><div className="ed-video"><iframe src={v} title={`Video testimony ${i + 1}`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" /></div><p className="ed-video-cap">In their own words</p></div>
+                  <div key={v}><EdVideo url={v} title={`Video testimony ${i + 1}`} /><p className="ed-video-cap">In their own words</p></div>
                 ))}
               </div>
             )}

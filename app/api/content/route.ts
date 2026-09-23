@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isLoggedIn } from "@/lib/auth";
+import { isValidSlot } from "@/config/site-slots";
+import { isOurUploadUrl } from "@/lib/uploads";
 import { getContent, saveContent, setPhoto, setVideo, setLink, type MediaLink, type Story, type CaseStudy, type Talk, type PressItem, type MediaKit, type Brand, type Keynote, type BioLink } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
@@ -23,6 +25,15 @@ export async function POST(req: NextRequest) {
 
     if (action === "clearPhoto") {
       return NextResponse.json({ ok: true, content: await setPhoto(String(body.slotId), null) });
+    }
+    if (action === "setUpload") {
+      // The browser uploaded straight to Blob; record the URL against the slot.
+      const slotId = String(body.slotId ?? "");
+      const url = String(body.url ?? "").trim();
+      if (!isValidSlot(slotId)) return NextResponse.json({ error: "Unknown photo slot" }, { status: 400 });
+      if (!isOurUploadUrl(url)) return NextResponse.json({ error: "That file isn't in the site's storage." }, { status: 400 });
+      const content = body.kind === "video" ? await setVideo(slotId, url) : await setPhoto(slotId, url);
+      return NextResponse.json({ ok: true, content });
     }
     if (action === "setVideo") {
       const url = String(body.url ?? "").trim();
