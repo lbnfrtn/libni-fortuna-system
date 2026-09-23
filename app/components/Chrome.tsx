@@ -109,7 +109,7 @@ export function SiteFooter() {
           <div>
             <p className="big" style={{ color: "#fff", margin: 0 }}>Come home to yourself.</p>
             <p className="muted" style={{ marginTop: 14, maxWidth: "34ch" }}>
-              Transformational mentoring, retreats and speaking — for the version of you beneath the roles.
+              Life Strategist. Transformational mentoring, retreats and speaking — for the version of you beneath the roles.
             </p>
             <p style={{ marginTop: 22 }}><a href="mailto:hello@libni.co">hello@libni.co</a></p>
           </div>

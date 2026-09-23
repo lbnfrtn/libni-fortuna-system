@@ -78,6 +78,10 @@ export const SLOT_GROUPS: SlotGroup[] = [
       { id: "about_now_beach", label: "Life now · the ocean", hint: "A beach day. Wide and calm works best.", aspect: "3/2" },
       { id: "about_now_freedom", label: "Life now · time freedom", hint: "A slow morning, travel, a long table, a weekday afternoon that’s yours.", aspect: "3/2" },
       { id: "about_now_peace", label: "Life now · peace of mind", hint: "Stillness. You, at ease.", aspect: "4/5" },
+      { id: "about_study_abroad", label: "Student of life · studying abroad", hint: "The “student of life” gallery appears once any of these four are uploaded. A classroom, a training room, a certificate day.", aspect: "4/5" },
+      { id: "about_study_australia", label: "Student of life · retreats in Australia", hint: "You holding a room or a circle there.", aspect: "3/2" },
+      { id: "about_study_travel", label: "Student of life · on the road", hint: "A country, a teacher, a moment that taught you something.", aspect: "3/2" },
+      { id: "about_study_room", label: "Student of life · in the room", hint: "An experience you curated — the room, the breath, the table.", aspect: "4/5" },
     ],
   },
   {

@@ -61,7 +61,7 @@ export default async function Speaking() {
     <SitePage navOverlay>
       <EdHero
         eyebrowStrong="Speaking"
-        eyebrow="TEDx Speaker · Transformational Keynote Speaker · Founder, Essence Retreat Philippines · Organisational Experience Designer"
+        eyebrow="Life Strategist · TEDx Speaker · Transformational Keynote Speaker · Founder, Essence Retreat Philippines · Organisational Experience Designer"
         title={<>This is not just a talk. <span className="ed-gold">It’s an experience.</span></>}
         lede="Information inspires. Experience transforms."
         sub="People don’t need another presentation, another keynote filled with ideas they’ll forget by Monday. They need experiences that help them pause, reconnect, and move forward differently."

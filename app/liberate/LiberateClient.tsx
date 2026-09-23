@@ -259,7 +259,7 @@ export default function LiberateClient({ photos = {} }: { photos?: Photos }) {
       {/* 01 — HERO */}
       <section className="lb-hero" id="top">
         <div className="lb-hero-panel">
-          <p className="lb-eyebrow lb-hero-who"><strong>Libni Fortuna</strong>Transformational mentor · Experience curator</p>
+          <p className="lb-eyebrow lb-hero-who"><strong>Libni Fortuna</strong>Life Strategist · Transformational mentor · Experience curator</p>
           <h1 className="lb-hero-title">Liberate</h1>
           <p className="lb-hero-lede">For the soul-led ones ready to let go of the weight and come home to their power.</p>
           <p className="lb-hero-sub">A 3-month transformational experience for people ready to break free from emotional patterns, people-pleasing, overthinking, and the quiet exhaustion of holding it all together.</p>
@@ -415,7 +415,7 @@ export default function LiberateClient({ photos = {} }: { photos?: Photos }) {
               <p>If you’re ready for that, welcome home. This is your space.</p>
             </div>
             <p className="lb-sign">Libni</p>
-            <p className="lb-creds">TEDx speaker · Founder, Essence Retreat Philippines · Certified hypnotherapist · NLP master practitioner · Breathwork &amp; somatic facilitator</p>
+            <p className="lb-creds">Life Strategist · TEDx speaker · Founder, Essence Retreat Philippines · Certified hypnotherapist · NLP master practitioner · Breathwork &amp; somatic facilitator</p>
           </div>
         </div>
       </section>

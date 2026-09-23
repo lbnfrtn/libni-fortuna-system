@@ -26,7 +26,7 @@ const signature = La_Belle_Aurore({
 
 export const metadata: Metadata = {
   title: "Libni Fortuna",
-  description: "Come home to yourself.",
+  description: "Libni Fortuna — Life Strategist, transformational mentor, TEDx speaker and experience curator. Come home to yourself.",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

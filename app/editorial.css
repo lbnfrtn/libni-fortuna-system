@@ -700,6 +700,7 @@ a.ed-talk:hover h4 { color: var(--ed-plum); }
 .ab-gallery img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
 .ab-gallery-4 figure:nth-child(2), .ab-gallery-4 figure:nth-child(3) { grid-column: span 1; }
 .ab-gallery figcaption { margin-top: 10px; font-family: var(--ed-sans); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(251,249,246,.6); }
+.ab-gallery.light figcaption { color: var(--ed-muted); }
 @media (max-width: 960px) { .ab-grid { grid-template-columns: 1fr 1fr; } .ab-gallery, .ab-gallery-3, .ab-gallery-4 { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 480px) { .ab-grid { grid-template-columns: 1fr; } }
 

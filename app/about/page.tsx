@@ -60,12 +60,19 @@ const NOW_SLOTS: [string, string][] = [
   ["about_now_peace", "Peace of mind"],
 ];
 
-/** Photos of the life itself — shown only once Libni has uploaded them in the Studio. */
-function LifeGallery({ photos }: { photos: Record<string, string> }) {
-  const shots = NOW_SLOTS.map(([id, caption]) => ({ id, caption, src: photos[id] })).filter((s) => s.src);
+const STUDY_SLOTS: [string, string][] = [
+  ["about_study_abroad", "Studying abroad"],
+  ["about_study_australia", "Retreats in Australia"],
+  ["about_study_travel", "On the road"],
+  ["about_study_room", "In the room"],
+];
+
+/** A row of photos — shown only once Libni has uploaded them in the Studio. */
+function Gallery({ photos, slots, light }: { photos: Record<string, string>; slots: [string, string][]; light?: boolean }) {
+  const shots = slots.map(([id, caption]) => ({ id, caption, src: photos[id] })).filter((s) => s.src);
   if (!shots.length) return null;
   return (
-    <div className={`ab-gallery ab-gallery-${shots.length} ed-reveal`}>
+    <div className={`ab-gallery ab-gallery-${shots.length}${light ? " light" : ""} ed-reveal`}>
       {shots.map((s) => <figure key={s.id}><img src={s.src} alt={s.caption} loading="lazy" /><figcaption>{s.caption}</figcaption></figure>)}
     </div>
   );
@@ -186,7 +193,27 @@ export default async function About() {
               </ul>
             </div>
           </div>
-          <LifeGallery photos={content.photos} />
+          <Gallery photos={content.photos} slots={NOW_SLOTS} />
+        </div>
+      </section>
+
+      {/* STUDENT OF LIFE */}
+      <section className="ed-sec ed-ivory">
+        <div className="ed-wrap">
+          <div className="ed-split ed-split-top">
+            <div className="ed-c5 ed-stack ed-reveal">
+              <p className="ed-eyebrow">A student of life</p>
+              <h2 className="ed-display">Because I love this work, I went and learned it everywhere I could.</h2>
+            </div>
+            <div className="ed-off1 ed-stack ed-reveal" style={{ transitionDelay: ".15s" }}>
+              <div className="ed-copy">
+                <p>I studied abroad to understand the mind — how it forms us, and how it can be re-formed. I immersed myself in experiences instead of just reading about them. I held my retreats in Australia. I travelled to different countries and collected knowledge and wisdom the way other people collect souvenirs — from teachers, from rooms, from strangers who had something to show me.</p>
+                <p>I’m a student of life beyond my labels. I learn from living. And then I turn what I’ve learned into something people can feel, not just hear.</p>
+              </div>
+              <p className="ed-pull">Curated experiences are my art. A room, a breath, a question, a table, an ocean — arranged so that something in you can finally move.</p>
+            </div>
+          </div>
+          <Gallery photos={content.photos} slots={STUDY_SLOTS} light />
         </div>
       </section>
 

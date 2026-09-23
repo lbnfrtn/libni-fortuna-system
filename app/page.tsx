@@ -48,7 +48,7 @@ export default async function Home() {
       {/* 1 · HERO */}
       <EdHero
         eyebrowStrong="Libni Fortuna"
-        eyebrow="Transformational mentor · TEDx speaker · Experience curator"
+        eyebrow="Life Strategist · Transformational mentor · TEDx speaker · Experience curator"
         title="Come home to yourself."
         lede="You’ve held everyone together. Who’s been holding you?"
         sub="There’s a version of you — whole, free, fully alive — beneath everything you carry. I’ve guided 1,000+ people back to her. There are different ways in; let’s find yours."
