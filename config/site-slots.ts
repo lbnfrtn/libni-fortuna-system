@@ -74,6 +74,10 @@ export const SLOT_GROUPS: SlotGroup[] = [
       { id: "about_portrait", label: "Story portrait", hint: "Sits beside “I’ve been a lot of people”. Quieter, candid.", aspect: "3/4", fallback: "/photos/liberate-libni-thought.jpg" },
       { id: "about_stage", label: "On stage", hint: "Beside “What I believe”.", aspect: "4/5", fallback: "/photos/stage-tedx.jpg" },
       { id: "about_life", label: "Beyond the work", hint: "Something personal — travel, the ocean, a table with people.", aspect: "4/5", fallback: "/photos/liberate-libni-warm.jpg" },
+      { id: "about_now_family", label: "Life now · with my family", hint: "The “Life now” gallery appears once any of these four are uploaded. Real, candid, unposed.", aspect: "4/5" },
+      { id: "about_now_beach", label: "Life now · the ocean", hint: "A beach day. Wide and calm works best.", aspect: "3/2" },
+      { id: "about_now_freedom", label: "Life now · time freedom", hint: "A slow morning, travel, a long table, a weekday afternoon that’s yours.", aspect: "3/2" },
+      { id: "about_now_peace", label: "Life now · peace of mind", hint: "Stillness. You, at ease.", aspect: "4/5" },
     ],
   },
   {

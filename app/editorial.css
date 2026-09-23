@@ -688,7 +688,19 @@ a.ed-talk:hover h4 { color: var(--ed-plum); }
 .ab-beliefs { list-style: none; margin: 0; padding: 0; }
 .ab-beliefs li { font-family: var(--ed-serif); font-size: clamp(20px, 1.9vw, 26px); line-height: 1.35; padding: 20px 0; border-top: 1px solid var(--ed-line); }
 .ab-beliefs li:last-child { border-bottom: 1px solid var(--ed-line); }
-@media (max-width: 960px) { .ab-grid { grid-template-columns: 1fr 1fr; } }
+.ab-now { list-style: none; margin: 0; padding: 0; }
+.ab-now li { font-family: var(--ed-serif); font-size: clamp(19px, 1.7vw, 24px); line-height: 1.35; color: rgba(251,249,246,.85); padding: 18px 0; border-top: 1px solid var(--ed-line-light); }
+.ab-now li:last-child { border-bottom: 1px solid var(--ed-line-light); }
+.ab-now b { display: block; font-family: var(--ed-sans); font-weight: 600; font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--ed-gold); margin-bottom: 6px; }
+.ab-gallery { display: grid; gap: clamp(12px, 1.6vw, 20px); margin-top: clamp(48px, 6vw, 84px); grid-template-columns: repeat(4, 1fr); }
+.ab-gallery-1 { grid-template-columns: 1fr; }
+.ab-gallery-2 { grid-template-columns: 1fr 1fr; }
+.ab-gallery-3 { grid-template-columns: repeat(3, 1fr); }
+.ab-gallery figure { margin: 0; }
+.ab-gallery img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; }
+.ab-gallery-4 figure:nth-child(2), .ab-gallery-4 figure:nth-child(3) { grid-column: span 1; }
+.ab-gallery figcaption { margin-top: 10px; font-family: var(--ed-sans); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(251,249,246,.6); }
+@media (max-width: 960px) { .ab-grid { grid-template-columns: 1fr 1fr; } .ab-gallery, .ab-gallery-3, .ab-gallery-4 { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 480px) { .ab-grid { grid-template-columns: 1fr; } }
 
 /* ---- /links (Instagram bio page) ---- */

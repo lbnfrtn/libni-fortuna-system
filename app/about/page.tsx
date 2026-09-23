@@ -53,6 +53,24 @@ const BRING: [string, string][] = [
   ["Energy", "Because sometimes the room changes before the conversation does."],
 ];
 
+const NOW_SLOTS: [string, string][] = [
+  ["about_now_family", "With my family"],
+  ["about_now_beach", "The ocean, often"],
+  ["about_now_freedom", "Time that’s mine"],
+  ["about_now_peace", "Peace of mind"],
+];
+
+/** Photos of the life itself — shown only once Libni has uploaded them in the Studio. */
+function LifeGallery({ photos }: { photos: Record<string, string> }) {
+  const shots = NOW_SLOTS.map(([id, caption]) => ({ id, caption, src: photos[id] })).filter((s) => s.src);
+  if (!shots.length) return null;
+  return (
+    <div className={`ab-gallery ab-gallery-${shots.length} ed-reveal`}>
+      {shots.map((s) => <figure key={s.id}><img src={s.src} alt={s.caption} loading="lazy" /><figcaption>{s.caption}</figcaption></figure>)}
+    </div>
+  );
+}
+
 export default async function About() {
   const content = await getContent();
   const photo = (id: string, fallback: string) => photoFor(content.photos, id) || fallback;
@@ -64,7 +82,7 @@ export default async function About() {
         eyebrow="Life Strategist · Transformational Mentor · TEDx Speaker · Experience Curator"
         title="Come home to yourself."
         lede="I’m Libni. And honestly, I’ve been a lot of people."
-        sub="Not a résumé. A real introduction — who I am, what shaped the way I work, what I believe, and what it’s like to sit in a room with me."
+        sub="Today I live a life I once thought belonged to other people — time that’s mine, a family I actually get to be with, work I’d choose again tomorrow, the ocean often. I got here the long way. And I learned that arriving is where the real conversation starts."
         ctas={[{ label: "Find your path", href: "/start", variant: "gold" }, { label: "Say hello", href: "/contact", variant: "light" }]}
         image={photo("about_hero", "/photos/liberate-libni-table.jpg")}
         alt="Libni Fortuna"
@@ -142,6 +160,36 @@ export default async function About() {
         </div>
       </section>
 
+      {/* LIFE NOW */}
+      <section className="ed-sec ed-night">
+        <div className="ed-wrap">
+          <div className="ed-head ed-reveal">
+            <div><p className="ed-eyebrow">Life now</p><h2 className="ed-display">I’m writing this from the other side of the rebuild.</h2></div>
+            <div className="ed-stack-sm">
+              <p className="ed-lede" style={{ color: "rgba(251,249,246,.85)" }}>Not from a stage I climbed once. From a life I get to live every day — and am still learning how to live fully.</p>
+            </div>
+          </div>
+          <div className="ed-split ed-split-top ed-reveal">
+            <div className="ed-c6 ed-stack">
+              <div className="ed-copy" style={{ color: "rgba(251,249,246,.82)" }}>
+                <p>My life today is abundant in the ways that actually count. Mornings that belong to me. A business built around my life instead of the other way round. Time with my family that isn’t squeezed in between everything else. Beaches, often. Peace of mind — not as a mood, as a baseline.</p>
+                <p>I didn’t inherit this. I built it, after building the other kind first — the impressive life that looked right and felt far away. So I know both from the inside. What it costs to keep the first one running. What it takes to trust the second one.</p>
+              </div>
+              <p className="ed-pull" style={{ color: "var(--ed-gold-soft)" }}>Which is exactly why I’m good with people who look like they have it figured out. I know that life. I know what it’s like to have everything and still quietly wonder whether it’s yours.</p>
+            </div>
+            <div className="ed-off-right5">
+              <ul className="ab-now">
+                <li><b>Time</b>that doesn’t have to be earned back.</li>
+                <li><b>Family</b>as the centre, not the reward.</li>
+                <li><b>Work</b>I would choose again tomorrow.</li>
+                <li><b>Peace of mind</b>as the baseline, not the holiday.</li>
+              </ul>
+            </div>
+          </div>
+          <LifeGallery photos={content.photos} />
+        </div>
+      </section>
+
       {/* SUBTRACTION */}
       <section className="ed-sec ed-plum">
         <div className="ed-wrap ed-statement">
@@ -214,7 +262,8 @@ export default async function About() {
             <p className="ed-eyebrow">Who do I work with?</p>
             <h2 className="ed-display">People standing at some kind of threshold.</h2>
             <div className="ed-copy">
-              <p>Founders, leaders, creatives, entrepreneurs, parents, professionals — people who are changing.</p>
+              <p>Founders, leaders, creatives, entrepreneurs, parents, professionals — of any gender, in any season — people who are changing.</p>
+              <p>Many of them have already built extraordinary lives. Success isn’t the problem. Honesty is the next level.</p>
             </div>
           </div>
           <div className="ed-off1 ed-stack ed-reveal" style={{ transitionDelay: ".15s" }}>
