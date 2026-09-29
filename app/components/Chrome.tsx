@@ -1,5 +1,6 @@
 import Link from "next/link";
 import EditorialFx from "./EditorialFx";
+import InstagramStrip from "./InstagramStrip";
 import { CHANNELS } from "@/config/channels";
 
 type NavLink = { label: string; href: string; external?: boolean };
@@ -161,6 +162,7 @@ export function SitePage({ children, navOverlay }: { children: React.ReactNode; 
       <AnnouncementBar />
       <SiteNav overlay={navOverlay} />
       <main className="ed">{children}</main>
+      <InstagramStrip />
       <SiteFooter />
       <EditorialFx />
     </>

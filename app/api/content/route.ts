@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isLoggedIn } from "@/lib/auth";
 import { isValidSlot } from "@/config/site-slots";
 import { isOurUploadUrl } from "@/lib/uploads";
-import { getContent, saveContent, setPhoto, setVideo, setLink, type MediaLink, type Story, type CaseStudy, type Talk, type PressItem, type MediaKit, type Brand, type Keynote, type BioLink } from "@/lib/content";
+import { getContent, saveContent, setPhoto, setVideo, setLink, TALK_SURFACES, type MediaLink, type Story, type CaseStudy, type Talk, type PressItem, type MediaKit, type Brand, type Keynote, type BioLink, type TalkSurface } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -111,8 +111,9 @@ export async function POST(req: NextRequest) {
       const talks: Talk[] = (Array.isArray(body.items) ? body.items : []).map((t: Partial<Talk>) => ({
         id: slug(String(t.id || t.title || "")),
         title: str(t.title, 160), org: str(t.org, 120), date: opt(t.date, 12), location: opt(t.location, 120), url: opt(t.url, 500),
-        kind: KINDS.find((k) => k === t.kind) ?? "other", blurb: opt(t.blurb, 400),
-      })).filter((t: Talk) => t.id && t.title && t.org);
+        kind: KINDS.find((k) => k === t.kind) ?? "other", blurb: opt(t.blurb, 400), details: opt(t.details, 3000),
+        showOn: (Array.isArray(t.showOn) ? t.showOn : []).filter((x): x is TalkSurface => TALK_SURFACES.some(([k]) => k === x)),
+      })).map((t: Talk) => (t.showOn && t.showOn.length ? t : { ...t, showOn: undefined })).filter((t: Talk) => t.id && t.title && t.org);
       return NextResponse.json({ ok: true, content: await saveContent({ talks }) });
     }
     if (action === "setPress") {

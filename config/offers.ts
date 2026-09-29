@@ -36,6 +36,25 @@ export const OFFERS: Record<string, Offer> = {
     pipeline: "consumer",
   },
 
+  // The same session, held in a room instead of on a call. Its own slug so the amount lives here, not in a component.
+  "ignite-in-person": {
+    slug: "ignite-in-person",
+    name: "Power Hour · In person",
+    blurb: "The 90-minute session, in person — Manila or wherever you are.",
+    track: "consumer",
+    journey: "A",
+    pricePHP: 8888,
+    allowPayInFull: true,
+    allowInstalments: false,
+    allowDeposit: false,
+    methods: ["GCASH", "PAYMAYA", "QRPH", "CREDIT_CARD"],
+    onboardingPack: "ignite",
+    refundNote:
+      "Life happens — you can reschedule once with at least 48 hours' notice. Sessions cancelled with less notice, or missed, aren't refundable, but let's talk if something serious came up.",
+    pipeline: "consumer",
+    hideFromStart: true,
+  },
+
   "private-studio": {
     slug: "private-studio",
     name: "Private Studio Sessions",

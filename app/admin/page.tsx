@@ -96,7 +96,8 @@ export default async function AdminHub() {
             ["/admin/clients", "Clients", "Everyone who has paid — programs, paid, owed."],
             ["/admin/onboarding", "Onboarding", "Welcome, agreement, intake, first session — ticked off."],
             ["/desk", "Payment Desk", "Create links, verify transfers, resend, refund."],
-            ["/admin/audience", "Audience & email", "Your list, where it came from, the sequences. Export to GHL."],
+            ["/admin/email", "Email & funnel", "Every automatic letter — welcome, nudges, reminders — and the people in them. Write to your list."],
+            ["/admin/audience", "Audience", "Your list and where it came from."],
             ["/admin/liberate", `Liberate HQ · ${content.liberate.cohortLabel}`, "Members, seats, and everything inside the member portal."],
             ["/admin/studio", "Studio", "Every photo, video, link and event on the public site."],
             ["/dashboard", "Money", "Cash, closes, balances, stuck orders, weekly digest."],
@@ -108,7 +109,7 @@ export default async function AdminHub() {
           ))}
         </div>
         <p className="muted" style={{ fontSize: 13, marginTop: 24 }}>
-          Client emails, agreements, reminders and broadcasts are sent by GoHighLevel from the tags this system sets. Payments are Xendit + manual transfer through the Desk. This admin is where you see it all and steer.
+          Welcome letters, nudges, reminders and your Letters are sent by the site itself (see Email &amp; funnel); GoHighLevel keeps the contact list and tags. Payments are Xendit + manual transfer through the Desk. This admin is where you see it all and steer.
         </p>
       </div>
     </>

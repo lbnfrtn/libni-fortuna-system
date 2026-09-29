@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isLoggedIn } from "@/lib/auth";
 import { setNote, MANUAL_STAGES, type Stage } from "@/lib/crm";
+import { stopOnStage } from "@/lib/funnel";
 
 export const dynamic = "force-dynamic";
 
@@ -22,7 +23,10 @@ export async function POST(req: NextRequest) {
     if ("note" in body) patch.note = String(body.note ?? "").slice(0, 2000);
     if ("nextAction" in body) patch.nextAction = String(body.nextAction ?? "").slice(0, 300);
 
-    return NextResponse.json({ ok: true, note: await setNote(email, patch) });
+    const note = await setNote(email, patch);
+    // Once Libni has taken over by hand, the automatic application nudges step back.
+    if (patch.stage) await stopOnStage(email).catch(() => {});
+    return NextResponse.json({ ok: true, note });
   } catch (err) {
     console.error("POST /api/crm:", err);
     return NextResponse.json({ error: String(err) }, { status: 500 });

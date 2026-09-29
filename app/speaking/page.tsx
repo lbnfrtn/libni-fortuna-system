@@ -7,6 +7,8 @@ import { CHANNELS } from "@/config/channels";
 import { LOGOS } from "@/config/logos";
 import { previewMap } from "@/lib/preview";
 import { TalkRow, PressCard, PressRow } from "@/app/components/Features";
+import { EngagementsByYear, PhotoMarquee } from "@/app/components/Engagements";
+import { talkPhotos } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -43,7 +45,7 @@ export default async function Speaking() {
   const talks = [...content.talks].sort(byDateDesc);
   const upcoming = talks.filter((t) => isUpcoming(t.date)).sort((a, b) => (a.date ?? "").localeCompare(b.date ?? ""));
   const past = talks.filter((t) => !isUpcoming(t.date));
-  const years = [...new Set(past.map((t) => (t.date ?? "").slice(0, 4) || "Earlier"))];
+  const roomPhotos = talks.flatMap((t) => talkPhotos(content.photos, t));
 
   const videos = ["speak_video_1", "speak_video_2", "speak_video_3", "speak_video_4"].map((id, i) => content.videos[id] || (i === 0 ? CHANNELS.tedx : "")).filter((u) => resolveVideo(u));
   const stages = ["stage_1", "stage_2", "stage_3", "stage_4", "stage_5", "stage_6", "stage_7", "stage_8"].map(photo).filter((u): u is string => Boolean(u));
@@ -134,6 +136,8 @@ export default async function Speaking() {
         </div>
       </section>
 
+      {roomPhotos.length >= 3 && <section className="ed-sec-sm ed-ivory" style={{ padding: "0 0 clamp(40px, 5vw, 72px)" }}><PhotoMarquee photos={roomPhotos} alt="Libni Fortuna — in the room" /></section>}
+
       {/* PHILOSOPHY */}
       <section className="ed-sec ed-plum">
         <div className="ed-wrap ed-statement">
@@ -218,16 +222,9 @@ export default async function Speaking() {
           )}
           <div className="ed-head ed-reveal">
             <div><p className="ed-eyebrow">01 · Events &amp; stages</p><h2 className="ed-display">Where the work has travelled.</h2></div>
-            <p className="ed-lede ed-muted">Keynotes, workshops, panels, retreats and facilitations — {past.length} and counting, by year.</p>
+            <p className="ed-lede ed-muted">Keynotes, workshops, panels, retreats and facilitations — {past.length} and counting. Open a year, then open a room.</p>
           </div>
-          <div className="ed-reveal">
-            {years.map((y) => (
-              <div key={y}>
-                <p className="ed-year">{y}</p>
-                {past.filter((t) => ((t.date ?? "").slice(0, 4) || "Earlier") === y).map((t) => <TalkRow key={t.id} t={t} photos={content.photos} prev={prev} />)}
-              </div>
-            ))}
-          </div>
+          <div className="ed-reveal"><EngagementsByYear talks={past} photos={content.photos} prev={prev} /></div>
         </div>
       </section>
 

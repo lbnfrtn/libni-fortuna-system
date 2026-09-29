@@ -108,6 +108,15 @@ export const SLOT_GROUPS: SlotGroup[] = [
     ],
   },
   {
+    key: "programs",
+    title: "Program pages — photo strips",
+    where: "Founders Circle, Workshops & Trainings, For Organisations, Studio Sessions, Private Experiences, For Brands and the Power Hour. A strip of real moments appears on each page once you add any photo.",
+    slots: ([
+      ["founders-circle", "Founders Circle"], ["workshops", "Workshops & Trainings"], ["organizations", "For Organisations"],
+      ["private-studio", "Private Studio Sessions"], ["private-experiences", "Private Experiences"], ["brands", "For Brands"], ["ignite", "Power Hour"],
+    ] as [string, string][]).flatMap(([slug, name]) => [1, 2, 3, 4].map((n) => ({ id: `prog_${slug}_${n}`, label: `${name} · photo ${n}`, hint: n === 1 ? "The room, the table, the people — candid over posed." : "", aspect: n % 2 ? "4/5" : "3/2" }))),
+  },
+  {
     key: "links",
     title: "Link in bio (/links)",
     where: "/links — the page behind your Instagram bio link",
@@ -163,7 +172,7 @@ export const ALL_SLOTS: Slot[] = SLOT_GROUPS.flatMap((g) => g.slots);
 
 /** Fixed slots above, plus the per-row photos of stories, talks and press (story_<id> …). */
 export function isValidSlot(id: string): boolean {
-  return ALL_SLOTS.some((s) => s.id === id) || /^(story|talk|press|brand|speak|case|libw)_[a-z0-9-]{1,60}$/.test(id);
+  return ALL_SLOTS.some((s) => s.id === id) || /^(story|talk|press|brand|speak|case|libw)_[a-z0-9-]{1,60}(_[1-9])?$/.test(id);
 }
 
 /** A video slot holds either a YouTube / Vimeo link (embedded) or an uploaded file (played directly). */
@@ -187,6 +196,8 @@ export function photoFor(photos: Record<string, string>, id: string): string | u
 
 /** Named links Libni pastes in the Studio. */
 export const LINK_FIELDS: { key: string; label: string; hint: string; placeholder: string }[] = [
+  { key: "calendlyPowerHour", label: "Power Hour booking calendar", hint: "Your Calendly (or any booking) link. After someone pays for a Power Hour they land on it to pick a time. Until it's here, the page tells them you'll message within a day.", placeholder: "https://calendly.com/…" },
+  { key: "instagramFeed", label: "Instagram feed (Behold)", hint: "Paste the feed link Behold gives you after you connect @libnifortuna. Your latest posts then appear at the bottom of every page.", placeholder: "https://feeds.behold.so/…" },
   { key: "spotify", label: "Spotify show", hint: "Your podcast on Spotify. The home page then shows a live player with your latest episodes.", placeholder: "https://open.spotify.com/show/…" },
   { key: "applePodcasts", label: "Apple Podcasts", hint: "Optional second place to listen.", placeholder: "https://podcasts.apple.com/…" },
   { key: "substack", label: "Substack / blog", hint: "Your write-ups. Adds a “Read the blog” link on the home page.", placeholder: "https://yourname.substack.com" },

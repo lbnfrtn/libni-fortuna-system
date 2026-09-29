@@ -56,6 +56,8 @@ export interface Offer {
   callOptional?: boolean;
   /** Which onboarding pack fires on `paid:<slug>` (defined in config/onboarding). */
   onboardingPack: string;
+  /** A variant of another offer (e.g. the in-person Power Hour): not listed on /start or Work with me. */
+  hideFromStart?: boolean;
   /**
    * If true, this offer never sells directly — the front door and Desk treat
    * it as waitlist-only regardless of price (e.g. undated workshops).

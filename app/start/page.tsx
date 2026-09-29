@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default function StartPage() {
   const offers = listOffers()
-    .filter((o) => o.track === "consumer")
+    .filter((o) => o.track === "consumer" && !o.hideFromStart)
     .map((o) => ({
       slug: o.slug,
       name: o.name,

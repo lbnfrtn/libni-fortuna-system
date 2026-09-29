@@ -10,11 +10,18 @@ import { resolveVideo } from "@/config/site-slots";
 
 export type Cta = { label: string; href: string; variant?: "gold" | "light" | "ink" | "ghost" | "solid"; external?: boolean };
 
+/** Forms that start a conversation — keep the landing page open behind them. */
+export function opensInNewTab(href: string): boolean {
+  return href.startsWith("/apply/") || href.startsWith("/liberate/apply");
+}
+
 export function EdBtn({ href, variant = "ink", external, children, small }: { href: string; variant?: Cta["variant"]; external?: boolean; children: ReactNode; small?: boolean }) {
   const cls = `ed-btn ed-btn-${variant}${small ? " ed-btn-sm" : ""}`;
   if (external || href.startsWith("http") || href.startsWith("#")) {
     return <a href={href} className={cls} {...(href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : {})}>{children}</a>;
   }
+  // Applications and enquiries open in a new tab so the page they came from stays put.
+  if (opensInNewTab(href)) return <Link href={href} className={cls} target="_blank" rel="noreferrer">{children}</Link>;
   return <Link href={href} className={cls}>{children}</Link>;
 }
 

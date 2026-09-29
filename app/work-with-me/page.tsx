@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { SitePage } from "@/app/components/Chrome";
-import { EdBtn, EdFinal, offerMeta, tx } from "@/app/components/Editorial";
+import { EdBtn, EdFinal, offerMeta, opensInNewTab, tx } from "@/app/components/Editorial";
 import { OFFERS } from "@/config/offers";
 import { PROGRAMS } from "@/config/programs";
 import { PHOTOS, img } from "@/config/media";
 import { getContent } from "@/lib/content";
 import { photoFor } from "@/config/site-slots";
+import { PhotoMarquee } from "@/app/components/Engagements";
+import { talkPhotos } from "@/lib/content";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +47,7 @@ function Card({ slug, tag, cta, blurb }: { slug: string; tag: string; cta: strin
       <h3>{x.name}</h3>
       <p className="ed-path-desc">{x.desc}</p>
       {x.forYou && <p className="ed-path-for"><b>For you if</b>{x.forYou}</p>}
-      <p className="ed-path-cta">{x.external ? <a href={x.href} className="ed-link" target="_blank" rel="noreferrer">{cta}</a> : <Link href={x.href} className="ed-link">{cta}</Link>}</p>
+      <p className="ed-path-cta">{x.external ? <a href={x.href} className="ed-link" target="_blank" rel="noreferrer">{cta}</a> : <Link href={x.href} className="ed-link" {...(opensInNewTab(x.href) ? { target: "_blank", rel: "noreferrer" } : {})}>{cta}</Link>}</p>
     </div>
   );
 }
@@ -53,6 +55,10 @@ function Card({ slug, tag, cta, blurb }: { slug: string; tag: string; cta: strin
 export default async function WorkWithMe() {
   const content = await getContent();
   const photo = (id: string, fallback: string) => photoFor(content.photos, id) || fallback;
+  // Real rooms — the stage photos plus everything attached to engagements in the Studio.
+  const stages = ["stage_1", "stage_2", "stage_3", "stage_4", "stage_5", "stage_6", "stage_7", "stage_8"].map((id) => photoFor(content.photos, id)).filter((u): u is string => Boolean(u));
+  const rooms = [...new Set([...content.talks.flatMap((t) => talkPhotos(content.photos, t)), ...stages])];
+  const experiences = [...new Set(["founders-circle", "workshops", "private-studio", "private-experiences"].flatMap((slug) => [1, 2, 3, 4].map((n) => content.photos[`prog_${slug}_${n}`])).filter(Boolean))];
 
   return (
     <SitePage>
@@ -113,6 +119,7 @@ export default async function WorkWithMe() {
             <div><p className="ed-eyebrow">03 · Experiences</p><h2 className="ed-display">Experience the work, without the long container.</h2></div>
             <p className="ed-lede ed-muted">A few hours or a day. In person, with the people you choose.</p>
           </div>
+          {experiences.length >= 3 && <div className="ed-reveal" style={{ marginBottom: "clamp(40px, 5vw, 64px)" }}><PhotoMarquee photos={experiences} alt="Experiences with Libni" /></div>}
           <div className="ed-path-grid">
             <Card slug="private-studio" tag="2 hours · in person · your group" cta="Book a studio session" />
             <Card slug="workshops" tag="Live · dated as announced" cta="See upcoming workshops" blurb />
@@ -129,6 +136,7 @@ export default async function WorkWithMe() {
             <div><p className="ed-eyebrow">04 · Organisations &amp; brands</p><h2 className="ed-display">Bring the work to your people.</h2></div>
             <p className="ed-lede" style={{ color: "rgba(251,249,246,.7)" }}>I also bring this work into organisations, events and teams — and into aligned brand collaborations.</p>
           </div>
+          <div className="ed-reveal" style={{ marginBottom: "clamp(40px, 5vw, 64px)" }}><PhotoMarquee photos={rooms} rev alt="Libni Fortuna — organisations and stages" /></div>
           <div className="ed-path-grid ed-path-grid-3">
             <Card slug="organizations" tag="Workshops · retreats · The Reset" cta="Enquire for your team" />
             <Card slug="speaking" tag="Keynotes · TEDx · summits" cta="Invite me to speak" />

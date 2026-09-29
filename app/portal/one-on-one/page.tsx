@@ -46,7 +46,7 @@ export default async function OneOnOnePortal() {
       </section>
 
       {orders.map((o) => {
-        const pack = ONBOARDING[o.offerSlug];
+        const pack = ONBOARDING[getOffer(o.offerSlug)?.onboardingPack ?? o.offerSlug];
         if (!pack) return null;
         return (
           <section key={o.id} className="ed-sec ed-ivory" id="next">

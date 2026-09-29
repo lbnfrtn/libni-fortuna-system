@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 import type { SiteContent, MediaLink, Story, CaseStudy, Talk, PressItem, MediaKit, Brand, Keynote, BioLink } from "@/lib/content";
+import { PROGRAM_OPTIONS, TALK_SURFACES } from "@/config/content-options";
 import { LINK_FIELDS, type SlotGroup, type Slot } from "@/config/site-slots";
 
 const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/heic";
@@ -161,7 +162,7 @@ export default function StudioClient({ groups, initial, storage, direct }: { gro
         photoHint="Their photo — shown as a small circle beside their words."
         blank={() => ({ id: `s-${Date.now().toString(36)}`, name: "", quote: "", featured: false })}
         fields={[
-          { key: "name", label: "Name" }, { key: "role", label: "Who they are (e.g. Actor · Mother)" }, { key: "program", label: "Program (Essence Retreat, Liberate, 1:1…)" },
+          { key: "name", label: "Name" }, { key: "role", label: "Who they are (e.g. Actor · Mother)" }, { key: "program", label: "Program — their words then appear on that page too", type: "select", options: [["", "— none —"], ...PROGRAM_OPTIONS.map((n): [string, string] => [n, n])] },
           { key: "featured", label: "Feature on the home page", type: "checkbox" },
           { key: "quote", label: "Their words", type: "textarea", full: true },
           { key: "before", label: "Where they started", type: "textarea" }, { key: "during", label: "The work", type: "textarea" }, { key: "after", label: "Where they are now", type: "textarea" },
@@ -212,12 +213,13 @@ export default function StudioClient({ groups, initial, storage, direct }: { gro
 
       <RowsEditor<Talk>
         id="talks"
-        title="Events & stages"
-        hint="Keynotes, workshops, panels, summits, retreats and facilitations — the engagement archive on /speaking, grouped by year. TV, podcasts and articles have their own sections below. Dates can be a year (2024), a month (2026-10), a day (2026-10-07) or a span (2021–2023); anything in the future shows under “Coming up”."
+        title="Events, stages & gatherings"
+        hint="Every room you've held — keynotes, workshops, panels, summits, retreats, company days, founders' tables. Each one can carry what you covered and up to seven photos, and you choose which pages it appears on: the Speaking archive (by year), For Organisations, Workshops & Trainings, or Founders Circle. Leave “Show on” empty and I'll place it sensibly from the type and organisation. Dates can be a year (2024), a month (2026-10), a day (2026-10-07) or a span (2021–2023); anything in the future shows under “Coming up”."
         rows={content.talks}
         photos={content.photos}
         photoPrefix="talk"
-        photoHint="Optional — a photo from that stage."
+        photoHint="Cover photo — the one that shows in the list."
+        extraPhotos={6}
         blank={() => ({ id: `t-${Date.now().toString(36)}`, title: "", org: "", kind: "keynote" })}
         fields={[
           { key: "title", label: "Talk title" }, { key: "org", label: "Event / organisation" },
@@ -225,6 +227,8 @@ export default function StudioClient({ groups, initial, storage, direct }: { gro
           { key: "kind", label: "Type", type: "select", options: [["keynote", "Keynote"], ["workshop", "Workshop"], ["panel", "Panel"], ["summit", "Summit"], ["retreat", "Retreat"], ["other", "Other"]] },
           { key: "url", label: "Link — YouTube, Spotify, TikTok and news links get a preview image automatically; Facebook/Instagram show a badge until you add a photo below", placeholder: "https://…" },
           { key: "blurb", label: "One line about it", full: true },
+          { key: "details", label: "What you talked about / what happened in the room — shown when someone opens it", type: "textarea", full: true },
+          { key: "showOn", label: "Show on", type: "multi", options: TALK_SURFACES as unknown as [string, string][], full: true },
         ]}
         busy={busy === "talks"}
         onSave={(items) => post({ action: "setTalks", items }, "talks")}
@@ -367,11 +371,13 @@ export default function StudioClient({ groups, initial, storage, direct }: { gro
   );
 }
 
-type Field<T> = { key: keyof T & string; label: string; type?: "text" | "textarea" | "select" | "checkbox"; options?: [string, string][]; placeholder?: string; full?: boolean };
+type Field<T> = { key: keyof T & string; label: string; type?: "text" | "textarea" | "select" | "checkbox" | "multi"; options?: [string, string][]; placeholder?: string; full?: boolean };
 
 /** One editor for any list of structured rows (stories, talks, press), each row with an optional photo. */
-function RowsEditor<T extends { id: string }>({ id, title, hint, rows: initial, fields, photos, photoPrefix, photoHint = "", blank, busy, onSave, onUpload, onClear }: {
+function RowsEditor<T extends { id: string }>({ id, title, hint, rows: initial, fields, photos, photoPrefix, photoHint = "", extraPhotos = 0, blank, busy, onSave, onUpload, onClear }: {
   id: string; title: string; hint: string; rows: T[]; fields: Field<T>[]; photos: Record<string, string>; photoPrefix?: string; photoHint?: string;
+  /** Numbered photos after the cover (`<prefix>_<id>_1` …). */
+  extraPhotos?: number;
   blank: () => T; busy: boolean; onSave: (rows: T[]) => void; onUpload: (slotId: string, f: File) => void; onClear: (slotId: string) => void;
 }) {
   const [rows, setRows] = useState<T[]>(initial);
@@ -406,6 +412,15 @@ function RowsEditor<T extends { id: string }>({ id, title, hint, rows: initial, 
                         <label style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 26 }}>
                           <input type="checkbox" checked={Boolean(row[f.key])} onChange={(e) => set(i, f.key, e.target.checked)} style={{ width: "auto", accentColor: "var(--plum)" }} /> {f.label}
                         </label>
+                      ) : f.type === "multi" ? (
+                        <><label>{f.label}</label>
+                          <div className="row" style={{ gap: 8 }}>
+                            {f.options?.map(([v, l]) => {
+                              const cur = (row[f.key] as unknown as string[] | undefined) ?? [];
+                              const on = cur.includes(v);
+                              return <button type="button" key={v} className={`chip${on ? " on" : ""}`} onClick={() => set(i, f.key, on ? cur.filter((x) => x !== v) : [...cur, v])}>{l}</button>;
+                            })}
+                          </div></>
                       ) : f.type === "select" ? (
                         <><label>{f.label}</label><select value={String(row[f.key] ?? "")} onChange={(e) => set(i, f.key, e.target.value)}>{f.options?.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select></>
                       ) : f.type === "textarea" ? (
@@ -417,6 +432,13 @@ function RowsEditor<T extends { id: string }>({ id, title, hint, rows: initial, 
                   ))}
                 </div>
                 {photoPrefix && <RowPhoto slotId={slotId} photo={photo} hint={photoHint} onUpload={(f) => onUpload(slotId, f)} onClear={() => onClear(slotId)} />}
+                {photoPrefix && extraPhotos > 0 && (
+                  <div style={{ marginTop: 6 }}>
+                    {Array.from({ length: extraPhotos }, (_, n) => `${slotId}_${n + 1}`).map((sid, n) => (
+                      <RowPhoto key={sid} slotId={sid} photo={photos[sid]} hint={`More photos · ${n + 1}`} onUpload={(f) => onUpload(sid, f)} onClear={() => onClear(sid)} />
+                    ))}
+                  </div>
+                )}
                 <div className="row" style={{ marginTop: 14, justifyContent: "space-between" }}>
                   <div className="row">
                     <button type="button" className="btn small ghost" disabled={i === 0} onClick={() => setRows((r) => { const c = [...r]; [c[i - 1], c[i]] = [c[i], c[i - 1]]; return c; })}>Move up</button>

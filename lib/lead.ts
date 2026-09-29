@@ -5,6 +5,7 @@ import { PIPELINES, knownFields } from "@/config/ghl-map";
 import { tag } from "@/lib/tags";
 import { isFull } from "@/lib/capacity";
 import { logLead } from "@/lib/leadlog";
+import { enrol } from "@/lib/funnel";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
@@ -82,11 +83,27 @@ export async function importBacklogRow(row: BacklogRow): Promise<{ ok: boolean; 
   }
 }
 
+/** Which email sequence a new lead starts, from what they actually did. Never throws. */
+async function startSequence(lead: LeadInput, waitlisted: boolean): Promise<void> {
+  const offer = getOffer(lead.offerSlug);
+  const source = lead.source || "website";
+  const isApplication = offer?.journey === "B" || offer?.journey === "C";
+  let trigger: string;
+  if (source === "newsletter" || source === "free-guide") trigger = source;
+  else if (!offer) trigger = "newsletter";
+  else if (waitlisted) trigger = `waitlist:${offer.slug}`;
+  else if (isApplication) trigger = `applied:${offer.slug}`;
+  else if (offer.track === "corporate" || offer.track === "brand" || offer.journey === "D") trigger = `enquiry:${offer.slug}`;
+  else return; // a plain lead on a pay-now offer gets the payment-link sequence from the order, not from here
+  await enrol({ email: lead.email, name: lead.name, trigger, vars: { offer: offer?.name ?? "" } }).catch(() => {});
+}
+
 export async function intakeLead(lead: LeadInput): Promise<LeadResult> {
   const offer = getOffer(lead.offerSlug);
   // Waitlist if: no price / explicitly waitlist-only / a capped offer is full.
   const full = offer?.capacity ? await isFull(lead.offerSlug) : false;
   const waitlisted = !!offer && (offer.waitlistOnly || offer.pricePHP == null || full);
+  await startSequence(lead, waitlisted).catch(() => {});
 
   try {
     const source = lead.source || "website";

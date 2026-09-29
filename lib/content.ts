@@ -72,7 +72,13 @@ export interface CaseStudy {
   video?: string;
 }
 
-/** A stage: keynote, workshop, panel, TV, summit… Photo in photos[`talk_${id}`]. */
+import { TALK_SURFACES, PROGRAM_OPTIONS, type TalkSurface } from "@/config/content-options";
+export { TALK_SURFACES, PROGRAM_OPTIONS, type TalkSurface };
+
+/**
+ * A stage: keynote, workshop, panel, TV, summit… Cover photo in photos[`talk_${id}`],
+ * more in photos[`talk_${id}_1` … `_6`]. `details` is what she covered in the room.
+ */
 export interface Talk {
   id: string;
   title: string;
@@ -82,7 +88,12 @@ export interface Talk {
   url?: string;
   kind: "keynote" | "workshop" | "panel" | "summit" | "retreat" | "other";
   blurb?: string;
+  /** What she talked about / what happened — shown when the row is opened. */
+  details?: string;
+  /** Empty = worked out from the kind and organisation (see talkSurfaces). */
+  showOn?: TalkSurface[];
 }
+
 
 /** Libni featured elsewhere: a guest on a podcast, a TV segment, an article. Still/thumbnail in photos[`press_${id}`]. */
 export interface PressItem {
@@ -334,6 +345,32 @@ function normalise(raw: Partial<SiteContent> | null | undefined): SiteContent {
     speakingWords: Array.isArray(raw?.speakingWords) ? raw!.speakingWords : [],
     bioLinks: Array.isArray(raw?.bioLinks) ? raw!.bioLinks : DEFAULT_BIO_LINKS,
   };
+}
+
+/** Where an engagement shows. Her choice wins; otherwise: every one on /speaking, corporate rooms on Organisations, her own workshops on Workshops, founders' tables on Founders Circle. */
+export function talkSurfaces(t: Talk): TalkSurface[] {
+  if (t.showOn && t.showOn.length) return t.showOn;
+  const out: TalkSurface[] = ["speaking"];
+  const founders = /founders/i.test(`${t.org} ${t.title}`);
+  const own = /^essence\b/i.test(t.org.trim());
+  if (founders) out.push("founders-circle");
+  if (!founders && !own && (t.kind === "workshop" || t.kind === "retreat" || t.kind === "other")) out.push("organizations");
+  if (!founders && (own || t.kind === "workshop")) out.push("workshops");
+  return [...new Set(out)];
+}
+
+/** Every photo Libni attached to an engagement — the cover first, then the numbered extras. */
+export function talkPhotos(photos: Record<string, string>, t: Talk): string[] {
+  return [photos[`talk_${t.id}`], ...[1, 2, 3, 4, 5, 6].map((n) => photos[`talk_${t.id}_${n}`])].filter((u): u is string => Boolean(u));
+}
+
+/** Stories tagged for a program (by its name), else nothing. */
+export function storiesFor(stories: Story[], programName: string): Story[] {
+  const key = programName.toLowerCase().replace(/^for /, "").split(" ")[0];
+  return stories.filter((s) => {
+    const p = (s.program ?? "").toLowerCase();
+    return p === programName.toLowerCase() || (key.length > 3 && p.includes(key));
+  });
 }
 
 /** A brand's logo: her upload, else the shipped file, else nothing (the name renders as a wordmark). */

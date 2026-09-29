@@ -3,27 +3,19 @@ import DeskLogin from "../../desk/DeskLogin";
 import AdminNav from "@/app/components/AdminNav";
 import { listLeads } from "@/lib/leadlog";
 import { getOffer } from "@/config/offers";
+import Link from "next/link";
+import { getFunnel } from "@/lib/funnel";
 
 export const dynamic = "force-dynamic";
 
 // The email-marketing side. Sending lives in GoHighLevel (deliverability,
 // unsubscribe law, sequences); this page shows who is on the list, where they
 // came from, and which automated sequences exist — with one-click export.
-const SEQUENCES: [string, string, string][] = [
-  ["Letters from Libni", "newsletter · free-guide", "Nurture: the free guide, then soft letters. Broadcasts go out from GHL."],
-  ["Applied, didn’t book a call", "apply", "3 gentle nudges over 7 days to book the discovery call."],
-  ["Booked, no-show", "call", "Reschedule invitation, then a check-in."],
-  ["Call done, no payment", "proposal", "Two follow-ups: what’s in the way, then a warm door left open."],
-  ["Payment link opened, not completed", "link", "Reminder at 24h and 72h; link expires cleanly."],
-  ["Instalment due", "instalment-due", "Reminder 3 days before, on the day, and 2 days after."],
-  ["Waitlist — a spot opened", "waitlist", "First-come note with a 48h hold."],
-  ["Paid: welcome + onboarding", "paid:<offer>", "Welcome, agreement, intake, first-session booking — per offer."],
-];
 
 export default async function Audience() {
   const session = await isLoggedIn();
   if (!session) return <DeskLogin />;
-  const leads = await listLeads(5000);
+  const [leads, funnel] = await Promise.all([listLeads(5000), getFunnel()]);
   const uniq = new Map<string, (typeof leads)[number]>();
   for (const l of leads.slice().reverse()) uniq.set(l.email.toLowerCase(), l);
   const list = [...uniq.values()].reverse();
@@ -43,11 +35,12 @@ export default async function Audience() {
           <div>
             <p className="kicker">Audience &amp; email</p>
             <h1 style={{ margin: "4px 0 6px" }}>{list.length} people on your list</h1>
-            <p className="muted" style={{ maxWidth: "64ch" }}>Everyone who has opted in through the site. Write to them from GoHighLevel — that’s where sending, unsubscribes and the automated sequences live.</p>
+            <p className="muted" style={{ maxWidth: "64ch" }}>Everyone who has opted in through the site. Letters and the automatic sequences are sent from here — see <Link href="/admin/email">Email &amp; funnel</Link>. GoHighLevel keeps a copy of every contact.</p>
           </div>
           <div className="row">
-            <a className="btn" href={ghl} target="_blank" rel="noreferrer">Write a letter in GHL</a>
+            <Link className="btn" href="/admin/email#letter">Write a letter</Link>
             <a className="btn ghost" href="/api/audience">Export CSV</a>
+            <a className="btn ghost" href={ghl} target="_blank" rel="noreferrer">Open GHL ↗</a>
           </div>
         </div>
 
@@ -76,11 +69,11 @@ export default async function Audience() {
         </div>
 
         <h2 style={{ marginTop: 40 }}>Automated sequences</h2>
-        <p className="muted" style={{ maxWidth: "70ch" }}>These fire from tags this site sets in GoHighLevel. The wording for each is drafted in <code>docs/MESSAGES.md</code> and waits for your approval before it goes live.</p>
+        <p className="muted" style={{ maxWidth: "70ch" }}>Sent by the site from what people do — sign up, apply, get a link, pay. Edit every word in <Link href="/admin/email">Email &amp; funnel</Link>. {funnel.suppressed.length} unsubscribed.</p>
         <div className="card" style={{ padding: 0, overflow: "hidden", marginTop: 12 }}>
           <table>
-            <thead><tr><th>Sequence</th><th>Trigger tag</th><th>What it does</th></tr></thead>
-            <tbody>{SEQUENCES.map(([n, t, d]) => <tr key={n}><td><strong>{n}</strong></td><td><code style={{ fontSize: 12 }}>{t}</code></td><td className="muted" style={{ fontSize: 14 }}>{d}</td></tr>)}</tbody>
+            <thead><tr><th>Sequence</th><th>Starts when</th><th>Letters</th><th>In it now</th><th></th></tr></thead>
+            <tbody>{funnel.sequences.map((s) => <tr key={s.id}><td><strong>{s.name}</strong><br /><span className="muted" style={{ fontSize: 12 }}>{s.description}</span></td><td><code style={{ fontSize: 12 }}>{s.triggers.join(", ")}</code></td><td>{s.steps.length}</td><td>{funnel.enrolments.filter((e) => e.sequenceId === s.id && e.status === "active").length}</td><td><span className={`pill ${s.active ? "paid" : "cancelled"}`}>{s.active ? "on" : "paused"}</span></td></tr>)}</tbody>
           </table>
         </div>
 

@@ -8,6 +8,7 @@ const ITEMS: [string, string][] = [
   ["Clients", "/admin/clients"],
   ["Onboarding", "/admin/onboarding"],
   ["Payment Desk", "/desk"],
+  ["Email", "/admin/email"],
   ["Audience", "/admin/audience"],
   ["Liberate HQ", "/admin/liberate"],
   ["Studio", "/admin/studio"],

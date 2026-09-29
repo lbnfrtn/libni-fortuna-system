@@ -5,7 +5,9 @@ import { getOffer, isSellable } from "@/config/offers";
 import { getProgram } from "@/config/programs";
 import { img } from "@/config/media";
 import { peso } from "@/lib/util";
-import { getContent, storyPhoto } from "@/lib/content";
+import { getContent, storyPhoto, storiesFor, talkSurfaces, byDateDesc, isUpcoming, talkPhotos, type TalkSurface } from "@/lib/content";
+import { previewMap } from "@/lib/preview";
+import { EngagementRow, LastGathering, PhotoMarquee } from "@/app/components/Engagements";
 
 export const dynamic = "force-dynamic";
 
@@ -41,13 +43,33 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
   const paras = (p.longCopy ?? []).map(tx);
   const ctaLabel = p.notice && waitlist ? "Join the waitlist" : cta.label;
 
-  // Real words for this program from the Studio (stories whose Program mentions its name); the config quote is the fallback.
+  // Real words only: stories tagged for this program in the Studio; else the config quote; else the featured stories from across the work.
   const content = await getContent();
-  const key = offer.name.split(" ")[0];
-  const tagged = content.stories.filter((s) => new RegExp(key, "i").test(s.program ?? ""));
-  const words = tagged.length
-    ? tagged.map((s) => ({ q: s.quote, who: s.name, role: s.role, photo: storyPhoto(content.photos, s.id) }))
-    : p.testimonial ? [p.testimonial] : [];
+  const tagged = storiesFor(content.stories, offer.name);
+  const wordsAreOwn = tagged.length > 0 || Boolean(p.testimonial);
+  const pool = tagged.length ? tagged : content.stories.filter((s) => s.featured);
+  const words = tagged.length || !p.testimonial
+    ? pool.map((s) => ({ q: s.quote, who: s.name, role: s.role, photo: storyPhoto(content.photos, s.id) }))
+    : [p.testimonial];
+  const wordsEyebrow = wordsAreOwn ? "In their words" : "Real people. Real shifts.";
+  const wordsNote = wordsAreOwn ? undefined : "Words from people who have done this work with Libni — across retreats, circles and one-to-one.";
+
+  // Photos of this program in the Studio (“Program pages — photo strips”).
+  const strip = [1, 2, 3, 4].map((n) => content.photos[`prog_${slug}_${n}`]).filter(Boolean);
+
+  // The rooms she has held for this page — from the engagement archive, by where each is set to show.
+  const surface = (["organizations", "workshops", "founders-circle"] as TalkSurface[]).find((x) => x === slug);
+  const rooms = surface ? content.talks.filter((t) => talkSurfaces(t).includes(surface)).sort(byDateDesc) : [];
+  const upcomingRooms = rooms.filter((t) => isUpcoming(t.date));
+  const pastRooms = rooms.filter((t) => !isUpcoming(t.date));
+  const prev = rooms.length ? await previewMap(rooms.map((t) => t.url)) : new Map<string, string>();
+  const roomPhotos = rooms.flatMap((t) => talkPhotos(content.photos, t));
+  const roomsCopy: Record<string, [string, string, string]> = {
+    organizations: ["Organisations I've worked with", "Rooms I've held for teams.", "Open one to see what we did there — and the faces, if they let me share them."],
+    workshops: ["Past workshops & trainings", "The rooms so far.", "Open one to see what we covered and what the room looked like."],
+    "founders-circle": ["Earlier tables", "Where we've gathered.", "Open one to see what we talked about that night."],
+  };
+  const [roomsEyebrow, roomsTitle, roomsLede] = roomsCopy[slug] ?? ["Past rooms", "Where the work has been.", ""];
 
   return (
     <SitePage navOverlay>
@@ -80,7 +102,7 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
 
       {words.length > 0 && p.notice && (
         <section className="ed-sec ed-ivory">
-          <div className="ed-wrap"><EdWords eyebrow="From the people who were there" items={words} /></div>
+          <div className="ed-wrap"><EdWords eyebrow="From the people who were there" items={words} note={wordsNote} /></div>
         </section>
       )}
 
@@ -98,9 +120,40 @@ export default async function ProgramPage({ params }: { params: Promise<{ slug: 
         </section>
       )}
 
+      {strip.length > 0 && (
+        <section className="ed-sec-sm ed-ivory" style={{ paddingTop: 0 }}>
+          <div className="ed-wrap"><div className="ed-strip ed-reveal">{strip.map((u, i) => <img key={u} src={u} alt={`${offer.name} — ${i + 1}`} loading="lazy" />)}</div></div>
+        </section>
+      )}
+
+      {/* THE ROOMS — last gathering as a feature, then the rest, from the engagement archive */}
+      {rooms.length > 0 && (
+        <section className="ed-sec ed-night">
+          <div className="ed-wrap">
+            {upcomingRooms.length > 0 && (
+              <div className="ed-upcoming ed-reveal" style={{ marginBottom: 56, background: "rgba(251,249,246,.06)" }}>
+                <p className="ed-eyebrow">Coming up</p>
+                <div>{upcomingRooms.map((t) => <EngagementRow key={t.id} t={t} photos={content.photos} prev={prev} />)}</div>
+              </div>
+            )}
+            {pastRooms[0] && slug === "founders-circle" && <LastGathering t={pastRooms[0]} photos={content.photos} prev={prev} />}
+            {pastRooms.length > (slug === "founders-circle" ? 1 : 0) && (
+              <>
+                <div className="ed-head ed-reveal" style={{ marginTop: slug === "founders-circle" ? "clamp(56px, 7vw, 96px)" : 0 }}>
+                  <div><p className="ed-eyebrow">{roomsEyebrow}</p><h2 className="ed-display">{roomsTitle}</h2></div>
+                  <p className="ed-lede" style={{ color: "rgba(251,249,246,.75)" }}>{roomsLede}</p>
+                </div>
+                <div className="ed-reveal">{(slug === "founders-circle" ? pastRooms.slice(1) : pastRooms).map((t) => <EngagementRow key={t.id} t={t} photos={content.photos} prev={prev} />)}</div>
+              </>
+            )}
+          </div>
+          {roomPhotos.length >= 3 && <div style={{ marginTop: "clamp(48px, 6vw, 88px)" }}><PhotoMarquee photos={roomPhotos} alt={`${offer.name} — in the room`} /></div>}
+        </section>
+      )}
+
       {words.length > 0 && !p.notice && (
         <section className="ed-sec ed-linen">
-          <div className="ed-wrap"><EdWords eyebrow="In their words" items={words} /></div>
+          <div className="ed-wrap"><EdWords eyebrow={wordsEyebrow} items={words} note={wordsNote} /></div>
         </section>
       )}
 

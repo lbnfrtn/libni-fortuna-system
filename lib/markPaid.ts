@@ -4,6 +4,7 @@ import { store } from "@/lib/store";
 import { addTags, setCustomFields, upsertOpportunity, notifyTeam } from "@/lib/ghl";
 import { PIPELINES, knownFields } from "@/config/ghl-map";
 import { tag } from "@/lib/tags";
+import { enrol, stopOnPaid } from "@/lib/funnel";
 import { peso } from "@/lib/util";
 
 export interface PaymentInfo {
@@ -66,8 +67,23 @@ export async function markPaid(orderId: string, payment: PaymentInfo): Promise<M
   });
   await store().put(order);
 
-  // --- GHL: record the money, move the deal, fire the onboarding tag. ---
+  // --- Email: pre-sale nudges stop; the welcome sequence for this offer begins on the first payment. ---
   const offer = getOffer(order.offerSlug);
+  try {
+    await stopOnPaid(order.contact.email);
+    if (order.instalments.filter((i) => i.status === "paid").length === 1) {
+      const base = (process.env.APP_BASE_URL || "").replace(/\/$/, "");
+      await enrol({
+        email: order.contact.email, name: order.contact.name, trigger: tag.paid(order.offerSlug),
+        vars: { offer: order.offerName, welcome_link: `${base}/welcome/${order.offerSlug}?o=${encodeURIComponent(order.id)}`, amount: peso(payment.amountPHP) },
+      });
+    }
+  } catch (e) {
+    order.events.push({ at: new Date().toISOString(), type: "mail-error", note: `markPaid email: ${e}` });
+    await store().put(order);
+  }
+
+  // --- GHL: record the money, move the deal, fire the onboarding tag. ---
   const contactId = order.contact.ghlContactId;
   try {
     if (offer && contactId) {

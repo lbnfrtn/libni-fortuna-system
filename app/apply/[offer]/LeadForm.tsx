@@ -39,6 +39,15 @@ export default function LeadForm({
   function setA(id: string, v: string) {
     setAnswers((a) => ({ ...a, [id]: v }));
   }
+  function toggleMulti(id: string, opt: string) {
+    setAnswers((a) => {
+      const cur = (a[id] || "").split(", ").filter(Boolean);
+      const next = cur.includes(opt) ? cur.filter((x) => x !== opt) : [...cur, opt];
+      return { ...a, [id]: next.join(", ") };
+    });
+  }
+  // A select answer can redirect the whole application (e.g. “start with a Power Hour first”).
+  const detour = questions.find((q) => q.detour && q.detourOn && answers[q.id] === q.detourOn)?.detour;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -72,6 +81,7 @@ export default function LeadForm({
       <div className="card">
         <p className="serif" style={{ fontSize: 24 }}>Thank you. 🤍</p>
         <p className="muted">{done.message}</p>
+        {detour && <p style={{ marginTop: 16 }}><a className="btn" href={detour.href}>{detour.cta} →</a></p>}
       </div>
     );
 
@@ -100,11 +110,34 @@ export default function LeadForm({
               <option value="">Choose…</option>
               {q.options?.map((o) => <option key={o} value={o}>{o}</option>)}
             </select>
+          ) : q.type === "multi" ? (
+            <div className="multi">
+              {q.options?.map((o) => {
+                const on = (answers[q.id] || "").split(", ").includes(o);
+                return (
+                  <label key={o} className={`multi-opt${on ? " on" : ""}`}>
+                    <input type="checkbox" checked={on} onChange={() => toggleMulti(q.id, o)} />
+                    {o}
+                  </label>
+                );
+              })}
+              {q.required && <input tabIndex={-1} aria-hidden style={{ position: "absolute", opacity: 0, height: 0, width: 0, pointerEvents: "none" }} value={answers[q.id] || ""} onChange={() => {}} required />}
+            </div>
           ) : (
             <input type={q.type} value={answers[q.id] || ""} onChange={(e) => setA(q.id, e.target.value)} placeholder={q.placeholder} required={q.required} />
           )}
         </div>
       ))}
+
+      {detour && (
+        <div className="note" style={{ marginTop: 20, padding: 22, background: "var(--lilac-tint)", color: "var(--ink)" }}>
+          <p style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: 20, lineHeight: 1.35 }}>{detour.text}</p>
+          <div className="row" style={{ marginTop: 14 }}>
+            <a className="btn" href={detour.href}>{detour.cta} →</a>
+            <span className="muted" style={{ fontSize: 13 }}>Or keep going below and send the application anyway.</span>
+          </div>
+        </div>
+      )}
 
       {/* Honeypot — hidden from people, catches bots. */}
       <div style={{ position: "absolute", left: "-9999px" }} aria-hidden>

@@ -5,7 +5,8 @@ import { generateInstalmentLink } from "@/lib/orders";
 import { addTags, setCustomFields, notifyTeam } from "@/lib/ghl";
 import { knownFields } from "@/config/ghl-map";
 import { tag } from "@/lib/tags";
-import { todayISO } from "@/lib/util";
+import { todayISO, peso } from "@/lib/util";
+import { enrol, runDue } from "@/lib/funnel";
 
 export const runtime = "nodejs";
 
@@ -57,8 +58,17 @@ export async function GET(req: Request) {
         await addTags(contactId, [tag.instalmentDue()]);
       }
     }
+    // The reminder letter itself — one per instalment per kind, never twice.
+    const base = (process.env.APP_BASE_URL || "").replace(/\/$/, "");
+    await enrol({
+      email: order.contact.email, name: order.contact.name, trigger: "instalment-due", key: `inst:${order.id}:${inst.n}:${a.kind}`,
+      vars: { offer: order.offerName, amount: peso(inst.amountPHP), due: a.kind === "overdue" ? `${inst.dueDate} (now overdue)` : inst.dueDate, payment_link: inst.invoiceUrl || `${base}/pay/${order.id}` },
+    }).catch(() => {});
     processed++;
   }
 
-  return NextResponse.json({ ok: true, today, reminders: actions.length, processed });
+  // Any sequence letters that came due since the last hourly run.
+  const mail = await runDue().catch(() => ({ sent: 0, failed: 0 }));
+
+  return NextResponse.json({ ok: true, today, reminders: actions.length, processed, mail });
 }

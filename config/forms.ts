@@ -9,11 +9,32 @@ import { getOffer } from "@/config/offers";
 export interface Question {
   id: string;
   label: string;
-  type: "text" | "textarea" | "email" | "tel" | "select" | "number";
+  type: "text" | "textarea" | "email" | "tel" | "select" | "number" | "multi";
   required?: boolean;
   options?: string[];
   placeholder?: string;
+  /** For a select: choosing this option shows `detour` instead of the rest of the form. */
+  detourOn?: string;
+  detour?: { text: string; cta: string; href: string };
 }
+
+/** The answer that sends a Becoming applicant to the Power Hour first. */
+export const POWER_HOUR_FIRST = "I'd like to start with a Power Hour first";
+
+// What people bring to the work. Ticked answers are stored as one comma-separated line.
+export const FOCUS_AREAS = [
+  "Trauma & the past",
+  "Relationships",
+  "Self-worth & confidence",
+  "Anxiety & the nervous system",
+  "Grief & loss",
+  "Inner child",
+  "Boundaries & people-pleasing",
+  "Purpose & direction",
+  "Career, business & leadership",
+  "Body & health",
+  "Something else",
+];
 
 // Shared "how did you find me" — always asked, feeds source tracking.
 const SOURCE_Q: Question = {
@@ -46,12 +67,19 @@ const BECOMING_Q: Question[] = [
   { id: "location", label: "Where are you based?", type: "text", placeholder: "City, country", required: true },
   { id: "where_now", label: "Where are you right now — in your life, your work, yourself?", type: "textarea", required: true },
   { id: "what_shift", label: "What would you love to be different by the end of our work together?", type: "textarea", required: true },
+  { id: "focus", label: "What would you most like to work on? Tick everything that's true.", type: "multi", options: FOCUS_AREAS, required: true },
   {
     id: "investment",
     label: "The investment to work with me one-on-one starts at ₱250,000. Is this within reach for you right now?",
     type: "select",
     required: true,
-    options: ["Yes, I am ready to invest", "Yes, with a payment plan", "I would like more details first", "Not right now — are there other options?"],
+    options: ["Yes, I am ready to invest", "Yes, with a payment plan", "I would like more details first", POWER_HOUR_FIRST, "Not right now — are there other options?"],
+    detourOn: POWER_HOUR_FIRST,
+    detour: {
+      text: "A beautiful place to start. The Power Hour is ninety minutes, just us — you'll leave clearer, and we'll both know whether The Becoming is the next step.",
+      cta: "Book a Power Hour",
+      href: "/programs/ignite",
+    },
   },
   { id: "call_time", label: "When is the best time for me to call you on WhatsApp?", type: "select", required: true, options: ["Morning (8–11 am)", "Midday (11 am–2 pm)", "Afternoon (2–5 pm)", "Evening (5–8 pm)"] },
   SOURCE_Q,
