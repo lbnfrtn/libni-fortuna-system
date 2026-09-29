@@ -6,6 +6,7 @@ import { people, STAGE_LABEL } from "@/lib/crm";
 import { store } from "@/lib/store";
 import { buildDigest } from "@/lib/digest";
 import { getContent } from "@/lib/content";
+import { runDue } from "@/lib/funnel";
 import { peso } from "@/lib/util";
 
 export const dynamic = "force-dynamic";
@@ -15,6 +16,8 @@ export const dynamic = "force-dynamic";
 export default async function AdminHub() {
   const session = await isLoggedIn();
   if (!session) return <DeskLogin />;
+  // Letters that came due since the last daily run go out whenever Libni opens the admin.
+  runDue().catch(() => {});
   const [all, orders, content] = await Promise.all([people(), store().list(), getContent()]);
   const d = buildDigest(orders);
   const day = 86_400_000;
