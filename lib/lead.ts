@@ -1,5 +1,7 @@
 import type { LeadInput } from "@/lib/validate";
 import { getOffer } from "@/config/offers";
+import { selfPayPlan } from "@/config/forms";
+import { createOrder } from "@/lib/orders";
 import { upsertContact, addTags, setCustomFields, upsertOpportunity } from "@/lib/ghl";
 import { PIPELINES, knownFields } from "@/config/ghl-map";
 import { tag } from "@/lib/tags";
@@ -92,10 +94,57 @@ async function startSequence(lead: LeadInput, waitlisted: boolean): Promise<void
   if (source === "newsletter" || source === "free-guide") trigger = source;
   else if (!offer) trigger = "newsletter";
   else if (waitlisted) trigger = `waitlist:${offer.slug}`;
-  else if (isApplication) trigger = `applied:${offer.slug}`;
+  else if (isApplication) {
+    if (selfPayPlan(lead.offerSlug, lead.answers)) return; // they chose to pay: the order's payment-link letters take over
+    trigger = `applied:${offer.slug}`;
+  }
   else if (offer.track === "corporate" || offer.track === "brand" || offer.journey === "D") trigger = `enquiry:${offer.slug}`;
   else return; // a plain lead on a pay-now offer gets the payment-link sequence from the order, not from here
   await enrol({ email: lead.email, name: lead.name, trigger, vars: { offer: offer?.name ?? "" } }).catch(() => {});
+}
+
+export interface SelfPay {
+  plan: "full" | "instalment";
+  link?: string;
+  manualPayUrl: string;
+  amount: number;
+  total: number;
+  offer: string;
+  instalments: { n: number; amount: number; dueDate: string }[];
+}
+
+/**
+ * An applicant who chose to pay (Liberate): create the order now and hand back
+ * the first link. If the order can't be made, fall back to the application
+ * letters so Libni follows up by hand.
+ */
+export async function selfPayAfterApply(lead: LeadInput, contactId?: string): Promise<SelfPay | null> {
+  const plan = selfPayPlan(lead.offerSlug, lead.answers);
+  const offer = getOffer(lead.offerSlug);
+  if (!plan || !offer || offer.pricePHP == null) return null;
+  let order;
+  try {
+    order = await createOrder({
+      offerSlug: offer.slug,
+      planType: plan,
+      contact: { name: lead.name, email: lead.email, phone: lead.phone, ghlContactId: contactId },
+      createdBy: "website",
+    });
+  } catch (e) {
+    console.error("[lead] self-pay order failed", e);
+    await enrol({ email: lead.email, name: lead.name, trigger: `applied:${offer.slug}`, vars: { offer: offer.name } }).catch(() => {});
+    return null;
+  }
+  const first = order.instalments[0];
+  const manualPayUrl = `${(process.env.APP_BASE_URL || "").replace(/\/$/, "")}/pay/${order.id}`;
+  await enrol({
+    email: lead.email, name: lead.name, trigger: "payment-pending",
+    vars: { offer: offer.name, payment_link: first.invoiceUrl || manualPayUrl, amount: String(first.amountPHP) },
+  }).catch(() => {});
+  return {
+    plan, link: first.invoiceUrl, manualPayUrl, amount: first.amountPHP, total: order.totalPHP, offer: offer.name,
+    instalments: order.instalments.map((i) => ({ n: i.n, amount: i.amountPHP, dueDate: i.dueDate })),
+  };
 }
 
 export async function intakeLead(lead: LeadInput): Promise<LeadResult> {

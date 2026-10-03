@@ -54,6 +54,7 @@ To test a bank transfer: on the Desk, copy the "bank-transfer page" link instead
 All prices live in **`config/offers.ts`**. To change Ignite's price, find `pricePHP: 7777` under `ignite` and change the number. That's it — nothing else to touch.
 
 - A price of `null` **or** `waitlistOnly: true` means the offer collects a **waitlist** instead of taking money. That's how Liberate, Essence, Founders Circle and Workshops behave until you give me prices and dates.
+- **Liberate self-pays (Libni's decision, 2026-10-04).** The application asks how they want to join: pay in full, three monthly payments, or talk first. The two paying answers create the order on the spot (`selfPayAfterApply` in `lib/lead.ts`) and show the link; "talk first" gets the `applied-liberate` letters and Libni calls them on WhatsApp. The Desk still works for anything bespoke.
 - To **open** a waitlisted offer: set its `pricePHP` to the real number and delete the `waitlistOnly: true` line.
 
 ## Adding a new offer

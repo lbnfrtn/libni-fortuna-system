@@ -314,9 +314,24 @@ export const DEFAULT_LIBERATE: LiberateHQ = {
   weeks: ROADMAP.map(([title, theme], i) => ({ n: i + 1, title, theme, resources: [] })),
 };
 
+// Real words from Liberate students, quoted from the stories they posted and Libni reshared
+// in her "LIBer" highlight (Jan 2024 – 2025). Edited in the Studio under "Liberate · words".
+export const DEFAULT_LIBERATE_WORDS: Story[] = [
+  { id: "tiff", name: "Tiffany Galvez", role: "@findyourhavenwithtiff · Liberate 2", quote: "I am in my happiest, most healed, successful and healthiest version of myself because of you, coach Lib. Being part of Liberate was one of my greatest investments I would never regret." },
+  { id: "erika", name: "Erika Mai", role: "@erkmai · Liberate 4", quote: "To my found sisters — strong women, soft hearts, loud laughs, zero competition. Just love, growth, and showing up for each other. I didn’t just find a community. I found women who feel like home." },
+  { id: "vivs", name: "Vivs", role: "@vivsy_b · Liberate 4, joined online", quote: "Not being there in person didn’t stop my heart from feeling full as I watched this Liberate journey unfold. Three months online brought so many meaningful lessons and a sisterhood I’m deeply grateful for. Your program is truly amazing." },
+  { id: "danessa", name: "Danessa Soler", role: "@danessasoler · Liberate 2", quote: "I have always been looking for a community to grow with, people who won’t judge you, who would support you. Even if we haven’t met each other in person it’s like we’re sisters already. I am feeling grateful, abundant and powerful." },
+  { id: "jill", name: "Jill", role: "@girlbossjill · Liberate 1", quote: "This group coaching experience has been truly empowering and life-changing. I couldn’t be prouder of these incredible people — we’re all winning at life. You’ll be doing yourself a huge favor. Go for it." },
+  { id: "mims", name: "Mims", role: "@mevrdnmd · Liberate 1", quote: "Just like the work — it’s not all love and light. It’s sitting on your own BS and holding yourself accountable. It’s uncomfortable and messy but oh so worth it. Everything feels clearer, lighter and brighter." },
+  { id: "petalio", name: "@prettyvpetalio", role: "Liberate 4", quote: "These women are highly accomplished in their chosen fields, yet in this space we have no titles, roles, achievements, and accolades — nothing flashy. We are intentional, grounded, and authentic." },
+  { id: "zy", name: "Zy", role: "@zy_zy_deme · Liberate 2", quote: "Liberate is the kind of community I want to be with constantly." },
+  { id: "nick", name: "Nick Ōh", role: "@itsnickoh · Liberate 1", quote: "We all need to be in a space where we are seen and celebrated talaga." },
+  { id: "sam", name: "Sam Libunao", role: "@samlibunao · Liberate 3", quote: "One year of doing inner work and in this journey. That’s some great post-traumatic growth. On my way to the Sam v3.0 soon." },
+];
+
 export const EMPTY_CONTENT: SiteContent = {
   photos: {}, videos: {}, links: {}, podcast: [], writings: [], events: [], liberate: DEFAULT_LIBERATE,
-  stories: DEFAULT_STORIES, becomingStories: [], liberateWords: [], talks: DEFAULT_TALKS, press: DEFAULT_PRESS, mediaKit: DEFAULT_MEDIA_KIT,
+  stories: DEFAULT_STORIES, becomingStories: [], liberateWords: DEFAULT_LIBERATE_WORDS, talks: DEFAULT_TALKS, press: DEFAULT_PRESS, mediaKit: DEFAULT_MEDIA_KIT,
   brands: DEFAULT_BRANDS, keynotes: DEFAULT_KEYNOTES, speakingWords: [], bioLinks: DEFAULT_BIO_LINKS,
 };
 
@@ -336,7 +351,7 @@ function normalise(raw: Partial<SiteContent> | null | undefined): SiteContent {
     // Undefined = never edited → the real defaults. An empty array = she cleared it on purpose.
     stories: Array.isArray(raw?.stories) ? raw!.stories : DEFAULT_STORIES,
     becomingStories: Array.isArray(raw?.becomingStories) ? raw!.becomingStories : [],
-    liberateWords: Array.isArray(raw?.liberateWords) ? raw!.liberateWords : [],
+    liberateWords: Array.isArray(raw?.liberateWords) ? raw!.liberateWords : DEFAULT_LIBERATE_WORDS,
     talks: Array.isArray(raw?.talks) ? raw!.talks : DEFAULT_TALKS,
     press: Array.isArray(raw?.press) ? raw!.press : DEFAULT_PRESS,
     mediaKit: mk,

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { leadSchema } from "@/lib/validate";
-import { intakeLead } from "@/lib/lead";
+import { intakeLead, selfPayAfterApply } from "@/lib/lead";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";
@@ -21,11 +21,15 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: parsed.error.issues[0]?.message || "Please check the form." }, { status: 400 });
   }
   const result = await intakeLead(parsed.data);
+  const pay = result.waitlisted ? null : await selfPayAfterApply(parsed.data, result.contactId);
   return NextResponse.json({
     ok: true,
     waitlisted: result.waitlisted,
+    pay,
     message: result.waitlisted
       ? "You're on the list. I'll be in touch when the next round opens."
-      : "Got it — thank you. Check your email shortly.",
+      : pay
+        ? "Your place is held the moment your payment clears. Pay below, or from the link in your inbox."
+        : "Got it — thank you. Check your email shortly.",
   });
 }

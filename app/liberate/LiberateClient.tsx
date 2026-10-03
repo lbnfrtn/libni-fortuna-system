@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useRef, useState } from "react";
 import { OFFERS } from "@/config/offers";
 
 type Photos = Record<string, string>;
@@ -67,6 +68,11 @@ const INSIDE_STOCK: Record<string, string> = {
   inside_8: "https://images.unsplash.com/photo-1758599670008-f18f47042e46?auto=format&fit=crop&w=1200&q=75",
 };
 const SHOT_SLOTS = ["shots_1", "shots_2", "shots_3", "shots_4", "shots_5", "shots_6", "shots_7", "shots_8"];
+// Real stories her students posted (reshared in her LIBer highlight) stand in until she uploads her own.
+const SHOT_FALLBACK = SHOT_SLOTS.map((_, i) => `/photos/liberate/words-${i + 1}.jpg`);
+
+// Libni's own words, written after the second intake closed.
+const WINS = ["Many opportunities", "Mended relationships", "Stepping into the next version", "A new car", "The courage to pursue the dream life"];
 
 const MOMENT_SLOTS = [
   ["moments_1", "In session"], ["moments_2", "The circle"], ["moments_3", "The work"],
@@ -78,7 +84,20 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
   // Client words come from the Studio (“Client stories”); the published quotes are the fallback.
   const WORDS_SHOWN: Word[] = incoming && incoming.length ? incoming : WORDS;
   const momentPhotos = MOMENT_SLOTS.filter(([id]) => photos[id]);
-  const shots = SHOT_SLOTS.map((id) => photos[id]).filter(Boolean);
+  const shots = SHOT_SLOTS.map((id, i) => photos[id] || SHOT_FALLBACK[i]);
+  const instalment = offer.allowInstalments && offer.instalmentCount ? Math.floor((offer.pricePHP ?? 0) / offer.instalmentCount) : 0;
+  const perMonth = instalment ? `₱${instalment.toLocaleString("en-PH")}` : "";
+
+  // The sticky bar appears once the hero has scrolled away.
+  const heroRef = useRef<HTMLElement | null>(null);
+  const [stuck, setStuck] = useState(false);
+  useEffect(() => {
+    const el = heroRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => setStuck(!e.isIntersecting), { threshold: 0.05 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
   const price = offer.pricePHP ? `₱${offer.pricePHP.toLocaleString("en-PH")}` : "TBA";
 
   const heroImg = photos.hero_portrait || "/photos/libni-hero.jpg";
@@ -88,7 +107,7 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
   const retreatPhotos = RETREAT_SLOTS.filter(([id]) => photos[id]);
 
   return (
-    <div className="lb">
+    <div className={`lb${stuck ? " lb-stuck" : ""}`}>
       <style>{`
         .lb {
           --lb-ink: #2b2528; --lb-night: #241c2a; --lb-plum: #5b4470; --lb-plum-deep: #3e2d4e;
@@ -134,22 +153,22 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
         @media (prefers-reduced-motion: reduce) { .lb-reveal { opacity: 1; transform: none; transition: none; } .lb-hero-media img, .lb-hero-panel > * { animation: none !important; } }
 
         /* 01 HERO */
-        .lb-hero { position: relative; min-height: 100svh; display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); background: var(--lb-night); color: var(--lb-ivory); }
-        .lb-hero-panel { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: flex-end; padding: clamp(130px, 16vh, 180px) clamp(20px, 5vw, 64px) clamp(44px, 7vh, 72px) clamp(20px, 6vw, 96px); background: radial-gradient(120% 80% at 0% 100%, rgba(91,68,112,.55) 0%, rgba(36,28,42,0) 60%), var(--lb-night); }
+        .lb-hero { position: relative; min-height: calc(100svh - var(--ed-bar-h, 0px)); display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); background: var(--lb-night); color: var(--lb-ivory); }
+        .lb-hero-panel { position: relative; z-index: 2; display: flex; flex-direction: column; justify-content: flex-end; padding: clamp(84px, 10vh, 110px) clamp(20px, 5vw, 64px) clamp(24px, 3.5vh, 36px) clamp(20px, 6vw, 96px); background: radial-gradient(120% 80% at 0% 100%, rgba(91,68,112,.55) 0%, rgba(36,28,42,0) 60%), var(--lb-night); }
         .lb-hero-panel > * { animation: lbUp 1.1s cubic-bezier(.2,.7,.2,1) both; }
         .lb-hero-panel > :nth-child(2) { animation-delay: .12s; } .lb-hero-panel > :nth-child(3) { animation-delay: .24s; }
         .lb-hero-panel > :nth-child(4) { animation-delay: .36s; } .lb-hero-panel > :nth-child(5) { animation-delay: .48s; } .lb-hero-panel > :nth-child(6) { animation-delay: .6s; }
         @keyframes lbUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: none; } }
-        .lb-hero-media { position: relative; overflow: hidden; min-height: 100svh; }
+        .lb-hero-media { position: relative; overflow: hidden; min-height: calc(100svh - var(--ed-bar-h, 0px)); max-height: calc(100svh - var(--ed-bar-h, 0px)); }
         .lb-hero-media img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; animation: lbZoom 2.2s ease-out both; }
         @keyframes lbZoom { from { transform: scale(1.07); } to { transform: scale(1); } }
         .lb-hero-media::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, var(--lb-night) 0%, rgba(36,28,42,.35) 22%, rgba(36,28,42,0) 48%), linear-gradient(180deg, rgba(36,28,42,.55) 0%, rgba(36,28,42,0) 30%, rgba(36,28,42,0) 70%, rgba(36,28,42,.55) 100%); }
         .lb-hero-who { color: rgba(251,249,246,.72); }
         .lb-hero-who strong { display: block; color: var(--lb-ivory); font-weight: 600; letter-spacing: .3em; margin-bottom: 6px; }
-        .lb-hero-title { font-size: clamp(84px, 13.5vw, 196px); line-height: .92; letter-spacing: -0.03em; margin: 22px 0 26px; font-weight: 400; }
-        .lb-hero-lede { font-family: var(--serif); font-size: clamp(24px, 2.5vw, 36px); line-height: 1.22; font-style: italic; max-width: 20ch; color: var(--lb-ivory); }
-        .lb-hero-sub { max-width: 46ch; color: rgba(251,249,246,.75); font-size: 16px; margin-top: 30px; }
-        .lb-hero-meta { display: flex; align-items: baseline; gap: 16px; margin: 32px 0 26px; padding-top: 22px; border-top: 1px solid var(--lb-line-light); font-family: var(--sans); font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: rgba(251,249,246,.6); }
+        .lb-hero-title { font-size: clamp(84px, 12.5vw, 172px); line-height: .9; letter-spacing: -0.03em; margin: 12px 0 14px; font-weight: 400; }
+        .lb-hero-lede { font-family: var(--serif); font-size: clamp(24px, 2.4vw, 34px); line-height: 1.16; font-style: italic; max-width: 25ch; color: var(--lb-ivory); }
+        .lb .lb-hero-sub { max-width: 54ch; color: rgba(251,249,246,.75); font-size: 15.5px; margin-top: 18px; }
+        .lb .lb-hero-meta { display: flex; align-items: baseline; gap: 16px; margin: 18px 0 16px; padding-top: 14px; border-top: 1px solid var(--lb-line-light); font-family: var(--sans); font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: rgba(251,249,246,.6); }
         .lb-hero-meta strong { font-family: var(--serif); font-size: 24px; letter-spacing: 0; text-transform: none; color: var(--lb-gold-soft); font-weight: 400; font-style: italic; }
 
         /* sections */
@@ -242,6 +261,38 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
         .lb-shots figure { margin: 0; background: var(--lb-ivory); border: 1px solid var(--lb-line); padding: 8px; }
         .lb-shots img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; object-position: top; display: block; }
 
+        .lb .lb-hero-proof { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--lb-line-light); display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; font-family: var(--serif); font-style: italic; font-size: 18px; line-height: 1.3; color: rgba(251,249,246,.82); }
+        .lb-hero-proof span { font-family: var(--sans); font-style: normal; font-size: 10px; letter-spacing: .28em; text-transform: uppercase; color: var(--lb-gold-soft); }
+        .lb-hero-proof em { font-style: normal; font-family: var(--sans); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(251,249,246,.5); }
+        .lb-wall { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 clamp(28px, 4vw, 56px); padding-top: clamp(24px, 3vw, 40px); }
+        .lb-wall .lb-word { padding: clamp(28px, 3vw, 40px) 0; border-bottom: 1px solid var(--lb-line); align-content: start; }
+        .lb-wall .lb-quote { font-size: clamp(20px, 1.6vw, 24px); line-height: 1.3; }
+        .lb-wall .lb-who { margin-top: 18px; }
+        .lb-shots { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 4px 18px; margin: 0 -4px; scrollbar-width: thin; }
+        .lb-shots figure { flex: 0 0 clamp(200px, 19vw, 260px); scroll-snap-align: start; }
+        .lb-wins { padding: clamp(72px, 9vw, 120px) 0; }
+        .lb-wins .lb-wrap { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 5vw, 96px); align-items: start; }
+        .lb-wins-head { display: grid; gap: 18px; }
+        .lb-wins-head .lb-display { font-size: clamp(36px, 4.4vw, 64px); }
+        .lb-wins-list { list-style: none; margin: 0; padding: 0; }
+        .lb-wins-list li { display: flex; gap: 22px; align-items: baseline; padding: 20px 0; border-top: 1px solid var(--lb-line-light); font-family: var(--serif); font-style: italic; font-size: clamp(26px, 2.8vw, 40px); line-height: 1.15; }
+        .lb-wins-list li:last-child { border-bottom: 1px solid var(--lb-line-light); }
+        .lb-wins-list span { font-family: var(--sans); font-style: normal; font-size: 11px; letter-spacing: .24em; color: var(--lb-gold-soft); font-weight: 600; min-width: 26px; }
+        .lb-paths { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 40px); margin-top: 36px; }
+        .lb-path { display: grid; gap: 14px; padding: 28px 0 0; border-top: 1px solid var(--lb-ink); align-content: start; }
+        .lb-path h3 { font-size: clamp(28px, 2.6vw, 36px); line-height: 1.05; font-style: italic; }
+        .lb-path p:not(.lb-eyebrow) { font-size: 15.5px; color: var(--lb-muted); max-width: 34ch; }
+        .lb-path .lb-btn { justify-self: start; margin-top: 8px; }
+        .lb-sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: rgba(36,28,42,.94); backdrop-filter: blur(10px); color: var(--lb-ivory); border-top: 1px solid var(--lb-line-light); transform: translateY(110%); transition: transform .5s cubic-bezier(.2,.7,.2,1); }
+        .lb-sticky.is-on { transform: none; }
+        .lb-stuck { padding-bottom: 72px; }
+        .lb-sticky-in { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 12px; padding-bottom: 12px; }
+        .lb-sticky p { display: flex; align-items: baseline; gap: 16px; min-width: 0; }
+        .lb-sticky strong { font-family: var(--serif); font-weight: 400; font-size: 24px; letter-spacing: -0.01em; }
+        .lb-sticky span { font-family: var(--sans); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: rgba(251,249,246,.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .lb-sticky .lb-ctas { flex-wrap: nowrap; gap: 10px; }
+        .lb-sticky .lb-btn { min-height: 44px; padding: 0 22px; font-size: 11px; }
+
         /* 10 investment */
         .lb-invest { display: grid; grid-template-columns: 6fr 5fr; gap: clamp(40px, 6vw, 110px); align-items: start; }
         .lb-price { font-family: var(--serif); font-size: clamp(64px, 8vw, 112px); line-height: 1; margin: 22px 0 8px; letter-spacing: -0.02em; }
@@ -276,18 +327,22 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
           .lb-split > .lb-figure, .lb-split > .lb-bleed-right { order: -1; }
           .lb-bleed-right { margin-right: 0; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
           .lb-bleed-right img { height: 68svh; }
-          .lb-head, .lb-index, .lb-road, .lb-finale, .lb-feature, .lb-words, .lb-invest, .lb-peace { grid-template-columns: 1fr; }
+          .lb-head, .lb-index, .lb-road, .lb-finale, .lb-feature, .lb-words, .lb-invest, .lb-peace, .lb-wins .lb-wrap, .lb-paths { grid-template-columns: 1fr; }
+          .lb-wall { grid-template-columns: 1fr; }
+          .lb-sticky span { display: none; }
+          .lb-sticky-in { gap: 12px; }
+          .lb-sticky .lb-ctas { flex-direction: row; } .lb-sticky .lb-ctas .lb-btn { width: auto; }
+          .lb { padding-bottom: 0; }
           .lb-road { gap: 48px; }
           .lb-story-img { position: static; }
           .lb-mosaic { grid-template-columns: 1fr 1fr; }
-          .lb-shots { grid-template-columns: 1fr 1fr; }
           .lb-mosaic figure, .lb-mosaic figure:first-child { grid-column: span 2; grid-row: auto; }
           .lb-ctas { flex-direction: column; } .lb-ctas .lb-btn { width: 100%; }
         }
       `}</style>
 
       {/* 01 — HERO */}
-      <section className="lb-hero" id="top">
+      <section className="lb-hero" id="top" ref={heroRef}>
         <div className="lb-hero-panel">
           <p className="lb-eyebrow lb-hero-who"><strong>Libni Fortuna</strong>Life Strategist · Transformational mentor · Experience curator</p>
           <h1 className="lb-hero-title">Liberate</h1>
@@ -298,6 +353,7 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
             <Link href="/liberate/apply" className="lb-btn lb-btn-gold">I’m ready to Liberate</Link>
             <a href="#lb-for-me" className="lb-btn lb-btn-light">Is this for me?</a>
           </div>
+          <p className="lb-hero-proof"><span>Four intakes since 2024</span>“I found women who feel like home.” <em>Erika Mai · Liberate 4</em></p>
         </div>
         <div className="lb-hero-media"><img src={heroImg} alt="Libni Fortuna" /></div>
       </section>
@@ -467,22 +523,42 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
               <p className="lb-quote">{WORDS_SHOWN[0].q}</p>
               <p className="lb-who">{WORDS_SHOWN[0].who}{WORDS_SHOWN[0].role && <span>{WORDS_SHOWN[0].role}</span>}</p>
             </div>
-            <p className="lb-lede lb-muted" style={{ maxWidth: "24ch" }}>Words from people who have sat in this circle. Not reviews. Turning points.</p>
+            <div className="lb-stack" style={{ gap: 18 }}>
+              <p className="lb-lede lb-muted" style={{ maxWidth: "24ch" }}>Words from people who have sat in this circle. Not reviews. Turning points.</p>
+              <p className="lb-eyebrow" style={{ color: "var(--lb-muted)" }}>Four intakes · 2024 – 2025 · online, then in person</p>
+            </div>
           </div>
-          <div className="lb-words">
+          <div className="lb-wall">
             {WORDS_SHOWN.slice(1).map((w, i) => (
-              <div key={w.who + i} className="lb-reveal lb-word" style={{ transitionDelay: `${i * 0.12}s` }}>
+              <div key={w.who + i} className="lb-reveal lb-word" style={{ transitionDelay: `${(i % 3) * 0.1}s` }}>
                 {w.photo && <img className="lb-word-img" src={w.photo} alt={w.who} loading="lazy" />}
                 <div><p className="lb-quote">{w.q}</p><p className="lb-who">{w.who}{w.role && <span>{w.role}</span>}</p></div>
               </div>
             ))}
           </div>
           {shots.length > 0 && (
-            <div className="lb-reveal" style={{ marginTop: "clamp(48px, 6vw, 84px)" }}>
-              <p className="lb-eyebrow" style={{ marginBottom: 18 }}>In their own words — straight from their messages</p>
+            <div className="lb-reveal" style={{ marginTop: "clamp(56px, 7vw, 96px)" }}>
+              <div className="lb-head" style={{ marginBottom: 26 }}>
+                <div><p className="lb-eyebrow">Straight from their stories</p><h3 className="lb-display" style={{ fontSize: "clamp(30px, 3.4vw, 48px)", marginTop: 12 }}>In their own words, as they posted them.</h3></div>
+                <p className="lb-muted" style={{ fontSize: 15, maxWidth: "40ch" }}>Screenshots of what students shared on Instagram during and after their three months — untouched.</p>
+              </div>
               <div className="lb-shots">{shots.map((src, i) => <figure key={i}><img src={src} alt={`A message from a Liberate student, ${i + 1}`} loading="lazy" /></figure>)}</div>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* 09b — WINS */}
+      <section className="lb-sec lb-plum lb-wins">
+        <div className="lb-wrap">
+          <div className="lb-wins-head lb-reveal">
+            <p className="lb-eyebrow" style={{ color: "var(--lb-gold-soft)" }}>After three months</p>
+            <h2 className="lb-display">What they walked away with.</h2>
+            <p className="lb-muted" style={{ color: "rgba(251,249,246,.72)", maxWidth: "42ch", fontSize: 16 }}>In Libni’s words, written the night the second intake closed — and, the best part, “a sisterhood who gets me and who grows with me.”</p>
+          </div>
+          <ol className="lb-wins-list lb-reveal" style={{ transitionDelay: ".15s" }}>
+            {WINS.map((w, i) => <li key={w}><span>{String(i + 1).padStart(2, "0")}</span>{w}</li>)}
+          </ol>
         </div>
       </section>
 
@@ -494,13 +570,23 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
             <h2 className="lb-display" style={{ marginTop: 14, maxWidth: "14ch" }}>Liberate, a 3-month group coaching experience.</h2>
             <p className="lb-price">{price}</p>
             {offer.allowInstalments && offer.instalmentCount && (
-              <p className="lb-plan">Pay in full, or in {offer.instalmentCount} instalments. Other payment plans are available — just ask me on the call.</p>
+              <p className="lb-plan">In full, or {offer.instalmentCount} monthly payments of about {perMonth}. Other payment plans are always something we can talk about.</p>
             )}
-            <div className="lb-ctas" style={{ marginTop: 30 }}>
-              <Link href="/liberate/apply" className="lb-btn lb-btn-ink">I’m ready to Liberate</Link>
-              <Link href="/book" className="lb-btn lb-btn-ghost">Book a call</Link>
+            <div className="lb-paths">
+              <div className="lb-path">
+                <p className="lb-eyebrow">If it’s a yes</p>
+                <h3>Join now.</h3>
+                <p>A short application, then you pay — in full or your first monthly payment — and your place is held the moment it clears. No call needed.</p>
+                <Link href="/liberate/apply" className="lb-btn lb-btn-ink">I’m ready to Liberate</Link>
+              </div>
+              <div className="lb-path">
+                <p className="lb-eyebrow">If you have questions</p>
+                <h3>Talk to me first.</h3>
+                <p>If the investment is within reach and you want clarity before you say yes, send the same application and choose “I’d like to talk first.” I’ll call you on WhatsApp.</p>
+                <Link href="/liberate/apply" className="lb-btn lb-btn-ghost">Talk to me first</Link>
+              </div>
             </div>
-            <p className="lb-note">This takes you to a short application, then a call with me. No payment is taken until we both know it’s the right space for you.</p>
+            <p className="lb-note">Nothing is charged until you choose to. GCash, Maya, cards and bank transfer all work.</p>
           </div>
           <div className="lb-reveal" style={{ transitionDelay: ".15s" }}>
             <p className="lb-eyebrow" style={{ marginBottom: 18 }}>What’s included</p>
@@ -548,10 +634,20 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
           </div>
           <div className="lb-ctas lb-reveal" style={{ transitionDelay: ".35s" }}>
             <Link href="/liberate/apply" className="lb-btn lb-btn-gold">I’m ready to Liberate</Link>
-            <Link href="/book" className="lb-btn lb-btn-light">Book a call</Link>
+            <Link href="/liberate/apply" className="lb-btn lb-btn-light">Talk to me first</Link>
           </div>
         </div>
       </section>
+
+      <div className={`lb-sticky${stuck ? " is-on" : ""}`} aria-hidden={!stuck}>
+        <div className="lb-wrap lb-sticky-in">
+          <p><strong>Liberate</strong><span>Begins October 12, 2026 · {price}{perMonth ? ` or ${offer.instalmentCount} × ${perMonth}` : ""}</span></p>
+          <div className="lb-ctas">
+            <Link href="/liberate/apply" className="lb-btn lb-btn-gold">Join</Link>
+            <Link href="/liberate/apply" className="lb-btn lb-btn-light">Talk first</Link>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }

@@ -21,6 +21,21 @@ export interface Question {
 /** The answer that sends a Becoming applicant to the Power Hour first. */
 export const POWER_HOUR_FIRST = "I'd like to start with a Power Hour first";
 
+/** How a Liberate applicant wants to join. The two paying answers create the order on the spot. */
+export const LIBERATE_JOIN = {
+  full: "Pay in full now",
+  plan: "Three monthly payments",
+  call: "I'd like to talk first",
+} as const;
+
+/** Which plan a self-pay application asks for; null when they want a call first (or the offer doesn't self-pay). */
+export function selfPayPlan(offerSlug: string, answers?: Record<string, string>): "full" | "instalment" | null {
+  if (offerSlug !== "liberate") return null;
+  if (answers?.join === LIBERATE_JOIN.full) return "full";
+  if (answers?.join === LIBERATE_JOIN.plan) return "instalment";
+  return null;
+}
+
 // What people bring to the work. Ticked answers are stored as one comma-separated line.
 export const FOCUS_AREAS = [
   "Trauma & the past",
@@ -85,6 +100,28 @@ const BECOMING_Q: Question[] = [
   SOURCE_Q,
 ];
 
+// Liberate: the price is on the page, so the application doesn't gatekeep.
+// They choose how to join; the paying answers get a link straight away.
+function liberateQuestions(): Question[] {
+  const offer = getOffer("liberate");
+  const price = offer?.pricePHP ?? 0;
+  const count = offer?.instalmentCount ?? 3;
+  const peso = (n: number) => `₱${Math.floor(n).toLocaleString("en-PH")}`;
+  return [
+    { id: "where_now", label: "Where are you right now — in your life, your work, yourself?", type: "textarea", required: true },
+    { id: "what_shift", label: "What would you love to be different by the end of our three months together?", type: "textarea", required: true },
+    {
+      id: "join",
+      label: `Liberate is ${peso(price)} — in full, or ${count} monthly payments of about ${peso(price / count)}. How would you like to join?`,
+      type: "select",
+      required: true,
+      options: [LIBERATE_JOIN.full, LIBERATE_JOIN.plan, LIBERATE_JOIN.call],
+    },
+    { id: "call_time", label: "If you'd like to talk first — when is the best time for me to call you on WhatsApp?", type: "select", options: ["Morning (8–11 am)", "Midday (11 am–2 pm)", "Afternoon (2–5 pm)", "Evening (5–8 pm)"] },
+    SOURCE_Q,
+  ];
+}
+
 // Track C (Retreat): application + a gentle health/consent note.
 const TRACK_C: Question[] = [
   { id: "where_now", label: "What's calling you to this retreat?", type: "textarea", required: true },
@@ -126,6 +163,13 @@ export function questionsFor(offerSlug: string): { track: Track; heading: string
       track: "consumer", heading: `Apply — ${offer.name}`,
       sub: "This is an application, not a checkout. Take your time — your answers shape our first conversation, and I will call you on WhatsApp.",
       questions: BECOMING_Q, phone: { label: "WhatsApp number", required: true },
+    };
+
+  if (offerSlug === "liberate")
+    return {
+      track: "consumer", heading: "Join Liberate",
+      sub: "A few honest questions, then it's your call: pay and your place is held, or we talk first on WhatsApp. Payment plans are always something we can talk about.",
+      questions: liberateQuestions(), phone: { label: "WhatsApp number", required: false },
     };
 
   if (offer.track === "corporate")

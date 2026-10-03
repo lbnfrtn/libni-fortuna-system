@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import type { Question, PhoneField } from "@/config/forms";
+import type { SelfPay } from "@/lib/lead";
+import { peso } from "@/lib/util";
 
 export default function LeadForm({
   offerSlug,
@@ -21,7 +23,7 @@ export default function LeadForm({
   const [honeypot, setHoneypot] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const [done, setDone] = useState<{ message: string } | null>(null);
+  const [done, setDone] = useState<{ message: string; pay?: SelfPay | null } | null>(null);
   const [utm, setUtm] = useState<Record<string, string>>({});
   const [src, setSrc] = useState("");
 
@@ -72,7 +74,7 @@ export default function LeadForm({
     });
     const j = await res.json();
     setBusy(false);
-    if (j.ok) setDone({ message: j.message });
+    if (j.ok) setDone({ message: j.message, pay: j.pay });
     else setErr(j.error || "Something went wrong. Please try again.");
   }
 
@@ -81,6 +83,23 @@ export default function LeadForm({
       <div className="card">
         <p className="serif" style={{ fontSize: 24 }}>Thank you. 🤍</p>
         <p className="muted">{done.message}</p>
+        {done.pay && (
+          <div style={{ marginTop: 18 }}>
+            <p style={{ margin: "0 0 12px" }}>
+              <b>{peso(done.pay.amount)}</b> {done.pay.plan === "instalment" ? `now — payment 1 of ${done.pay.instalments.length}` : "in full"}
+              {done.pay.plan === "instalment" && (
+                <span className="muted" style={{ display: "block", fontSize: 14 }}>
+                  Then {done.pay.instalments.slice(1).map((i) => `${peso(i.amount)} on ${i.dueDate}`).join(" · ")}
+                </span>
+              )}
+            </p>
+            <div className="row">
+              {done.pay.link && <a className="btn" href={done.pay.link}>Pay with GCash, Maya or card</a>}
+              <a className="btn ghost" href={done.pay.manualPayUrl}>Pay by bank transfer</a>
+            </div>
+            <p className="muted" style={{ fontSize: 13, marginTop: 12 }}>If you close this page, the link in your email still works.</p>
+          </div>
+        )}
         {detour && <p style={{ marginTop: 16 }}><a className="btn" href={detour.href}>{detour.cta} →</a></p>}
       </div>
     );

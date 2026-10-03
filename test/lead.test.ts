@@ -1,6 +1,8 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { leadSchema } from "@/lib/validate";
-import { intakeLead } from "@/lib/lead";
+import { intakeLead, selfPayAfterApply } from "@/lib/lead";
+import { selfPayPlan, LIBERATE_JOIN } from "@/config/forms";
+import { useMemStore } from "./helpers";
 
 describe("lead validation", () => {
   it("requires consent", () => {
@@ -39,5 +41,41 @@ describe("intakeLead (GHL safe mode)", () => {
     });
     expect(r.ok).toBe(true);
     expect(r.waitlisted).toBe(false);
+  });
+});
+
+describe("Liberate self-pay application", () => {
+  beforeEach(() => useMemStore());
+
+  it("maps the join answer to a plan", () => {
+    expect(selfPayPlan("liberate", { join: LIBERATE_JOIN.full })).toBe("full");
+    expect(selfPayPlan("liberate", { join: LIBERATE_JOIN.plan })).toBe("instalment");
+    expect(selfPayPlan("liberate", { join: LIBERATE_JOIN.call })).toBeNull();
+    expect(selfPayPlan("the-becoming", { join: LIBERATE_JOIN.full })).toBeNull();
+  });
+
+  it("pay in full: creates the order and hands back the first link", async () => {
+    const lead = { name: "Cai", email: "cai@e.com", offerSlug: "liberate", track: "consumer" as const, consent: true as const, answers: { join: LIBERATE_JOIN.full } };
+    const r = await intakeLead(lead);
+    expect(r.waitlisted).toBe(false);
+    const pay = await selfPayAfterApply(lead, r.contactId);
+    expect(pay?.plan).toBe("full");
+    expect(pay?.amount).toBe(70000);
+    expect(pay?.link).toContain("/mock-pay/");
+    expect(pay?.manualPayUrl).toContain("/pay/LF-liberate-");
+  });
+
+  it("three payments: first instalment now, three in the schedule", async () => {
+    const lead = { name: "Dee", email: "dee@e.com", offerSlug: "liberate", track: "consumer" as const, consent: true as const, answers: { join: LIBERATE_JOIN.plan } };
+    const pay = await selfPayAfterApply(lead);
+    expect(pay?.plan).toBe("instalment");
+    expect(pay?.instalments).toHaveLength(3);
+    expect(pay?.instalments.reduce((a, i) => a + i.amount, 0)).toBe(70000);
+    expect(pay?.amount).toBe(pay?.instalments[0].amount);
+  });
+
+  it("talk first: no order", async () => {
+    const lead = { name: "Eli", email: "eli@e.com", offerSlug: "liberate", track: "consumer" as const, consent: true as const, answers: { join: LIBERATE_JOIN.call } };
+    expect(await selfPayAfterApply(lead)).toBeNull();
   });
 });

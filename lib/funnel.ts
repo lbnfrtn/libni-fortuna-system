@@ -123,7 +123,31 @@ Reply with two or three times that work for you this week and I'll call you then
 — Libni`],
   ], { stopOnPaid: true, stopOnStage: true }),
 
-  S("applied", "Applications · Liberate & others", "Someone applies for a program that begins with a conversation.", ["applied:*"], [
+  S("applied-liberate", "Liberate · wants to talk first", "A Liberate applicant chose to talk before paying (or their link couldn't be made). Libni reaches them on WhatsApp; these letters hold the space.", ["applied:liberate"], [
+    [0, "I got your application, {{first_name}}", `{{first_name}},
+
+Thank you for the honesty in your application — I read every word.
+
+You asked to talk first, so I'll reach out on WhatsApp to find a time. If email is easier, reply here with two or three times that work this week.
+
+And if you already know it's a yes, just say so and I'll send your link the same day.
+
+— Libni`],
+    [3, "Still holding a space for you", `{{first_name}},
+
+If we haven't spoken yet, it's on me — not a sign. I'm still holding a space for you in the circle.
+
+Reply with a couple of times that work and I'll call you then.
+
+— Libni`],
+    [10, "I'll stop nudging after this one", `{{first_name}},
+
+If the timing isn't right, that's completely okay. Liberate will be here — {{site}}/liberate — and I'll be glad to hear from you whenever it changes.
+
+— Libni`],
+  ], { stopOnPaid: true, stopOnStage: true }),
+
+  S("applied", "Applications · others", "Someone applies for a program that begins with a conversation.", ["applied:*"], [
     [0, "I got your application, {{first_name}}", `{{first_name}},
 
 I saw your application come through — thank you for the honesty in it.
