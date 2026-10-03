@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from "vitest";
 import { leadSchema } from "@/lib/validate";
 import { intakeLead, selfPayAfterApply } from "@/lib/lead";
-import { selfPayPlan, LIBERATE_JOIN } from "@/config/forms";
+import { selfPayPlan, questionsFor, LIBERATE_JOIN } from "@/config/forms";
 import { useMemStore } from "./helpers";
 
 describe("lead validation", () => {
@@ -46,6 +46,14 @@ describe("intakeLead (GHL safe mode)", () => {
 
 describe("Liberate self-pay application", () => {
   beforeEach(() => useMemStore());
+
+  it("the call application filters on affordability and never self-pays", () => {
+    const { questions } = questionsFor("liberate");
+    const q = questions.find((x) => x.id === "investment");
+    expect(q?.detour?.hard).toBe(true);
+    expect(questions.some((x) => x.id === "join")).toBe(false);
+    expect(selfPayPlan("liberate", { investment: "Yes — I'm ready to invest" })).toBeNull();
+  });
 
   it("maps the join answer to a plan", () => {
     expect(selfPayPlan("liberate", { join: LIBERATE_JOIN.full })).toBe("full");

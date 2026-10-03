@@ -8,6 +8,7 @@ import { tag } from "@/lib/tags";
 import { isFull } from "@/lib/capacity";
 import { logLead } from "@/lib/leadlog";
 import { enrol } from "@/lib/funnel";
+import { getContent } from "@/lib/content";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 
@@ -100,7 +101,12 @@ async function startSequence(lead: LeadInput, waitlisted: boolean): Promise<void
   }
   else if (offer.track === "corporate" || offer.track === "brand" || offer.journey === "D") trigger = `enquiry:${offer.slug}`;
   else return; // a plain lead on a pay-now offer gets the payment-link sequence from the order, not from here
-  await enrol({ email: lead.email, name: lead.name, trigger, vars: { offer: offer?.name ?? "" } }).catch(() => {});
+  const vars: Record<string, string> = { offer: offer?.name ?? "" };
+  if (offer?.slug === "liberate") {
+    const base = (process.env.APP_BASE_URL || "").replace(/\/$/, "");
+    vars.booking_link = (await getContent().catch(() => null))?.links.calendlyLiberate || `${base}/contact`;
+  }
+  await enrol({ email: lead.email, name: lead.name, trigger, vars }).catch(() => {});
 }
 
 export interface SelfPay {

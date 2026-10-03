@@ -402,7 +402,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
           <p className="lb-hero-sub">A 3-month transformational experience for people ready to break free from emotional patterns, people-pleasing, overthinking, and the quiet exhaustion of holding it all together. We meet twice a week — twenty-four live sessions, held together.</p>
           <p className="lb-hero-meta"><span>We begin</span><strong>October 12, 2026 · 7 pm</strong></p>
           <div className="lb-ctas">
-            <Link href="/liberate/apply" className="lb-btn lb-btn-gold">I’m ready to Liberate</Link>
+            <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">I’m ready to Liberate</a>
             <a href="#lb-for-me" className="lb-btn lb-btn-light">Is this for me?</a>
           </div>
           <p className="lb-hero-proof"><span>Four intakes since 2024</span>“I found women who feel like home.” <em>Erika Mai · Liberate 4</em></p>
@@ -622,7 +622,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
             <p>{price} in full, or {offer.instalmentCount} × {perMonth}. Pay and your place is held — or talk to me first.</p>
           </div>
           <div className="lb-ctas">
-            <Link href="/liberate/apply" className="lb-btn lb-btn-gold">I’m ready to Liberate</Link>
+            <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">Join now</a>
             <Link href="/liberate/apply" className="lb-btn lb-btn-light">Talk to me first</Link>
           </div>
         </div>
@@ -656,13 +656,13 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
               <div className="lb-path">
                 <p className="lb-eyebrow">If it’s a yes</p>
                 <h3>Join now.</h3>
-                <p>A short application, then you pay — in full or your first monthly payment — and your place is held the moment it clears. No call needed.</p>
-                <Link href="/liberate/apply" className="lb-btn lb-btn-ink">I’m ready to Liberate</Link>
+                <p>Choose full or three monthly payments, leave your details, pay — and your place is held the moment it clears. No call needed. Opens in a new tab.</p>
+                <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-ink">Join now</a>
               </div>
               <div className="lb-path">
                 <p className="lb-eyebrow">If you have questions</p>
                 <h3>Talk to me first.</h3>
-                <p>If the investment is within reach and you want clarity before you say yes, send the same application and choose “I’d like to talk first.” I’ll call you on WhatsApp.</p>
+                <p>If the investment is within reach and you want clarity before you say yes, answer a few honest questions and book a call with me.</p>
                 <Link href="/liberate/apply" className="lb-btn lb-btn-ghost">Talk to me first</Link>
               </div>
             </div>
@@ -693,7 +693,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
               <p>And when you say yes, let it be a full yes, one your whole being can stand behind.</p>
               <p className="lb-em" style={{ fontFamily: "var(--serif)", fontSize: 24 }}>We’ll meet you there.</p>
             </div>
-            <div className="lb-ctas"><Link href="/liberate/apply" className="lb-btn lb-btn-ink">I’m ready to be held</Link></div>
+            <div className="lb-ctas"><a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-ink">I’m ready to be held</a></div>
           </div>
         </div>
       </section>
@@ -713,7 +713,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
             <div>Investment<b>{price}</b></div>
           </div>
           <div className="lb-ctas lb-reveal" style={{ transitionDelay: ".35s" }}>
-            <Link href="/liberate/apply" className="lb-btn lb-btn-gold">I’m ready to Liberate</Link>
+            <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">I’m ready to Liberate</a>
             <Link href="/liberate/apply" className="lb-btn lb-btn-light">Talk to me first</Link>
           </div>
         </div>
@@ -723,7 +723,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
         <div className="lb-wrap lb-sticky-in">
           <p><strong>Liberate</strong><span>Begins October 12, 2026 · {price}{perMonth ? ` or ${offer.instalmentCount} × ${perMonth}` : ""}</span></p>
           <div className="lb-ctas">
-            <Link href="/liberate/apply" className="lb-btn lb-btn-gold">Join</Link>
+            <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">Join</a>
             <Link href="/liberate/apply" className="lb-btn lb-btn-light">Talk first</Link>
           </div>
         </div>

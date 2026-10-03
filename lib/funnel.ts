@@ -128,16 +128,16 @@ Reply with two or three times that work for you this week and I'll call you then
 
 Thank you for the honesty in your application — I read every word.
 
-You asked to talk first, so I'll reach out on WhatsApp to find a time. If email is easier, reply here with two or three times that work this week.
+You asked to talk first. Book our call here whenever it suits you: {{booking_link}} — or reply with two or three times that work this week and I'll call you on WhatsApp.
 
-And if you already know it's a yes, just say so and I'll send your link the same day.
+And if you already know it's a yes, you can join straight away: {{site}}/liberate/join
 
 — Libni`],
     [3, "Still holding a space for you", `{{first_name}},
 
 If we haven't spoken yet, it's on me — not a sign. I'm still holding a space for you in the circle.
 
-Reply with a couple of times that work and I'll call you then.
+Pick a time here: {{booking_link}} — or reply with a couple of times that work and I'll call you then.
 
 — Libni`],
     [10, "I'll stop nudging after this one", `{{first_name}},

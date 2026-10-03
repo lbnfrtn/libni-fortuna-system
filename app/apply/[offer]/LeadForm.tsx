@@ -23,7 +23,7 @@ export default function LeadForm({
   const [honeypot, setHoneypot] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const [done, setDone] = useState<{ message: string; pay?: SelfPay | null } | null>(null);
+  const [done, setDone] = useState<{ message: string; pay?: SelfPay | null; book?: string | null } | null>(null);
   const [utm, setUtm] = useState<Record<string, string>>({});
   const [src, setSrc] = useState("");
 
@@ -49,7 +49,11 @@ export default function LeadForm({
     });
   }
   // A select answer can redirect the whole application (e.g. “start with a Power Hour first”).
-  const detour = questions.find((q) => q.detour && q.detourOn && answers[q.id] === q.detourOn)?.detour;
+  const detourIdx = questions.findIndex((q) => q.detour && q.detourOn && answers[q.id] === q.detourOn);
+  const detour = detourIdx >= 0 ? questions[detourIdx].detour : undefined;
+  // A hard detour ends the form: the questions after it and the Send button disappear.
+  const hardStop = !!detour?.hard;
+  const shown = hardStop ? questions.slice(0, detourIdx + 1) : questions;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -74,7 +78,7 @@ export default function LeadForm({
     });
     const j = await res.json();
     setBusy(false);
-    if (j.ok) setDone({ message: j.message, pay: j.pay });
+    if (j.ok) setDone({ message: j.message, pay: j.pay, book: j.book });
     else setErr(j.error || "Something went wrong. Please try again.");
   }
 
@@ -83,6 +87,9 @@ export default function LeadForm({
       <div className="card">
         <p className="serif" style={{ fontSize: 24 }}>Thank you. 🤍</p>
         <p className="muted">{done.message}</p>
+        {done.book && (
+          <p style={{ marginTop: 16 }}><a className="btn" href={done.book} target="_blank" rel="noreferrer">Book your call →</a></p>
+        )}
         {done.pay && (
           <div style={{ marginTop: 18 }}>
             <p style={{ margin: "0 0 12px" }}>
@@ -119,7 +126,7 @@ export default function LeadForm({
       <label>{phoneField ? `${phoneField.label}${phoneField.required ? " *" : ""}` : "Phone / WhatsApp (optional)"}</label>
       <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+63…" required={phoneField?.required} />
 
-      {questions.map((q) => (
+      {shown.map((q) => (
         <div key={q.id}>
           <label>{q.label}{q.required ? " *" : ""}</label>
           {q.type === "textarea" ? (
@@ -153,10 +160,11 @@ export default function LeadForm({
           <p style={{ margin: 0, fontFamily: "var(--font-serif)", fontSize: 20, lineHeight: 1.35 }}>{detour.text}</p>
           <div className="row" style={{ marginTop: 14 }}>
             <a className="btn" href={detour.href}>{detour.cta} →</a>
-            <span className="muted" style={{ fontSize: 13 }}>Or keep going below and send the application anyway.</span>
+            {!hardStop && <span className="muted" style={{ fontSize: 13 }}>Or keep going below and send the application anyway.</span>}
           </div>
         </div>
       )}
+      {hardStop ? null : (<>
 
       {/* Honeypot — hidden from people, catches bots. */}
       <div style={{ position: "absolute", left: "-9999px" }} aria-hidden>
@@ -175,6 +183,7 @@ export default function LeadForm({
       <div style={{ marginTop: 18 }}>
         <button className="btn" disabled={busy}>{busy ? "Sending…" : "Send"}</button>
       </div>
+      </>)}
     </form>
   );
 }

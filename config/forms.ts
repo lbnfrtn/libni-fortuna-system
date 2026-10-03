@@ -15,13 +15,17 @@ export interface Question {
   placeholder?: string;
   /** For a select: choosing this option shows `detour` instead of the rest of the form. */
   detourOn?: string;
-  detour?: { text: string; cta: string; href: string };
+  /** `hard`: the detour replaces the rest of the form — no application is sent. */
+  detour?: { text: string; cta: string; href: string; hard?: boolean };
 }
 
 /** The answer that sends a Becoming applicant to the Power Hour first. */
 export const POWER_HOUR_FIRST = "I'd like to start with a Power Hour first";
 
-/** How a Liberate applicant wants to join. The two paying answers create the order on the spot. */
+/** The honest "not right now" on the Liberate call application — it ends the form kindly instead of booking a call. */
+export const LIBERATE_NOT_NOW = "Not right now";
+
+/** How someone joins Liberate from the join page. The two paying answers create the order on the spot. */
 export const LIBERATE_JOIN = {
   full: "Pay in full now",
   plan: "Three monthly payments",
@@ -100,8 +104,8 @@ const BECOMING_Q: Question[] = [
   SOURCE_Q,
 ];
 
-// Liberate: the price is on the page, so the application doesn't gatekeep.
-// They choose how to join; the paying answers get a link straight away.
+// Liberate's "talk to me first" application. Paying happens on /liberate/join; this
+// form is for a call — and only if the investment is within reach (Libni's rule).
 function liberateQuestions(): Question[] {
   const offer = getOffer("liberate");
   const price = offer?.pricePHP ?? 0;
@@ -111,13 +115,21 @@ function liberateQuestions(): Question[] {
     { id: "where_now", label: "Where are you right now — in your life, your work, yourself?", type: "textarea", required: true },
     { id: "what_shift", label: "What would you love to be different by the end of our three months together?", type: "textarea", required: true },
     {
-      id: "join",
-      label: `Liberate is ${peso(price)} — in full, or ${count} monthly payments of about ${peso(price / count)}. How would you like to join?`,
+      id: "investment",
+      label: `Liberate is ${peso(price)} — in full, or ${count} monthly payments of about ${peso(price / count)}. Is this within reach for you right now?`,
       type: "select",
       required: true,
-      options: [LIBERATE_JOIN.full, LIBERATE_JOIN.plan, LIBERATE_JOIN.call],
+      options: ["Yes — I'm ready to invest", "Yes — with a payment plan", LIBERATE_NOT_NOW],
+      detourOn: LIBERATE_NOT_NOW,
+      detour: {
+        hard: true,
+        text: "Thank you for your honesty — that matters more than a yes. Liberate asks for a real investment, and I'd rather you come when it's within reach than stretch for it. The door stays open. If you'd like a smaller first step, the Power Hour is ninety minutes, just us.",
+        cta: "See the Power Hour",
+        href: "/programs/ignite",
+      },
     },
-    { id: "call_time", label: "If you'd like to talk first — when is the best time for me to call you on WhatsApp?", type: "select", options: ["Morning (8–11 am)", "Midday (11 am–2 pm)", "Afternoon (2–5 pm)", "Evening (5–8 pm)"] },
+    { id: "questions", label: "What would you like to talk through on the call?", type: "textarea", placeholder: "Anything you're unsure about — the pace, the payment plan, whether it's the right space for you." },
+    { id: "call_time", label: "When is the best time for me to call you on WhatsApp?", type: "select", options: ["Morning (8–11 am)", "Midday (11 am–2 pm)", "Afternoon (2–5 pm)", "Evening (5–8 pm)"] },
     SOURCE_Q,
   ];
 }
@@ -167,9 +179,9 @@ export function questionsFor(offerSlug: string): { track: Track; heading: string
 
   if (offerSlug === "liberate")
     return {
-      track: "consumer", heading: "Join Liberate",
-      sub: "A few honest questions, then it's your call: pay and your place is held, or we talk first on WhatsApp. Payment plans are always something we can talk about.",
-      questions: liberateQuestions(), phone: { label: "WhatsApp number", required: false },
+      track: "consumer", heading: "Talk to me first — Liberate",
+      sub: "A few honest questions, then we book a call. Liberate is a real investment; if it's within reach right now, I'd love to talk it through with you. Ready to join without a call? You can pay straight away on the join page.",
+      questions: liberateQuestions(), phone: { label: "WhatsApp number", required: true },
     };
 
   if (offer.track === "corporate")
