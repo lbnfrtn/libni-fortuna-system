@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { OFFERS } from "@/config/offers";
+import { resolveVideo } from "@/config/site-slots";
 
 type Photos = Record<string, string>;
 
@@ -43,7 +44,7 @@ const RETREAT_SLOTS = [
 ] as const;
 
 // Real, published client words (also shown on /testimony).
-const WORDS = [
+const WORDS: Word[] = [
   { q: "I came with the intention to release and remember, and that’s exactly what happened. I was able to let go of the trauma I’d been carrying and reconnect with who I truly am.", who: "Pepe Herrera", role: "Actor" },
   { q: "I came thinking I was okay. I left realizing I wasn’t. What I found was healing, hope, and a deeper understanding of myself. One of the greatest investments I’ve ever made.", who: "King Fortuna", role: "Businessman" },
   { q: "Essence created a space of deep connection, safety, and belonging. I discovered a new way of seeing myself and a new way of living.", who: "Nadia Montenegro", role: "Actress · Mother · Businesswoman" },
@@ -54,7 +55,16 @@ const INCLUDED = [
   "Energetic exploration", "Guided meditations", "Private community", "Your own online portal", "Celebratory overnight retreat, in person",
 ];
 
-type Word = { q: string; who: string; role?: string; photo?: string };
+type Word = { id?: string; q: string; who: string; role?: string; photo?: string };
+type Video = { url: string; poster?: string };
+
+// Faces cropped from the photos her students posted alongside their words (LIBer highlight).
+const FACES: Record<string, string> = {
+  tiff: "/photos/liberate/face-tiff.jpg", erika: "/photos/liberate/face-erika.jpg", danessa: "/photos/liberate/face-danessa.jpg",
+  jill: "/photos/liberate/face-jill.jpg", mims: "/photos/liberate/face-mims.jpg", zy: "/photos/liberate/face-zy.jpg",
+  nick: "/photos/liberate/face-nick.jpg", sam: "/photos/liberate/face-sam.jpg", lea: "/photos/liberate/face-lea.jpg", risha: "/photos/liberate/face-risha.jpg",
+};
+const FEATURE_PHOTO: Record<string, string> = { tiff: "/photos/liberate/feature-tiff.jpg" };
 
 // Stock photos (Unsplash, free licence) stand in until Libni uploads her own to each “inside” slot.
 const INSIDE_STOCK: Record<string, string> = {
@@ -69,7 +79,7 @@ const INSIDE_STOCK: Record<string, string> = {
 };
 const SHOT_SLOTS = ["shots_1", "shots_2", "shots_3", "shots_4", "shots_5", "shots_6", "shots_7", "shots_8"];
 // Real stories her students posted (reshared in her LIBer highlight) stand in until she uploads her own.
-const SHOT_FALLBACK = SHOT_SLOTS.map((_, i) => `/photos/liberate/words-${i + 1}.jpg`);
+const SHOT_FALLBACK = Array.from({ length: 16 }, (_, i) => `/photos/liberate/words-${i + 1}.jpg`);
 
 // Libni's own words, written after the second intake closed.
 const WINS = ["Many opportunities", "Mended relationships", "Stepping into the next version", "A new car", "The courage to pursue the dream life"];
@@ -79,12 +89,32 @@ const MOMENT_SLOTS = [
   ["moments_4", "Together"], ["moments_5", "The retreat"], ["moments_6", "After"],
 ] as const;
 
-export default function LiberateClient({ photos = {}, words: incoming }: { photos?: Photos; words?: Word[] }) {
+function Face({ src, name, size = 56 }: { src?: string; name: string; size?: number }) {
+  if (src) return <img className="lb-face" src={src} alt="" width={size} height={size} style={{ width: size, height: size }} loading="lazy" />;
+  return <span className="lb-face lb-face-initial" style={{ width: size, height: size }}>{name.replace(/^@/, "").charAt(0).toUpperCase()}</span>;
+}
+
+function LbVideo({ url, poster, n }: { url: string; poster?: string; n: number }) {
+  const v = resolveVideo(url);
+  if (!v) return null;
+  return (
+    <figure className="lb-video">
+      {"embed" in v
+        ? <iframe src={v.embed} title={`A Liberate student, video ${n}`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" />
+        : <video src={v.file} poster={poster} controls playsInline preload="metadata" />}
+    </figure>
+  );
+}
+
+export default function LiberateClient({ photos = {}, words: incoming, videos = [] }: { photos?: Photos; words?: Word[]; videos?: Video[] }) {
   const offer = OFFERS.liberate;
   // Client words come from the Studio (“Client stories”); the published quotes are the fallback.
-  const WORDS_SHOWN: Word[] = incoming && incoming.length ? incoming : WORDS;
+  const WORDS_SHOWN: Word[] = (incoming && incoming.length ? incoming : WORDS).map((w) => ({ ...w, photo: w.photo || (w.id ? FACES[w.id] : undefined) }));
+  const first = WORDS_SHOWN[0];
+  const featurePhoto = photos.libw_feature || (first.id && FEATURE_PHOTO[first.id]) || first.photo;
   const momentPhotos = MOMENT_SLOTS.filter(([id]) => photos[id]);
-  const shots = SHOT_SLOTS.map((id, i) => photos[id] || SHOT_FALLBACK[i]);
+  const uploadedShots = SHOT_SLOTS.map((id) => photos[id]).filter(Boolean);
+  const shots = uploadedShots.length ? uploadedShots : SHOT_FALLBACK;
   const instalment = offer.allowInstalments && offer.instalmentCount ? Math.floor((offer.pricePHP ?? 0) / offer.instalmentCount) : 0;
   const perMonth = instalment ? `₱${instalment.toLocaleString("en-PH")}` : "";
 
@@ -264,10 +294,27 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
         .lb .lb-hero-proof { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--lb-line-light); display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; font-family: var(--serif); font-style: italic; font-size: 18px; line-height: 1.3; color: rgba(251,249,246,.82); }
         .lb-hero-proof span { font-family: var(--sans); font-style: normal; font-size: 10px; letter-spacing: .28em; text-transform: uppercase; color: var(--lb-gold-soft); }
         .lb-hero-proof em { font-style: normal; font-family: var(--sans); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; color: rgba(251,249,246,.5); }
-        .lb-wall { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 clamp(28px, 4vw, 56px); padding-top: clamp(24px, 3vw, 40px); }
-        .lb-wall .lb-word { padding: clamp(28px, 3vw, 40px) 0; border-bottom: 1px solid var(--lb-line); align-content: start; }
+        .lb-h3 { font-size: clamp(30px, 3.4vw, 48px); margin-top: 12px; line-height: 1.05; }
+        .lb-face { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; object-fit: cover; object-position: 50% 25%; flex: 0 0 auto; background: var(--lb-sand); }
+        .lb-face-initial { font-family: var(--serif); font-size: 22px; color: var(--lb-plum); }
+        .lb-proof-feature { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(28px, 5vw, 80px); align-items: center; }
+        .lb-proof-portrait { max-width: 420px; }
+        .lb-proof-portrait img { aspect-ratio: 4 / 5; object-position: 50% 15%; }
+        .lb-byline { display: flex; align-items: center; gap: 16px; margin-top: 26px; }
+        .lb-byline .lb-who { margin-top: 0; }
+        .lb-videos-wrap { margin-top: clamp(56px, 7vw, 96px); padding-top: clamp(40px, 5vw, 64px); border-top: 1px solid var(--lb-line); }
+        .lb-videos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .lb-video { margin: 0; position: relative; aspect-ratio: 9 / 16; background: var(--lb-night); overflow: hidden; }
+        .lb-video video, .lb-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
+        .lb-wall { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 clamp(28px, 4vw, 56px); margin-top: clamp(56px, 7vw, 96px); padding-top: clamp(8px, 1vw, 16px); border-top: 1px solid var(--lb-line); }
+        .lb-wall .lb-word { display: block; padding: clamp(28px, 3vw, 40px) 0; border-bottom: 1px solid var(--lb-line); }
         .lb-wall .lb-quote { font-size: clamp(20px, 1.6vw, 24px); line-height: 1.3; }
-        .lb-wall .lb-who { margin-top: 18px; }
+        .lb-word-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+        .lb-word-head .lb-who { margin-top: 0; }
+        .lb-cta-strip { background: var(--lb-night); color: var(--lb-ivory); padding: clamp(56px, 7vw, 96px) 0; }
+        .lb-cta-in { display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
+        .lb-cta-in h2 { font-size: clamp(34px, 4vw, 56px); font-style: italic; line-height: 1.05; margin: 10px 0 12px; }
+        .lb-cta-in p:not(.lb-eyebrow) { color: rgba(251,249,246,.72); font-size: 16px; max-width: 46ch; }
         .lb-shots { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 4px 18px; margin: 0 -4px; scrollbar-width: thin; }
         .lb-shots figure { flex: 0 0 clamp(200px, 19vw, 260px); scroll-snap-align: start; }
         .lb-wins { padding: clamp(72px, 9vw, 120px) 0; }
@@ -329,6 +376,11 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
           .lb-bleed-right img { height: 68svh; }
           .lb-head, .lb-index, .lb-road, .lb-finale, .lb-feature, .lb-words, .lb-invest, .lb-peace, .lb-wins .lb-wrap, .lb-paths { grid-template-columns: 1fr; }
           .lb-wall { grid-template-columns: 1fr; }
+          .lb-proof-feature { grid-template-columns: 1fr; }
+          .lb-proof-portrait { max-width: 320px; }
+          .lb-videos { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; }
+          .lb-video { flex: 0 0 72vw; scroll-snap-align: start; }
+          .lb-cta-in .lb-ctas { width: 100%; }
           .lb-sticky span { display: none; }
           .lb-sticky-in { gap: 12px; }
           .lb-sticky .lb-ctas { flex-direction: row; } .lb-sticky .lb-ctas .lb-btn { width: auto; }
@@ -514,37 +566,65 @@ export default function LiberateClient({ photos = {}, words: incoming }: { photo
         </div>
       </section>
 
-      {/* 09 — WORDS */}
-      <section className="lb-sec lb-linen">
+      {/* 09 — PROOF */}
+      <section className="lb-sec lb-linen" id="words">
         <div className="lb-wrap">
-          <div className="lb-feature lb-reveal">
+          <div className="lb-head lb-reveal">
+            <div><p className="lb-eyebrow">From the people of Liberate</p><h2 className="lb-display" style={{ marginTop: 14 }}>Four intakes. One circle.</h2></div>
+            <p className="lb-lede lb-muted" style={{ maxWidth: "26ch" }}>Not reviews. Turning points — in their words, their faces, their own stories.</p>
+          </div>
+
+          <div className="lb-proof-feature lb-reveal">
+            {featurePhoto && <div className="lb-figure lb-proof-portrait"><img src={featurePhoto} alt={first.who} loading="lazy" /></div>}
             <div>
-              <p className="lb-eyebrow" style={{ marginBottom: 24 }}>From the people of Liberate</p>
-              <p className="lb-quote">{WORDS_SHOWN[0].q}</p>
-              <p className="lb-who">{WORDS_SHOWN[0].who}{WORDS_SHOWN[0].role && <span>{WORDS_SHOWN[0].role}</span>}</p>
-            </div>
-            <div className="lb-stack" style={{ gap: 18 }}>
-              <p className="lb-lede lb-muted" style={{ maxWidth: "24ch" }}>Words from people who have sat in this circle. Not reviews. Turning points.</p>
-              <p className="lb-eyebrow" style={{ color: "var(--lb-muted)" }}>Four intakes · 2024 – 2025 · online, then in person</p>
+              <p className="lb-quote">{first.q}</p>
+              <div className="lb-byline"><Face src={first.photo} name={first.who} size={60} /><p className="lb-who">{first.who}{first.role && <span>{first.role}</span>}</p></div>
             </div>
           </div>
+
+          {videos.length > 0 && (
+            <div className="lb-videos-wrap lb-reveal">
+              <div className="lb-head" style={{ marginBottom: 26 }}>
+                <div><p className="lb-eyebrow">Hear it from them</p><h3 className="lb-h3">Real voices, on camera.</h3></div>
+                <p className="lb-muted" style={{ fontSize: 15, maxWidth: "36ch" }}>Students of Liberate, in their own voice. Tap to play — sound on.</p>
+              </div>
+              <div className="lb-videos">{videos.map((v, i) => <LbVideo key={i} url={v.url} poster={v.poster} n={i + 1} />)}</div>
+            </div>
+          )}
+
           <div className="lb-wall">
             {WORDS_SHOWN.slice(1).map((w, i) => (
-              <div key={w.who + i} className="lb-reveal lb-word" style={{ transitionDelay: `${(i % 3) * 0.1}s` }}>
-                {w.photo && <img className="lb-word-img" src={w.photo} alt={w.who} loading="lazy" />}
-                <div><p className="lb-quote">{w.q}</p><p className="lb-who">{w.who}{w.role && <span>{w.role}</span>}</p></div>
+              <div key={(w.id ?? w.who) + i} className="lb-reveal lb-word" style={{ transitionDelay: `${(i % 3) * 0.1}s` }}>
+                <div className="lb-word-head"><Face src={w.photo} name={w.who} /><p className="lb-who">{w.who}{w.role && <span>{w.role}</span>}</p></div>
+                <p className="lb-quote">{w.q}</p>
               </div>
             ))}
           </div>
+
           {shots.length > 0 && (
             <div className="lb-reveal" style={{ marginTop: "clamp(56px, 7vw, 96px)" }}>
               <div className="lb-head" style={{ marginBottom: 26 }}>
-                <div><p className="lb-eyebrow">Straight from their stories</p><h3 className="lb-display" style={{ fontSize: "clamp(30px, 3.4vw, 48px)", marginTop: 12 }}>In their own words, as they posted them.</h3></div>
-                <p className="lb-muted" style={{ fontSize: 15, maxWidth: "40ch" }}>Screenshots of what students shared on Instagram during and after their three months — untouched.</p>
+                <div><p className="lb-eyebrow">Straight from their stories</p><h3 className="lb-h3">As they posted them.</h3></div>
+                <p className="lb-muted" style={{ fontSize: 15, maxWidth: "40ch" }}>{shots.length} screenshots of what students shared on Instagram during and after their three months — untouched. Swipe →</p>
               </div>
               <div className="lb-shots">{shots.map((src, i) => <figure key={i}><img src={src} alt={`A message from a Liberate student, ${i + 1}`} loading="lazy" /></figure>)}</div>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* 09a — CTA */}
+      <section className="lb-cta-strip">
+        <div className="lb-wrap lb-cta-in lb-reveal">
+          <div>
+            <p className="lb-eyebrow" style={{ color: "var(--lb-gold-soft)" }}>The next circle</p>
+            <h2>Begins October 12, 2026.</h2>
+            <p>{price} in full, or {offer.instalmentCount} × {perMonth}. Pay and your place is held — or talk to me first.</p>
+          </div>
+          <div className="lb-ctas">
+            <Link href="/liberate/apply" className="lb-btn lb-btn-gold">I’m ready to Liberate</Link>
+            <Link href="/liberate/apply" className="lb-btn lb-btn-light">Talk to me first</Link>
+          </div>
         </div>
       </section>
 

@@ -327,6 +327,8 @@ export const DEFAULT_LIBERATE_WORDS: Story[] = [
   { id: "zy", name: "Zy", role: "@zy_zy_deme · Liberate 2", quote: "Liberate is the kind of community I want to be with constantly." },
   { id: "nick", name: "Nick Ōh", role: "@itsnickoh · Liberate 1", quote: "We all need to be in a space where we are seen and celebrated talaga." },
   { id: "sam", name: "Sam Libunao", role: "@samlibunao · Liberate 3", quote: "One year of doing inner work and in this journey. That’s some great post-traumatic growth. On my way to the Sam v3.0 soon." },
+  { id: "lea", name: "Lea Angela", role: "@its.leaangela · Liberate 2", quote: "The magic never gets old. Second day palang ng Liberate and it’s intense. Thank you for sharing your space." },
+  { id: "risha", name: "Risha Marcellana", role: "@rishamarcellana · Liberate 2", quote: "To be held in this space. Love you, Liberate fam." },
 ];
 
 export const EMPTY_CONTENT: SiteContent = {

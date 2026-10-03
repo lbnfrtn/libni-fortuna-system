@@ -159,12 +159,15 @@ export const SLOT_GROUPS: SlotGroup[] = [
     key: "liberate",
     title: "Liberate sales page",
     where: "/liberate",
-    slots: LIBERATE_PHOTO_SLOTS.map((s) => ({
-      id: s.id,
-      label: s.label,
-      hint: s.section,
-      aspect: s.aspectRatio,
-    })),
+    slots: [
+      ...LIBERATE_PHOTO_SLOTS.map((s) => ({
+        id: s.id,
+        label: s.label,
+        hint: s.section,
+        aspect: s.aspectRatio,
+      })),
+      ...[1, 2, 3, 4].map((n) => ({ id: `lib_video_${n}`, label: `Student video ${n}`, hint: "A Liberate student speaking on camera. Upload an MP4 / MOV from your phone or paste a YouTube / Vimeo link — vertical (9:16) looks best. Shown under “Hear it from them”.", aspect: "9/16", kind: "video" as const })),
+    ],
   },
 ];
 
