@@ -307,11 +307,14 @@ const ROADMAP: [string, string][] = [
   ["Repatterning", "Practice a new way of being."], ["Nervous system", "Create more capacity for safety, receiving, and expression."], ["Integration", "Bring the work into real life."], ["Liberation", "Step into greater freedom and choice."],
 ];
 
+// Tuesday circle dates for the November 2026 cohort (rest on Dec 22 and 29).
+export const LIBERATE_TUESDAYS = ["2026-11-03", "2026-11-10", "2026-11-17", "2026-11-24", "2026-12-01", "2026-12-08", "2026-12-15", "2027-01-05", "2027-01-12", "2027-01-19", "2027-01-26", "2027-02-02"];
+
 export const DEFAULT_LIBERATE: LiberateHQ = {
   cohortLabel: "November 2026 cohort",
   accessCode: "",
   welcome: "Welcome home. Everything for our twelve weeks together lives here — the roadmap, each week’s session, the replays, and the practices in between. Take what you need, when you need it.",
-  weeks: ROADMAP.map(([title, theme], i) => ({ n: i + 1, title, theme, resources: [] })),
+  weeks: ROADMAP.map(([title, theme], i) => ({ n: i + 1, title, theme, date: LIBERATE_TUESDAYS[i], resources: [] })),
 };
 
 // Real words from Liberate students, quoted from the stories they posted and Libni reshared

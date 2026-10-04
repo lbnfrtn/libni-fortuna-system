@@ -51,11 +51,6 @@ export const LIBERATE_PHOTO_SLOTS: LiberatePhotoSlot[] = [
   { id: "shots_8", label: "Testimonial screenshot 8", section: "Section 9 · screenshots", aspectRatio: "9/16", required: false },
 
   // Section 7: Retreat
-  { id: "session_1", label: "Session screenshot 1 • the Zoom room", section: "Section 6b · sessions", aspectRatio: "3/2", required: false },
-  { id: "session_2", label: "Session screenshot 2", section: "Section 6b · sessions", aspectRatio: "3/2", required: false },
-  { id: "session_3", label: "Session screenshot 3", section: "Section 6b · sessions", aspectRatio: "3/2", required: false },
-  { id: "session_4", label: "Session screenshot 4", section: "Section 6b · sessions", aspectRatio: "3/2", required: false },
-
   { id: "retreat_hero", label: "Retreat • wide shot, Manila", section: "Section 7", aspectRatio: "16/9", required: false },
   { id: "retreat_1", label: "Retreat mosaic photo 1", section: "Section 7", aspectRatio: "1/1", required: false },
   { id: "retreat_2", label: "Retreat mosaic photo 2", section: "Section 7", aspectRatio: "1/1", required: false },

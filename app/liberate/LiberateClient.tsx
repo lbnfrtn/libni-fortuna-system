@@ -80,20 +80,12 @@ const INSIDE_STOCK: Record<string, string> = {
 };
 const SHOT_SLOTS = ["shots_1", "shots_2", "shots_3", "shots_4", "shots_5", "shots_6", "shots_7", "shots_8"];
 
-// Real screenshots from the weekly Zoom sessions (from the LIBer highlight) — what a night inside looks like.
-const SESSIONS: [string, string][] = [
-  ["session_1", "The weekly circle"],
-  ["session_2", "Wherever you are"],
-  ["session_3", "Breathwork, together"],
-  ["session_4", "The final call"],
-];
 type Clip = { src: string; poster?: string; label?: string };
 const DEFAULT_CLIPS: Clip[] = [
   { src: "/videos/liberate/session-29.mp4", poster: "/photos/liberate/session-3.jpg", label: "Breathwork, together" },
   { src: "/videos/liberate/session-32.mp4", poster: "/photos/liberate/session-1.jpg", label: "Favourite night of the week" },
   { src: "/videos/liberate/session-05.mp4", poster: "/photos/liberate/session-4.jpg", label: "A guest in the circle" },
 ];
-const SESSION_FALLBACK = ["/photos/liberate/session-1.jpg", "/photos/liberate/session-2.jpg", "/photos/liberate/session-3.jpg", "/photos/liberate/session-4.jpg"];
 
 // The in-person celebration & retreat gallery (real photos from the highlight).
 // Tuesday circle dates for the November 2026 cohort. Thursdays follow two days later.
@@ -354,12 +346,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-clip:nth-child(2) { transform: translateY(-18px); }
         .lb-clip video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
         .lb-clip figcaption { position: absolute; left: 12px; right: 12px; bottom: 12px; font-family: var(--sans); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--lb-ivory); text-shadow: 0 1px 8px rgba(0,0,0,.7); }
-        .lb-sessions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: clamp(40px, 5vw, 64px); }
-        .lb-sessions figure { margin: 0; position: relative; overflow: hidden; }
-        .lb-sessions img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; display: block; transition: transform 1.2s cubic-bezier(.2,.7,.2,1); }
-        .lb-sessions figure:hover img { transform: scale(1.03); }
-        .lb-sessions figcaption { position: absolute; left: 14px; bottom: 12px; font-family: var(--sans); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--lb-ivory); text-shadow: 0 1px 8px rgba(0,0,0,.55); }
-        .lb-sessions figure::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(36,28,42,0) 55%, rgba(36,28,42,.5) 100%); pointer-events: none; }
 
         /* 07 retreat */
         .lb-retreat-head { max-width: 900px; }
@@ -520,7 +506,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb-sticky .lb-ctas { flex-direction: row; } .lb-sticky .lb-ctas .lb-btn { width: auto; }
           .lb { padding-bottom: 0; }
           .lb-road { gap: 48px; }
-          .lb-sessions { grid-template-columns: 1fr; }
           .lb-clips { overflow-x: auto; justify-content: flex-start; padding: 20px 4px 12px; margin-left: -4px; margin-right: -4px; scroll-snap-type: x mandatory; }
           .lb-clip { flex: 0 0 48vw; scroll-snap-align: start; }
           .lb-clip:nth-child(2) { transform: none; }
@@ -661,21 +646,13 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         <div className="lb-wrap">
           <div className="lb-head lb-reveal">
             <div><p className="lb-eyebrow">What our sessions look like</p><h2 className="lb-display" style={{ marginTop: 14 }}>Come sit in the room.</h2></div>
-            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Twice a week on Zoom, wherever you are. Cameras on, hearts open — real moments from our weekly circles, so you can feel what a night in Liberate is like before you ever join one.</p>
+            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Twice a week on Zoom, wherever you are. Cameras on, hearts open — real moments from our weekly circles — tap any one — so you can feel what a night in Liberate is like before you ever join one.</p>
           </div>
           {clips.length > 0 && (
             <div className="lb-clips lb-reveal">
               {clips.map((c, i) => <LbClip key={c.src + i} clip={c} />)}
             </div>
           )}
-          <div className="lb-sessions lb-reveal">
-            {SESSIONS.map(([slot, label], i) => (
-              <figure key={slot} style={{ transitionDelay: `${(i % 2) * 0.08}s` }}>
-                <img src={photos[slot] || SESSION_FALLBACK[i]} alt={label} loading="lazy" />
-                <figcaption>{label}</figcaption>
-              </figure>
-            ))}
-          </div>
         </div>
       </section>
 
