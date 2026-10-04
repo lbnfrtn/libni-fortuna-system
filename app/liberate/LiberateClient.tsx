@@ -51,7 +51,22 @@ const INCLUDED = [
 ];
 
 type Word = { id?: string; q: string; who: string; role?: string; photo?: string };
-type Video = { url: string; poster?: string };
+type Video = { url: string; poster?: string; name?: string; role?: string; w?: number; h?: number; dur?: number };
+
+// Her students on camera — the Vimeo uploads Libni made of their testimonials (5 vertical, 5 landscape).
+const DEFAULT_VIDEOS: Video[] = [
+  { url: "https://vimeo.com/1232676253", name: "Joyce", role: "Liberate 4", w: 16, h: 9, dur: 173, poster: "/photos/liberate/vid-1232676253.jpg" },
+  { url: "https://vimeo.com/1232676156", name: "Danessa", role: "Liberate 2", w: 9, h: 16, dur: 64, poster: "/photos/liberate/vid-1232676156.jpg" },
+  { url: "https://vimeo.com/1232675412", name: "Precious", role: "Liberate 4", w: 16, h: 9, dur: 149, poster: "/photos/liberate/vid-1232675412.jpg" },
+  { url: "https://vimeo.com/1232676628", name: "Victoria", role: "Liberate 3", w: 9, h: 16, dur: 185, poster: "/photos/liberate/vid-1232676628.jpg" },
+  { url: "https://vimeo.com/1232675915", name: "Kimi", role: "Liberate 4", w: 16, h: 9, dur: 220, poster: "/photos/liberate/vid-1232675915.jpg" },
+  { url: "https://vimeo.com/1232675738", name: "Bam", role: "Liberate 3", w: 9, h: 16, dur: 163, poster: "/photos/liberate/vid-1232675738.jpg" },
+  { url: "https://vimeo.com/1232675467", name: "Mitch", role: "Liberate 4", w: 16, h: 9, dur: 97, poster: "/photos/liberate/vid-1232675467.jpg" },
+  { url: "https://vimeo.com/1232676439", name: "Tonet", role: "Liberate 3", w: 9, h: 16, dur: 277, poster: "/photos/liberate/vid-1232676439.jpg" },
+  { url: "https://vimeo.com/1232675411", name: "Ikay", role: "Liberate", w: 16, h: 9, dur: 169, poster: "/photos/liberate/vid-1232675411.jpg" },
+  { url: "https://vimeo.com/1232675409", name: "Pawla", role: "Liberate 1", w: 9, h: 16, dur: 70, poster: "/photos/liberate/vid-1232675409.jpg" },
+];
+const mmss = (n?: number) => (n ? `${Math.floor(n / 60)}:${String(n % 60).padStart(2, "0")}` : "");
 
 // Faces cropped from the photos her students posted alongside their words (LIBer highlight).
 const FACES: Record<string, string> = {
@@ -109,19 +124,35 @@ function Face({ src, name, size = 56 }: { src?: string; name: string; size?: num
   return <span className="lb-face lb-face-initial" style={{ width: size, height: size }}>{name.replace(/^@/, "").charAt(0).toUpperCase()}</span>;
 }
 
-function LbVideo({ url, poster, n }: { url: string; poster?: string; n: number }) {
-  const v = resolveVideo(url);
+function LbVideo({ video, n }: { video: Video; n: number }) {
+  const [on, setOn] = useState(false);
+  const v = resolveVideo(video.url);
   if (!v) return null;
+  const ratio = video.w && video.h ? `${video.w} / ${video.h}` : "9 / 16";
+  const wide = !!(video.w && video.h && video.w > video.h);
+  const title = video.name ? `${video.name} on Liberate` : `A Liberate student, video ${n}`;
+  const src = "embed" in v ? `${v.embed}${v.embed.includes("?") ? "&" : "?"}autoplay=1&title=0&byline=0&portrait=0&dnt=1` : v.file;
   return (
-    <figure className="lb-video">
-      {"embed" in v
-        ? <iframe src={v.embed} title={`A Liberate student, video ${n}`} allow="accelerometer; clipboard-write; encrypted-media; picture-in-picture" allowFullScreen loading="lazy" />
-        : <video src={v.file} poster={poster} controls playsInline preload="metadata" />}
+    <figure className={`lb-video${wide ? " lb-video-wide" : ""}`} style={{ aspectRatio: ratio }}>
+      {on ? (
+        "embed" in v
+          ? <iframe src={src} title={title} allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowFullScreen />
+          : <video src={src} poster={video.poster} controls autoPlay playsInline />
+      ) : (
+        <button type="button" className="lb-video-play" onClick={() => setOn(true)} aria-label={`Play: ${title}`}>
+          {video.poster ? <img src={video.poster} alt="" loading="lazy" /> : <span className="lb-video-blank" />}
+          <span className="lb-video-btn"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>
+        </button>
+      )}
+      {(video.name || video.dur) && (
+        <figcaption><strong>{video.name ?? "A Liberate student"}</strong>{video.role && <span>{video.role}</span>}{video.dur ? <em>{mmss(video.dur)}</em> : null}</figcaption>
+      )}
     </figure>
   );
 }
 
-export default function LiberateClient({ photos = {}, words: incoming, videos = [] }: { photos?: Photos; words?: Word[]; videos?: Video[] }) {
+export default function LiberateClient({ photos = {}, words: incoming, videos: incomingVideos = [] }: { photos?: Photos; words?: Word[]; videos?: Video[] }) {
+  const videos: Video[] = incomingVideos.length ? incomingVideos : DEFAULT_VIDEOS;
   const offer = OFFERS.liberate;
   // Client words come from the Studio (“Client stories”); the published quotes are the fallback.
   const WORDS_SHOWN: Word[] = (incoming && incoming.length ? incoming : WORDS).map((w) => ({ ...w, photo: w.photo || (w.id ? FACES[w.id] : undefined) }));
@@ -330,9 +361,21 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
         .lb-byline { display: flex; align-items: center; gap: 16px; margin-top: 26px; }
         .lb-byline .lb-who { margin-top: 0; }
         .lb-videos-wrap { margin-top: clamp(56px, 7vw, 96px); padding-top: clamp(40px, 5vw, 64px); border-top: 1px solid var(--lb-line); }
-        .lb-videos { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
-        .lb-video { margin: 0; position: relative; aspect-ratio: 9 / 16; background: var(--lb-night); overflow: hidden; }
-        .lb-video video, .lb-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; }
+        .lb-videos { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 4px 18px; margin: 0 -4px; scrollbar-width: thin; --lb-vh: clamp(360px, 40vw, 480px); }
+        .lb-video { margin: 0; position: relative; flex: 0 0 auto; height: var(--lb-vh); background: var(--lb-night); overflow: hidden; scroll-snap-align: start; }
+        .lb-video video, .lb-video iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: cover; background: #000; }
+        .lb-video-play { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; padding: 0; background: var(--lb-night); cursor: pointer; display: block; }
+        .lb-video-play img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 1.2s cubic-bezier(.2,.7,.2,1), opacity .4s; }
+        .lb-video-play:hover img { transform: scale(1.03); opacity: .92; }
+        .lb-video-play::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(36,28,42,0) 50%, rgba(36,28,42,.65) 100%); pointer-events: none; }
+        .lb-video-btn { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 64px; height: 64px; border-radius: 50%; background: rgba(251,249,246,.92); color: var(--lb-night); display: grid; place-items: center; box-shadow: 0 10px 30px rgba(0,0,0,.35); transition: transform .35s ease, background .35s ease; }
+        .lb-video-btn svg { margin-left: 3px; }
+        .lb-video-play:hover .lb-video-btn { transform: translate(-50%, -50%) scale(1.08); background: var(--lb-gold-soft); }
+        .lb-video figcaption { position: absolute; left: 16px; right: 16px; bottom: 14px; z-index: 2; color: var(--lb-ivory); font-family: var(--sans); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; pointer-events: none; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; text-shadow: 0 1px 8px rgba(0,0,0,.6); }
+        .lb-video figcaption strong { font-family: var(--serif); font-weight: 400; font-size: 22px; letter-spacing: 0; text-transform: none; }
+        .lb-video figcaption span { color: rgba(251,249,246,.75); }
+        .lb-video figcaption em { font-style: normal; color: rgba(251,249,246,.6); margin-left: auto; }
+        .lb-video iframe + figcaption, .lb-video video + figcaption { display: none; }
         .lb-wall { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 clamp(28px, 4vw, 56px); margin-top: clamp(56px, 7vw, 96px); padding-top: clamp(8px, 1vw, 16px); border-top: 1px solid var(--lb-line); }
         .lb-wall .lb-word { display: block; padding: clamp(28px, 3vw, 40px) 0; border-bottom: 1px solid var(--lb-line); }
         .lb-wall .lb-quote { font-size: clamp(20px, 1.6vw, 24px); line-height: 1.3; }
@@ -405,8 +448,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
           .lb-wall { grid-template-columns: 1fr; }
           .lb-proof-feature { grid-template-columns: 1fr; }
           .lb-proof-portrait { max-width: 320px; }
-          .lb-videos { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; }
-          .lb-video { flex: 0 0 72vw; scroll-snap-align: start; }
+          .lb-videos { align-items: center; }
+          .lb-video { height: auto; width: 62vw; }
+          .lb-video-wide { width: 86vw; }
           .lb-cta-in .lb-ctas { width: 100%; }
           .lb-sticky span { display: none; }
           .lb-sticky-in { gap: 12px; }
@@ -623,10 +667,10 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
           {videos.length > 0 && (
             <div className="lb-videos-wrap lb-reveal">
               <div className="lb-head" style={{ marginBottom: 26 }}>
-                <div><p className="lb-eyebrow">Hear it from them</p><h3 className="lb-h3">Real voices, on camera.</h3></div>
-                <p className="lb-muted" style={{ fontSize: 15, maxWidth: "36ch" }}>Students of Liberate, in their own voice. Tap to play — sound on.</p>
+                <div><p className="lb-eyebrow">Hear it from them</p><h3 className="lb-h3">{videos.length} students, in their own voice.</h3></div>
+                <p className="lb-muted" style={{ fontSize: 15, maxWidth: "36ch" }}>Unscripted, on camera, from four intakes. Tap any one to play — sound on. Swipe for more →</p>
               </div>
-              <div className="lb-videos">{videos.map((v, i) => <LbVideo key={i} url={v.url} poster={v.poster} n={i + 1} />)}</div>
+              <div className="lb-videos">{videos.map((v, i) => <LbVideo key={v.url + i} video={v} n={i + 1} />)}</div>
             </div>
           )}
 
