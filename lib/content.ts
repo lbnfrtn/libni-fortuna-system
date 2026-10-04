@@ -329,6 +329,10 @@ export const DEFAULT_LIBERATE_WORDS: Story[] = [
   { id: "sam", name: "Sam Libunao", role: "@samlibunao · Liberate 3", quote: "One year of doing inner work and in this journey. That’s some great post-traumatic growth. On my way to the Sam v3.0 soon." },
   { id: "lea", name: "Lea Angela", role: "@its.leaangela · Liberate 2", quote: "The magic never gets old. Second day palang ng Liberate and it’s intense. Thank you for sharing your space." },
   { id: "risha", name: "Risha Marcellana", role: "@rishamarcellana · Liberate 2", quote: "To be held in this space. Love you, Liberate fam." },
+  { id: "tonet", name: "Tonet", role: "Liberate 3 · on camera", quote: "It was deeply rooted in fear — fear of being heard, of being seen, of being judged. Liberate liberated me from the fear." },
+  { id: "bam", name: "Bam", role: "Liberate 3 · on camera", quote: "A few months ago I had forgotten a lot of the good things about me. Through the coaching and the peer group, it helped me bring up the real in me." },
+  { id: "mitch", name: "Mitch", role: "Liberate 4 · on camera", quote: "I 100% understand why you felt you had to bend over backwards for other people’s approval. There’s no more need for that." },
+  { id: "dayone", name: "A student", role: "Liberate 4 · after day one", quote: "I shared with my partner about Liberate and the learnings I had — things I never shared with him before. He told me, ‘grabe ha, day 1 palang yan.’" },
 ];
 
 export const EMPTY_CONTENT: SiteContent = {

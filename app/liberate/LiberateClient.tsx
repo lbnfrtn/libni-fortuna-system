@@ -61,19 +61,20 @@ const FACES: Record<string, string> = {
   tiff: "/photos/liberate/face-tiff.jpg", erika: "/photos/liberate/face-erika.jpg", danessa: "/photos/liberate/face-danessa.jpg",
   jill: "/photos/liberate/face-jill.jpg", mims: "/photos/liberate/face-mims.jpg", zy: "/photos/liberate/face-zy.jpg",
   nick: "/photos/liberate/face-nick.jpg", sam: "/photos/liberate/face-sam.jpg", lea: "/photos/liberate/face-lea.jpg", risha: "/photos/liberate/face-risha.jpg",
+  tonet: "/photos/liberate/face-tonet.jpg", bam: "/photos/liberate/face-bam.jpg", mitch: "/photos/liberate/face-mitch.jpg",
 };
 const FEATURE_PHOTO: Record<string, string> = { tiff: "/photos/liberate/feature-tiff.jpg" };
 
-// Stock photos (Unsplash, free licence) stand in until Libni uploads her own to each “inside” slot.
+// Real photos from her retreats and sessions stand in until she uploads her own to each “inside” slot.
 const INSIDE_STOCK: Record<string, string> = {
-  inside_1: "https://images.unsplash.com/photo-1612832164313-ac0d7e07b5ce?auto=format&fit=crop&w=1200&q=75",
-  inside_2: "https://images.unsplash.com/photo-1518708909080-704599b19972?auto=format&fit=crop&w=1200&q=75",
-  inside_3: "https://images.unsplash.com/photo-1561190401-ff2c4b95cd29?auto=format&fit=crop&w=1200&q=75",
-  inside_4: "https://images.unsplash.com/photo-1585059896947-f99dd6c80101?auto=format&fit=crop&w=1200&q=75",
-  inside_5: "https://images.unsplash.com/photo-1660324197196-69580168711e?auto=format&fit=crop&w=1200&q=75",
-  inside_6: "https://images.unsplash.com/photo-1622352496174-9e1d969b1945?auto=format&fit=crop&w=1200&q=75",
-  inside_7: "https://images.unsplash.com/photo-1758876201548-ade1eff8b169?auto=format&fit=crop&w=1200&q=75",
-  inside_8: "https://images.unsplash.com/photo-1758599670008-f18f47042e46?auto=format&fit=crop&w=1200&q=75",
+  inside_1: "/photos/liberate/session-2.jpg",
+  inside_2: "/photos/liberate/inside-2.jpg",
+  inside_3: "/photos/liberate/inside-3.jpg",
+  inside_4: "/photos/liberate/inside-4.jpg",
+  inside_5: "/photos/liberate/inside-5.jpg",
+  inside_6: "/photos/liberate/inside-6.jpg",
+  inside_7: "/photos/liberate/inside-7.jpg",
+  inside_8: "/photos/liberate/inside-8.jpg",
 };
 const SHOT_SLOTS = ["shots_1", "shots_2", "shots_3", "shots_4", "shots_5", "shots_6", "shots_7", "shots_8"];
 
@@ -88,12 +89,12 @@ const SESSION_FALLBACK = ["/photos/liberate/session-1.jpg", "/photos/liberate/se
 
 // The in-person celebration & retreat gallery (real photos from the highlight).
 const RETREAT_TILES: [string, string, string][] = [
-  ["retreat_1", "The celebration", "/photos/liberate/retreat-1.jpg"],
-  ["retreat_2", "The toast", "/photos/liberate/retreat-2.jpg"],
-  ["retreat_3", "Still together", "/photos/liberate/retreat-3.jpg"],
-  ["retreat_4", "From Zoom to real life", "/photos/liberate/retreat-4.jpg"],
-  ["retreat_5", "The retreat", "/photos/liberate/retreat-5.jpg"],
-  ["retreat_6", "Goodbyes, for now", "/photos/liberate/retreat-6.jpg"],
+  ["retreat_1", "Floating — a sound bath on the water", "/photos/liberate/retreat-1.jpg"],
+  ["retreat_2", "The candlelit room", "/photos/liberate/retreat-2.jpg"],
+  ["retreat_3", "Morning movement, mountains behind", "/photos/liberate/retreat-3.jpg"],
+  ["retreat_4", "Golden hour, all of us", "/photos/liberate/retreat-4.jpg"],
+  ["retreat_5", "Held", "/photos/liberate/retreat-5.jpg"],
+  ["retreat_6", "The ice bath", "/photos/liberate/retreat-6.jpg"],
 ];
 const RETREAT_HERO_FALLBACK = "/photos/liberate/retreat-hero.jpg";
 // Real stories her students posted (reshared in her LIBer highlight) stand in until she uploads her own.
@@ -109,10 +110,14 @@ const WINS: [string, string, string][] = [
   ["A sisterhood for life", "“A sisterhood who gets me and who grows with me — where conversations are expansive and make life more meaningful.”", "Libni"],
 ];
 
-const MOMENT_SLOTS = [
-  ["moments_1", "In session"], ["moments_2", "The circle"], ["moments_3", "The work"],
-  ["moments_4", "Together"], ["moments_5", "The retreat"], ["moments_6", "After"],
-] as const;
+const MOMENT_SLOTS: [string, string, string][] = [
+  ["moments_1", "Wherever you are — one of us joined the celebration from the screen", "/photos/liberate/moments-1.jpg"],
+  ["moments_2", "The last night", "/photos/liberate/moments-2.jpg"],
+  ["moments_3", "Dinner, with the whole circle at the table", "/photos/liberate/moments-3.jpg"],
+  ["moments_4", "Mid-story", "/photos/liberate/moments-4.jpg"],
+  ["moments_5", "Sound bath, by candlelight", "/photos/liberate/moments-5.jpg"],
+  ["moments_6", "Cake, obviously", "/photos/liberate/moments-6.jpg"],
+];
 
 function Face({ src, name, size = 56 }: { src?: string; name: string; size?: number }) {
   if (src) return <img className="lb-face" src={src} alt="" width={size} height={size} style={{ width: size, height: size }} loading="lazy" />;
@@ -140,7 +145,10 @@ function LbVideo({ video, n }: { video: Video; n: number }) {
         </button>
       )}
       {(video.name || video.dur) && (
-        <figcaption><strong>{video.name ?? "A Liberate student"}</strong>{video.role && <span>{video.role}</span>}{video.dur ? <em>{mmss(video.dur)}</em> : null}</figcaption>
+        <figcaption>
+          {video.quote && !wide && <q>{video.quote}</q>}
+          <strong>{video.name ?? "A Liberate student"}</strong>{video.role && <span>{video.role}</span>}{video.dur ? <em>{mmss(video.dur)}</em> : null}
+        </figcaption>
       )}
     </figure>
   );
@@ -153,7 +161,8 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
   const WORDS_SHOWN: Word[] = (incoming && incoming.length ? incoming : WORDS).map((w) => ({ ...w, photo: w.photo || (w.id ? FACES[w.id] : undefined) }));
   const first = WORDS_SHOWN[0];
   const featurePhoto = photos.libw_feature || (first.id && FEATURE_PHOTO[first.id]) || first.photo;
-  const momentPhotos = MOMENT_SLOTS.filter(([id]) => photos[id]);
+  const uploadedMoments = MOMENT_SLOTS.filter(([id]) => photos[id]);
+  const momentPhotos: [string, string][] = uploadedMoments.length ? uploadedMoments.map(([id, label]) => [label, photos[id]]) : MOMENT_SLOTS.map(([, label, src]) => [label, src]);
   const uploadedShots = SHOT_SLOTS.map((id) => photos[id]).filter(Boolean);
   const shots = uploadedShots.length ? uploadedShots : SHOT_FALLBACK;
   const instalment = offer.allowInstalments && offer.instalmentCount ? Math.floor((offer.pricePHP ?? 0) / offer.instalmentCount) : 0;
@@ -268,8 +277,17 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-statement h2 { font-size: clamp(42px, 6.4vw, 92px); line-height: 1; }
         .lb-statement .lb-intro { max-width: 62ch; margin: 0 auto; display: grid; gap: 1.1em; color: rgba(251,249,246,.86); }
         .lb-logo { width: min(100%, 380px); margin: 0 auto; opacity: .95; }
-        .lb-zoom { margin-top: clamp(48px, 6vw, 80px); border: 1px solid var(--lb-line-light); padding: 10px; }
-        .lb-zoom img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+        .lb-devices { position: relative; margin: clamp(56px, 7vw, 96px) auto 0; max-width: 880px; padding-right: 14%; padding-bottom: 40px; }
+        .lb-laptop { position: relative; }
+        .lb-laptop .lb-screen { border: 10px solid #15111a; border-bottom-width: 14px; border-radius: 14px 14px 4px 4px; background: #000; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
+        .lb-laptop .lb-screen img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+        .lb-laptop-base { height: 14px; margin: 0 -4%; border-radius: 0 0 14px 14px; background: linear-gradient(180deg, #3a3340, #1c1720); }
+        .lb-laptop-base::after { content: ""; position: absolute; left: 50%; transform: translateX(-50%); bottom: 6px; width: 18%; height: 4px; border-radius: 0 0 6px 6px; background: #0e0b12; }
+        .lb-tablet { position: absolute; right: 0; bottom: 0; width: 34%; }
+        .lb-tablet .lb-screen { border: 8px solid #15111a; border-radius: 16px; background: #000; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.5); }
+        .lb-tablet .lb-screen img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+        .lb-devices-note { position: absolute; left: 0; bottom: 0; font-family: var(--serif); font-style: italic; font-size: 17px; color: rgba(251,249,246,.7); }
+        .lb-video figcaption q { quotes: "“" "”"; display: block; width: 100%; font-family: var(--serif); font-style: italic; font-size: 17px; line-height: 1.3; letter-spacing: 0; text-transform: none; margin-bottom: 8px; }
 
         /* 05 inside */
         .lb-head { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end; margin-bottom: clamp(48px, 6vw, 84px); }
@@ -456,6 +474,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb { padding-bottom: 0; }
           .lb-road { gap: 48px; }
           .lb-sessions { grid-template-columns: 1fr; }
+          .lb-devices { padding-right: 0; padding-bottom: 0; }
+          .lb-tablet { display: none; }
+          .lb-devices-note { position: static; margin-top: 14px; text-align: center; }
           .lb-story-img { position: static; }
           .lb-mosaic { grid-template-columns: 1fr 1fr; }
           .lb-mosaic figure, .lb-mosaic figure:first-child { grid-column: span 2; grid-row: auto; }
@@ -526,9 +547,11 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
               <p>This is where deep healing meets grounded embodiment. You won’t just talk about change. You’ll feel it in your body, your energy, your boundaries, and your life.</p>
             </div>
           </div>
-          {photos.zoom_screenshot && (
-            <div className="lb-zoom lb-reveal"><img src={photos.zoom_screenshot} alt="A Liberate group session" /></div>
-          )}
+          <div className="lb-devices lb-reveal">
+            <div className="lb-laptop"><div className="lb-screen"><img src={photos.zoom_screenshot || "/photos/liberate/session-2.jpg"} alt="A Liberate session on Zoom" loading="lazy" /></div><div className="lb-laptop-base" /></div>
+            <div className="lb-tablet"><div className="lb-screen"><img src="/photos/liberate/session-1.jpg" alt="" loading="lazy" /></div></div>
+            <p className="lb-devices-note">Twice a week, from wherever you are. This is the room.</p>
+          </div>
         </div>
       </section>
 
@@ -551,8 +574,8 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           {momentPhotos.length > 0 && (
             <div className="lb-mosaic lb-reveal" style={{ marginTop: "clamp(48px, 6vw, 84px)" }}>
               <p className="lb-eyebrow" style={{ gridColumn: "1 / -1", marginBottom: 6 }}>Moments from Liberate</p>
-              {momentPhotos.map(([id, label]) => (
-                <figure key={id}><img src={photos[id]} alt={label} /><figcaption>{label}</figcaption></figure>
+              {momentPhotos.map(([label, src], i) => (
+                <figure key={i}><img src={src} alt={label} loading="lazy" /><figcaption>{label}</figcaption></figure>
               ))}
             </div>
           )}
@@ -613,7 +636,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
               <p className="lb-lede" style={{ color: "var(--lb-ivory)" }}>It needs to be lived.</p>
             </div>
           </div>
-          <div className="lb-retreat-hero lb-reveal"><img src={retreatHero} alt="The Liberate retreat" /><figcaption>Out of the Zoom calls, into the present moment</figcaption></div>
+          <div className="lb-retreat-hero lb-reveal"><img src={retreatHero} alt="The Liberate retreat" /><figcaption>Out of the Zoom calls, into the mountains</figcaption></div>
           <div className="lb-mosaic lb-reveal">
             {retreatTiles.map(([label, src], i) => (
               <figure key={i}><img src={src} alt={label} loading="lazy" /><figcaption>{label}</figcaption></figure>

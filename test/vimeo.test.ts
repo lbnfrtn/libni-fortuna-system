@@ -11,7 +11,8 @@ describe("Liberate videos", () => {
   it("a Studio-pasted link to a known video keeps Libni's name, intake and poster (no network)", async () => {
     const [v] = await enrichVideos(["https://player.vimeo.com/video/1232675915"]);
     expect(v.name).toBe("Kimi");
-    expect(v.role).toBe("Liberate 4");
+    expect(v.role).toContain("Liberate 4");
+    expect(v.quote).toBeTruthy();
     expect(v.poster).toContain("vid-1232675915");
     expect(DEFAULT_LIBERATE_VIDEOS).toHaveLength(10);
   });
