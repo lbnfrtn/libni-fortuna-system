@@ -97,7 +97,8 @@ const SESSION_FALLBACK = ["/photos/liberate/session-1.jpg", "/photos/liberate/se
 
 // The in-person celebration & retreat gallery (real photos from the highlight).
 // Tuesday circle dates for the November 2026 cohort. Thursdays follow two days later.
-const WEEK_DATES = ["Nov 3", "Nov 10", "Nov 17", "Nov 24", "Dec 1", "Dec 8", "Dec 15", "Dec 22", "Dec 29", "Jan 5", "Jan 12", "Jan 19"];
+// We rest on Dec 22 and 29 and continue January 5.
+const WEEK_DATES = ["Nov 3", "Nov 10", "Nov 17", "Nov 24", "Dec 1", "Dec 8", "Dec 15", "Jan 5", "Jan 12", "Jan 19", "Jan 26", "Feb 2"];
 
 const RETREAT_TILES: [string, string, string][] = [
   ["retreat_1", "Floating — a sound bath on the water", "/photos/liberate/retreat-1.jpg"],
@@ -339,6 +340,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-week small { font-family: var(--sans); font-size: 11px; letter-spacing: .26em; color: var(--lb-gold); font-weight: 600; }
         .lb-week h4 { font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 1.1; margin: 4px 0 4px; }
         .lb-week p { font-size: 15px; color: var(--lb-muted); }
+        .lb-pause { margin-top: 18px; padding: 12px 14px; border-left: 1px solid var(--lb-gold); background: rgba(184,149,90,.08); }
+        .lb-pause small { color: var(--lb-muted); }
+        .lb-pause p { margin-top: 2px; font-size: 13.5px; }
         .lb-finale { margin-top: clamp(24px, 4vw, 48px); padding-top: clamp(40px, 5vw, 64px); border-top: 1px solid var(--lb-gold); display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end; }
         .lb-finale small { font-family: var(--sans); font-size: 11px; letter-spacing: .3em; color: var(--lb-gold); font-weight: 600; }
         .lb-finale h3 { font-size: clamp(64px, 9vw, 140px); line-height: .95; font-style: italic; color: var(--lb-plum); margin-top: 8px; }
@@ -638,14 +642,16 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
               <div className="lb-col" key={m.theme}>
                 <div className="lb-col-head"><p className="lb-eyebrow">{m.month}</p><h3>{m.theme}</h3></div>
                 {m.weeks.map(([n, t, d]) => (
-                  <div className="lb-week" key={n}><small>Week {n} · {WEEK_DATES[Number(n) - 1]}</small><h4>{t}</h4><p>{d}</p></div>
+                  <div className="lb-week" key={n}><small>Week {n} · {WEEK_DATES[Number(n) - 1]}</small><h4>{t}</h4><p>{d}</p>
+                    {n === "07" && <div className="lb-pause"><small>Dec 22 &amp; 29 · we rest</small><p>Christmas and New Year with our families. We continue January 5.</p></div>}
+                  </div>
                 ))}
               </div>
             ))}
           </div>
           <div className="lb-finale lb-reveal">
-            <div><small>Week 12 · Jan 19 · The arrival</small><h3>Liberation.</h3></div>
-            <div className="lb-copy"><p>Step into greater freedom and choice. Not a new you. The one who was here all along.</p><p><strong style={{ color: "var(--lb-plum)" }}>Then, the final week: the in-person retreat.</strong> January 2027, most likely Batangas — dates announced inside the circle. Travel and your own logistics are yours to arrange.</p></div>
+            <div><small>Week 12 · Feb 2 · The arrival</small><h3>Liberation.</h3></div>
+            <div className="lb-copy"><p>Step into greater freedom and choice. Not a new you. The one who was here all along.</p><p><strong style={{ color: "var(--lb-plum)" }}>Then, the final week: the in-person retreat.</strong> Most likely Batangas — dates announced inside the circle. Your stay and meals are covered; you arrange your own transport.</p></div>
           </div>
         </div>
       </section>
@@ -680,7 +686,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             <p className="lb-eyebrow">The retreat</p>
             <h2 className="lb-display"><span>It doesn’t end on Zoom.</span><span className="lb-gold">It ends with a celebration.</span></h2>
             <div className="lb-copy" style={{ color: "rgba(251,249,246,.82)" }}>
-              <p>The journey culminates in an in-person retreat where we slow down, connect, integrate, celebrate, and embody everything you’ve experienced. January 2027, most likely Batangas — dates to be announced. Travel is your own.</p>
+              <p>The journey culminates in an in-person retreat where we slow down, connect, integrate, celebrate, and embody everything you’ve experienced. Most likely Batangas, dates to be announced. Your stay and meals are covered; you arrange your own transport.</p>
               <p>Because sometimes transformation needs more than another Zoom call.</p>
               <p className="lb-lede" style={{ color: "var(--lb-ivory)" }}>It needs to be lived.</p>
             </div>
