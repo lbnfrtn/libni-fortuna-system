@@ -9,7 +9,9 @@ export const dynamic = "force-dynamic";
 export default async function LiberatePage() {
   const { photos, videos: videoSlots, stories, liberateWords } = await getContent();
   const videoUrls = Array.from({ length: 10 }, (_, i) => videoSlots[`lib_video_${i + 1}`] ?? "").filter((u) => resolveVideo(u));
-  const videos = videoUrls.length ? await enrichVideos(videoUrls) : [];
+  // Raw file uploads carry no name or poster; the curated Vimeo set wins until the Studio holds real links.
+  const enriched = videoUrls.length ? await enrichVideos(videoUrls) : [];
+  const videos = enriched.some((v) => v.poster || v.name) ? enriched : [];
   // Liberate's own testimonials first; then stories tagged Liberate; otherwise the featured ones from across the work.
   const tagged = stories.filter((s) => /liberate/i.test(s.program ?? ""));
   const words = liberateWords.length
