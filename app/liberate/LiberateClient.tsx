@@ -277,16 +277,11 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-statement h2 { font-size: clamp(42px, 6.4vw, 92px); line-height: 1; }
         .lb-statement .lb-intro { max-width: 62ch; margin: 0 auto; display: grid; gap: 1.1em; color: rgba(251,249,246,.86); }
         .lb-logo { width: min(100%, 380px); margin: 0 auto; opacity: .95; }
-        .lb-devices { position: relative; margin: clamp(56px, 7vw, 96px) auto 0; max-width: 880px; padding-right: 14%; padding-bottom: 40px; }
-        .lb-laptop { position: relative; }
-        .lb-laptop .lb-screen { border: 10px solid #15111a; border-bottom-width: 14px; border-radius: 14px 14px 4px 4px; background: #000; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.45); }
-        .lb-laptop .lb-screen img { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
-        .lb-laptop-base { height: 14px; margin: 0 -4%; border-radius: 0 0 14px 14px; background: linear-gradient(180deg, #3a3340, #1c1720); }
-        .lb-laptop-base::after { content: ""; position: absolute; left: 50%; transform: translateX(-50%); bottom: 6px; width: 18%; height: 4px; border-radius: 0 0 6px 6px; background: #0e0b12; }
-        .lb-tablet { position: absolute; right: 0; bottom: 0; width: 34%; }
-        .lb-tablet .lb-screen { border: 8px solid #15111a; border-radius: 16px; background: #000; overflow: hidden; box-shadow: 0 24px 60px rgba(0,0,0,.5); }
-        .lb-tablet .lb-screen img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
-        .lb-devices-note { position: absolute; left: 0; bottom: 0; font-family: var(--serif); font-style: italic; font-size: 17px; color: rgba(251,249,246,.7); }
+        .lb-devices { margin: clamp(48px, 6vw, 88px) auto 0; max-width: 980px; text-align: center; }
+        .lb-mockup { width: 100%; display: block; filter: drop-shadow(0 40px 60px rgba(0,0,0,.45)); animation: lbFloat 7s ease-in-out infinite; }
+        @keyframes lbFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        @media (prefers-reduced-motion: reduce) { .lb-mockup { animation: none; } }
+        .lb-devices-note { margin-top: 22px; font-family: var(--serif); font-style: italic; font-size: clamp(17px, 1.6vw, 21px); color: rgba(251,249,246,.75); }
         .lb-video figcaption q { quotes: "“" "”"; display: block; width: 100%; font-family: var(--serif); font-style: italic; font-size: 17px; line-height: 1.3; letter-spacing: 0; text-transform: none; margin-bottom: 8px; }
 
         /* 05 inside */
@@ -474,9 +469,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb { padding-bottom: 0; }
           .lb-road { gap: 48px; }
           .lb-sessions { grid-template-columns: 1fr; }
-          .lb-devices { padding-right: 0; padding-bottom: 0; }
-          .lb-tablet { display: none; }
-          .lb-devices-note { position: static; margin-top: 14px; text-align: center; }
+          .lb-devices-note { margin-top: 14px; }
           .lb-story-img { position: static; }
           .lb-mosaic { grid-template-columns: 1fr 1fr; }
           .lb-mosaic figure, .lb-mosaic figure:first-child { grid-column: span 2; grid-row: auto; }
@@ -548,8 +541,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             </div>
           </div>
           <div className="lb-devices lb-reveal">
-            <div className="lb-laptop"><div className="lb-screen"><img src={photos.zoom_screenshot || "/photos/liberate/session-2.jpg"} alt="A Liberate session on Zoom" loading="lazy" /></div><div className="lb-laptop-base" /></div>
-            <div className="lb-tablet"><div className="lb-screen"><img src="/photos/liberate/session-1.jpg" alt="" loading="lazy" /></div></div>
+            <img className="lb-mockup" src={photos.zoom_screenshot || "/photos/liberate/zoom-mockup.png"} alt="A Liberate session on Zoom — the weekly circle on a laptop and a tablet" />
             <p className="lb-devices-note">Twice a week, from wherever you are. This is the room.</p>
           </div>
         </div>
