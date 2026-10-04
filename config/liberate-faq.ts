@@ -1,0 +1,16 @@
+// Questions people ask before joining Liberate. Only facts Libni has confirmed live here —
+// anything she hasn't decided is written as "to be announced", never guessed.
+export const LIBERATE_FAQ: { q: string; a: string }[] = [
+  { q: "When does Liberate start, and when do we meet?", a: "The next circle begins Tuesday, November 3, 2026. We meet twice a week at 7 pm (Manila time): Tuesdays and Thursdays, for twelve weeks, with the in-person retreat in the final week in January." },
+  { q: "What’s the difference between Tuesday and Thursday?", a: "Tuesday is the coaching circle with Libni — a check-in to be heard, then the week’s deeper work. Thursday is a bonus workshop night: previous Liberate students join the circle, so you’re learning alongside women who have walked this road before you." },
+  { q: "What if I can’t make a night?", a: "Every session is recorded. The replay lands in your portal, together with that week’s practices, so you can catch up in your own time." },
+  { q: "Is it online or in person?", a: "The twelve weeks are on Zoom, from wherever you are. The final week is an in-person retreat." },
+  { q: "Tell me about the retreat.", a: "It closes the journey: time to slow down, integrate and celebrate together, in person. It’s set for January 2027, most likely in Batangas — exact dates will be announced inside the circle. The retreat itself is part of Liberate; travel and your own logistics are yours to arrange." },
+  { q: "How much is it, and can I pay in parts?", a: "₱70,000 in full, or three monthly payments of about ₱23,333 — the first when you join, then monthly. GCash, Maya, cards and bank transfer all work. If you need a different arrangement, choose “Talk to me first” and we’ll find one together." },
+  { q: "Do I have to apply, or get on a call first?", a: "No. If it’s a yes, you can join and pay straight away and your place is held the moment it clears. If you’d like to talk it through first, send the short application and book a call with Libni — as long as the investment is within reach for you." },
+  { q: "Is there a refund if I change my mind?", a: "Liberate does not offer refunds. This space is built on alignment, not urgency — if you’re unsure, take your time, ask your questions, and say yes only when it’s a full yes." },
+  { q: "Who is this for?", a: "Women who have done the mindset work and still feel the old patterns pulling — the people-pleasing, the overthinking, the quiet exhaustion of holding it all together — and are ready to go beneath the surface, in a small circle, with support." },
+  { q: "Do I need experience with breathwork, meditation or energy work?", a: "No. Everything is guided, and nothing is performed. You come as you are; the practices meet you where you are." },
+  { q: "Is Liberate therapy?", a: "No. Liberate is group coaching, somatic and energy work — not therapy or medical care. If you are under the care of a doctor or therapist, please keep that care alongside this work." },
+  { q: "What do I get access to?", a: "Twenty-four live nights across twelve weeks, every replay, your own online portal with the roadmap, guided meditations and practices, a private community, and the closing in-person retreat." },
+];

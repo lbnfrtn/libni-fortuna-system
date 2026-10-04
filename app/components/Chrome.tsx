@@ -50,7 +50,7 @@ export function AnnouncementBar() {
     <div className="ed-topbar">
       <Link href="/liberate">
         <b>Now open</b>
-        <span>Liberate — a 3-month group coaching experience. Next intake October 2026.</span>
+        <span>Liberate — a 3-month group coaching experience. Next intake begins November 3, 2026.</span>
         <u className="ed-topbar-cta">Read more</u>
       </Link>
     </div>

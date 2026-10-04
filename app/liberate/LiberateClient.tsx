@@ -5,11 +5,12 @@ import { useEffect, useRef, useState } from "react";
 import { OFFERS } from "@/config/offers";
 import { resolveVideo } from "@/config/site-slots";
 import { DEFAULT_LIBERATE_VIDEOS, type LiberateVideo } from "@/config/liberate-videos";
+import { LIBERATE_FAQ } from "@/config/liberate-faq";
 
 type Photos = Record<string, string>;
 
 const INSIDE = [
-  ["Live sessions, twice a week", "A check-in circle to be heard, then a workshop to go deeper — guided coaching, shadow work and somatic practices on Zoom. Twenty-four sessions across three months, and every one is recorded, so if you miss a night the replay is waiting for you.", "inside_1"],
+  ["Live sessions, twice a week", "Tuesdays at 7 pm: the coaching circle with Libni — a check-in to be heard, then the week’s deeper work. Thursdays at 7 pm: a bonus workshop night, where previous Liberate students join the circle. Twelve weeks, every night recorded, so if you miss one the replay is waiting for you.", "inside_1"],
   ["Subconscious reprogramming", "Release old beliefs and patterns stored deep within, and create new ones rooted in self-trust and truth.", "inside_2"],
   ["Energetic exploration and chakra alignment", "Understand your energy body and return to balance through breathwork and gentle practices.", "inside_3"],
   ["Spiritual tools and intuitive activation", "Deepen your connection with intuition, inner knowing, and your spiritual path.", "inside_4"],
@@ -47,7 +48,7 @@ const WORDS: Word[] = [
 ];
 
 const INCLUDED = [
-  "3-month group experience", "24 live sessions — twice a week", "Replays of every session", "A weekly check-in circle", "A weekly workshop", "Subconscious work", "Shadow work", "Somatic practices", "Breathwork",
+  "3-month group experience", "12 Tuesday coaching circles with Libni", "12 Thursday workshop nights, with the alumni", "Replays of every session", "Subconscious work", "Shadow work", "Somatic practices", "Breathwork",
   "Energetic exploration", "Guided meditations", "Private community", "Your own online portal", "Celebratory overnight retreat, in person",
 ];
 
@@ -95,6 +96,9 @@ const DEFAULT_CLIPS: Clip[] = [
 const SESSION_FALLBACK = ["/photos/liberate/session-1.jpg", "/photos/liberate/session-2.jpg", "/photos/liberate/session-3.jpg", "/photos/liberate/session-4.jpg"];
 
 // The in-person celebration & retreat gallery (real photos from the highlight).
+// Tuesday circle dates for the November 2026 cohort. Thursdays follow two days later.
+const WEEK_DATES = ["Nov 3", "Nov 10", "Nov 17", "Nov 24", "Dec 1", "Dec 8", "Dec 15", "Dec 22", "Dec 29", "Jan 5", "Jan 12", "Jan 19"];
+
 const RETREAT_TILES: [string, string, string][] = [
   ["retreat_1", "Floating — a sound bath on the water", "/photos/liberate/retreat-1.jpg"],
   ["retreat_2", "The candlelit room", "/photos/liberate/retreat-2.jpg"],
@@ -466,6 +470,16 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-list { counter-reset: lb; }
         .lb-list li:last-child { border-bottom: 1px solid var(--lb-line); }
 
+        /* 10b faq */
+        .lb-faq-wrap { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 5vw, 96px); align-items: start; }
+        .lb-faq details { border-top: 1px solid var(--lb-line); }
+        .lb-faq details:last-child { border-bottom: 1px solid var(--lb-line); }
+        .lb-faq summary { cursor: pointer; list-style: none; padding: 22px 44px 22px 0; font-family: var(--serif); font-size: clamp(20px, 1.8vw, 25px); line-height: 1.25; position: relative; }
+        .lb-faq summary::-webkit-details-marker { display: none; }
+        .lb-faq summary::after { content: "+"; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-family: var(--sans); font-size: 22px; color: var(--lb-gold); transition: transform .3s ease; }
+        .lb-faq details[open] summary::after { transform: translateY(-50%) rotate(45deg); }
+        .lb-faq p { padding: 0 44px 24px 0; font-size: 16px; line-height: 1.7; color: var(--lb-muted); max-width: 60ch; }
+
         /* 11 peace */
         .lb-peace { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 5vw, 96px); align-items: start; }
         .lb-peace .lb-copy p:first-child { font-family: var(--serif); font-size: 26px; line-height: 1.3; }
@@ -489,7 +503,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb-split > .lb-figure, .lb-split > .lb-bleed-right { order: -1; }
           .lb-bleed-right { margin-right: 0; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
           .lb-bleed-right img { height: 68svh; }
-          .lb-head, .lb-index, .lb-road, .lb-finale, .lb-feature, .lb-words, .lb-invest, .lb-peace, .lb-wins .lb-wrap, .lb-paths { grid-template-columns: 1fr; }
+          .lb-head, .lb-index, .lb-road, .lb-finale, .lb-feature, .lb-words, .lb-invest, .lb-peace, .lb-wins .lb-wrap, .lb-paths, .lb-faq-wrap { grid-template-columns: 1fr; }
           .lb-wall { grid-template-columns: 1fr; }
           .lb-proof-feature { grid-template-columns: 1fr; }
           .lb-proof-portrait { max-width: 320px; }
@@ -520,8 +534,8 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <p className="lb-eyebrow lb-hero-who"><strong>Libni Fortuna</strong>Life Strategist · Transformational mentor · Experience curator</p>
           <h1 className="lb-hero-title">Liberate</h1>
           <p className="lb-hero-lede">For the soul-led ones ready to let go of the weight and come home to their power.</p>
-          <p className="lb-hero-sub">A 3-month transformational experience for people ready to break free from emotional patterns, people-pleasing, overthinking, and the quiet exhaustion of holding it all together. We meet twice a week — twenty-four live sessions, held together.</p>
-          <p className="lb-hero-meta"><span>We begin</span><strong>October 12, 2026 · 7 pm</strong><span className="lb-hero-meta-sep" /><span>Investment</span><strong>{price}</strong>{perMonth && <small>or {offer.instalmentCount} × {perMonth}</small>}</p>
+          <p className="lb-hero-sub">A 3-month transformational experience for people ready to break free from emotional patterns, people-pleasing, overthinking, and the quiet exhaustion of holding it all together. We meet twice a week — twelve Tuesday circles with Libni, and twelve Thursday workshop nights with the Liberate alumni.</p>
+          <p className="lb-hero-meta"><span>We begin</span><strong>November 3, 2026 · 7 pm</strong><span className="lb-hero-meta-sep" /><span>Investment</span><strong>{price}</strong>{perMonth && <small>or {offer.instalmentCount} × {perMonth}</small>}</p>
           <div className="lb-ctas">
             <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">I’m ready to Liberate</a>
             <a href="#lb-for-me" className="lb-btn lb-btn-light">Is this for me?</a>
@@ -617,21 +631,21 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         <div className="lb-wrap">
           <div className="lb-head lb-reveal">
             <div><p className="lb-eyebrow">The roadmap</p><h2 className="lb-display" style={{ marginTop: 14 }}>Your 12-week journey.</h2></div>
-            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Twice a week: a check-in circle, then a workshop. Each week goes a little deeper than the last. You start by seeing the pattern. You end by living without it.</p>
+            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Tuesdays, the circle. Thursdays, the workshop — with the Liberate alumni in the room. Each week goes a little deeper than the last. You start by seeing the pattern. You end by living without it.</p>
           </div>
           <div className="lb-road lb-reveal">
             {ROADMAP.map((m) => (
               <div className="lb-col" key={m.theme}>
                 <div className="lb-col-head"><p className="lb-eyebrow">{m.month}</p><h3>{m.theme}</h3></div>
                 {m.weeks.map(([n, t, d]) => (
-                  <div className="lb-week" key={n}><small>Week {n}</small><h4>{t}</h4><p>{d}</p></div>
+                  <div className="lb-week" key={n}><small>Week {n} · {WEEK_DATES[Number(n) - 1]}</small><h4>{t}</h4><p>{d}</p></div>
                 ))}
               </div>
             ))}
           </div>
           <div className="lb-finale lb-reveal">
-            <div><small>Week 12 · The arrival</small><h3>Liberation.</h3></div>
-            <p>Step into greater freedom and choice. Not a new you. The one who was here all along.</p>
+            <div><small>Week 12 · Jan 19 · The arrival</small><h3>Liberation.</h3></div>
+            <div className="lb-copy"><p>Step into greater freedom and choice. Not a new you. The one who was here all along.</p><p><strong style={{ color: "var(--lb-plum)" }}>Then, the final week: the in-person retreat.</strong> January 2027, most likely Batangas — dates announced inside the circle. Travel and your own logistics are yours to arrange.</p></div>
           </div>
         </div>
       </section>
@@ -666,7 +680,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             <p className="lb-eyebrow">The retreat</p>
             <h2 className="lb-display"><span>It doesn’t end on Zoom.</span><span className="lb-gold">It ends with a celebration.</span></h2>
             <div className="lb-copy" style={{ color: "rgba(251,249,246,.82)" }}>
-              <p>The journey culminates in an in-person overnight retreat where we slow down, connect, integrate, celebrate, and embody everything you’ve experienced.</p>
+              <p>The journey culminates in an in-person retreat where we slow down, connect, integrate, celebrate, and embody everything you’ve experienced. January 2027, most likely Batangas — dates to be announced. Travel is your own.</p>
               <p>Because sometimes transformation needs more than another Zoom call.</p>
               <p className="lb-lede" style={{ color: "var(--lb-ivory)" }}>It needs to be lived.</p>
             </div>
@@ -756,7 +770,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         <div className="lb-wrap lb-cta-in lb-reveal">
           <div>
             <p className="lb-eyebrow" style={{ color: "var(--lb-gold-soft)" }}>The next circle</p>
-            <h2>Begins October 12, 2026.</h2>
+            <h2>Begins November 3, 2026.</h2>
             <p>{price} in full, or {offer.instalmentCount} × {perMonth}. Pay and your place is held — or talk to me first.</p>
           </div>
           <div className="lb-ctas">
@@ -818,6 +832,22 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         </div>
       </section>
 
+      {/* 10b — FAQ */}
+      <section className="lb-sec lb-ivory" id="faq">
+        <div className="lb-wrap lb-faq-wrap">
+          <div className="lb-reveal">
+            <p className="lb-eyebrow">Before you decide</p>
+            <h2 className="lb-display" style={{ marginTop: 14 }}>Questions, answered.</h2>
+            <p className="lb-muted" style={{ marginTop: 18, maxWidth: "34ch", fontSize: 16 }}>If yours isn’t here, choose “Talk to me first” — I’d rather you decide clearly than quickly.</p>
+          </div>
+          <div className="lb-faq lb-reveal" style={{ transitionDelay: ".12s" }}>
+            {LIBERATE_FAQ.map((f) => (
+              <details key={f.q}><summary>{f.q}</summary><p>{f.a}</p></details>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 11 — PEACE OF MIND */}
       <section className="lb-sec lb-linen">
         <div className="lb-wrap lb-peace">
@@ -848,11 +878,11 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <div className="lb-copy lb-reveal" style={{ transitionDelay: ".15s" }}>
             <p>Break free from the emotional weight you’ve been carrying. From the people-pleasing, the patterns, the quiet exhaustion that’s become your normal.</p>
             <p>Liberate is your space to unravel, rebuild, and rise. This is your next chapter, and it doesn’t have to be written in pain.</p>
-            <p style={{ color: "var(--lb-ivory)" }}>We begin October 12, 2026, at 7 pm. Spots are limited and held with intention.</p>
+            <p style={{ color: "var(--lb-ivory)" }}>We begin November 3, 2026, at 7 pm. Spots are limited and held with intention.</p>
           </div>
           <div className="lb-final-meta lb-reveal" style={{ transitionDelay: ".25s" }}>
-            <div>Liberate<b>3 months · 24 live sessions</b></div>
-            <div>We begin<b>October 12, 2026</b></div>
+            <div>Liberate<b>12 weeks · Tuesdays &amp; Thursdays, 7 pm</b></div>
+            <div>We begin<b>November 3, 2026</b></div>
             <div>Investment<b>{price}</b></div>
           </div>
           <div className="lb-ctas lb-reveal" style={{ transitionDelay: ".35s" }}>
@@ -864,7 +894,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
 
       <div className={`lb-sticky${stuck ? " is-on" : ""}`} aria-hidden={!stuck}>
         <div className="lb-wrap lb-sticky-in">
-          <p><strong>Liberate</strong><span>Begins October 12, 2026 · {price}{perMonth ? ` or ${offer.instalmentCount} × ${perMonth}` : ""}</span></p>
+          <p><strong>Liberate</strong><span>Begins November 3, 2026 · {price}{perMonth ? ` or ${offer.instalmentCount} × ${perMonth}` : ""}</span></p>
           <div className="lb-ctas">
             <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">Join</a>
             <Link href="/liberate/apply" className="lb-btn lb-btn-light">Talk first</Link>

@@ -308,7 +308,7 @@ const ROADMAP: [string, string][] = [
 ];
 
 export const DEFAULT_LIBERATE: LiberateHQ = {
-  cohortLabel: "October 2026 cohort",
+  cohortLabel: "November 2026 cohort",
   accessCode: "",
   welcome: "Welcome home. Everything for our twelve weeks together lives here — the roadmap, each week’s session, the replays, and the practices in between. Take what you need, when you need it.",
   weeks: ROADMAP.map(([title, theme], i) => ({ n: i + 1, title, theme, resources: [] })),

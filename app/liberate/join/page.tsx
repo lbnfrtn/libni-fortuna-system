@@ -8,7 +8,7 @@ export default function LiberateJoinPage() {
   const open = offer.pricePHP != null && !offer.waitlistOnly;
   return (
     <div className="wrap">
-      <p className="kicker">Liberate · begins October 12, 2026</p>
+      <p className="kicker">Liberate · begins November 3, 2026 · Tuesdays &amp; Thursdays, 7 pm</p>
       <h1>Join Liberate</h1>
       <p className="muted" style={{ fontSize: 17 }}>Choose how you’d like to pay, leave your details, and your place is held the moment your payment clears.</p>
       <div style={{ marginTop: 16 }}>
