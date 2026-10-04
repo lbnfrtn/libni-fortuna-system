@@ -3,15 +3,19 @@ import LiberateClient from "./LiberateClient";
 import { getContent } from "@/lib/content";
 import { resolveVideo } from "@/config/site-slots";
 import { enrichVideos } from "@/lib/vimeo";
+import { DEFAULT_LIBERATE_VIDEOS, vimeoId } from "@/config/liberate-videos";
 
 export const dynamic = "force-dynamic";
 
 export default async function LiberatePage() {
   const { photos, videos: videoSlots, stories, liberateWords } = await getContent();
   const videoUrls = Array.from({ length: 10 }, (_, i) => videoSlots[`lib_video_${i + 1}`] ?? "").filter((u) => resolveVideo(u));
-  // Raw file uploads carry no name or poster; the curated Vimeo set wins until the Studio holds real links.
+  // The curated ten always show. Studio links that resolve to a real video are added after them
+  // (same Vimeo id = already in the set); raw uploads without a poster or name are skipped.
   const enriched = videoUrls.length ? await enrichVideos(videoUrls) : [];
-  const videos = enriched.some((v) => v.poster || v.name) ? enriched : [];
+  const known = new Set(DEFAULT_LIBERATE_VIDEOS.map((v) => vimeoId(v.url)));
+  const extras = enriched.filter((v) => (v.poster || v.name) && !known.has(vimeoId(v.url)));
+  const videos = [...DEFAULT_LIBERATE_VIDEOS, ...extras];
   // Liberate's own testimonials first; then stories tagged Liberate; otherwise the featured ones from across the work.
   const tagged = stories.filter((s) => /liberate/i.test(s.program ?? ""));
   const words = liberateWords.length
