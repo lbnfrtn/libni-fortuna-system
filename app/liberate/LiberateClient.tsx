@@ -142,6 +142,47 @@ const THEME_OF: Record<string, Theme> = {
   tiff: "Confidence", jill: "Confidence", sam: "Confidence", kimi: "Confidence", lea: "Confidence",
 };
 
+type Pattern = "pleasing" | "overthinking" | "overwhelm" | "doubt";
+// Five quick taps. Every line is drawn from the page's own language — it's a mirror, not a diagnosis.
+const QUIZ: { q: string; a: [Pattern, string][] }[] = [
+  { q: "Someone asks for something you don’t have the capacity for. You…", a: [
+    ["pleasing", "Say yes — and feel the resentment later."],
+    ["overthinking", "Think it over for days before you answer."],
+    ["overwhelm", "Feel it in your chest before you’ve said a word."],
+    ["doubt", "Wonder if you’re even allowed to say no."],
+  ] },
+  { q: "You’ve had a hard day. What usually happens next?", a: [
+    ["pleasing", "You make sure everyone else is okay first."],
+    ["overthinking", "You replay every conversation in your head."],
+    ["overwhelm", "It spills — tears, snapping, or shutting down."],
+    ["doubt", "You decide it was probably your fault."],
+  ] },
+  { q: "What do the people close to you say about you?", a: [
+    ["pleasing", "“You’re always there for everyone.”"],
+    ["overthinking", "“You think too much.”"],
+    ["overwhelm", "“You feel everything so deeply.”"],
+    ["doubt", "“You don’t see how capable you are.”"],
+  ] },
+  { q: "You know what you want. What stops you?", a: [
+    ["pleasing", "What it might cost the people around you."],
+    ["overthinking", "Needing to be sure before you move."],
+    ["overwhelm", "The fear of what it will bring up."],
+    ["doubt", "The voice that says: who are you to want that?"],
+  ] },
+  { q: "When it’s quiet and you’re alone, you feel…", a: [
+    ["pleasing", "Like you’ve disappeared somewhere along the way."],
+    ["overthinking", "Still busy — the mind doesn’t switch off."],
+    ["overwhelm", "Everything you’ve been holding all week."],
+    ["doubt", "Not enough, no matter what you did today."],
+  ] },
+];
+const QUIZ_RESULT: Record<Pattern, { name: string; mirror: string; stage: string; work: string; changes: string }> = {
+  pleasing: { name: "People-pleasing", mirror: "You keep everything else together by abandoning yourself. Being needed has felt safer than being honest.", stage: "See · Become", work: "Seeing the pattern — and its root. Then self-trust, voice and boundaries: choosing yourself without guilt, saying the true thing, taking up space.", changes: "You’ll set boundaries without drowning in guilt." },
+  overthinking: { name: "Overthinking", mirror: "You already know better — you can name the pattern while you’re inside it. Knowing hasn’t been the same as living differently.", stage: "Feel", work: "A pattern isn’t only a thought. It’s often a feeling, a reflex, a response you’ve learned to repeat — so we go beneath understanding and move it through the body.", changes: "You’ll recognise your patterns without becoming them." },
+  overwhelm: { name: "Emotional overwhelm", mirror: "You feel everything — and you’ve learned to hold it alone, or manage it instead of letting it move.", stage: "Feel", work: "Feeling, and moving emotion through the body: breathwork and somatic practice, so a feeling can move instead of being managed.", changes: "You’ll feel your emotions without being consumed by them." },
+  doubt: { name: "Self-doubt", mirror: "They’ve called you intuitive, grounded, even strong — and deep down you still question your worth.", stage: "See · Become", work: "Repatterning beneath the surface: the subconscious stories under the behaviour, not just the behaviour. Then practising the new way until it feels like you.", changes: "You’ll trust yourself instead of outsourcing every decision." },
+};
+
 const FOR_YOU = [
   "You’re tired of repeating the same patterns — and you can finally admit it.",
   "You’re ready to look at yourself honestly, with kindness.",
@@ -218,6 +259,10 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
   const [week, setWeek] = useState(1);
   const [plan, setPlan] = useState<"full" | "instalment">("full");
   const [theme, setTheme] = useState<Theme | "All">("All");
+  const [quiz, setQuiz] = useState<Pattern[]>([]);
+  const quizResult: Pattern | null = quiz.length === QUIZ.length
+    ? (["pleasing", "overthinking", "overwhelm", "doubt"] as Pattern[]).reduce((best, k) => (quiz.filter((x) => x === k).length > quiz.filter((x) => x === best).length ? k : best), quiz[0])
+    : null;
   const videos: Video[] = incomingVideos.length ? incomingVideos : DEFAULT_VIDEOS;
   const offer = OFFERS.liberate;
   // Client words come from the Studio (“Client stories”); the published quotes are the fallback.
@@ -423,6 +468,29 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-chip:hover { border-color: var(--lb-plum); }
         .lb-chip.on { background: var(--lb-plum); border-color: var(--lb-plum); color: var(--lb-ivory); }
         .lb-tag { font-family: var(--sans); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--lb-gold); font-weight: 600; }
+        .lb-quiz { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 6vw, 96px); align-items: start; }
+        .lb-quiz-head .lb-display { margin-top: 14px; font-size: clamp(36px, 4.4vw, 62px); }
+        .lb-quiz-head .lb-lede { margin-top: 18px; }
+        .lb-quiz-card { background: var(--lb-ivory); color: var(--lb-ink); padding: clamp(28px, 3.6vw, 52px); border-radius: 22px; box-shadow: 0 30px 80px rgba(0,0,0,.35); min-height: 420px; }
+        @keyframes lbQuiz { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+        .lb-quiz-step, .lb-quiz-result { animation: lbQuiz .5s cubic-bezier(.2,.7,.2,1) both; }
+        .lb-quiz-progress { display: flex; gap: 6px; }
+        .lb-quiz-progress span { flex: 1; height: 3px; background: var(--lb-line); border-radius: 2px; }
+        .lb-quiz-progress span.done { background: var(--lb-plum); } .lb-quiz-progress span.now { background: var(--lb-gold); }
+        .lb-quiz-n { margin-top: 22px; font-family: var(--sans); font-size: 11px; letter-spacing: .26em; text-transform: uppercase; color: var(--lb-muted); }
+        .lb-quiz-step h3 { font-family: var(--serif); font-weight: 400; font-size: clamp(24px, 2.4vw, 34px); line-height: 1.2; margin-top: 10px; }
+        .lb-quiz-opts { display: grid; gap: 10px; margin-top: 26px; }
+        .lb-qopt { text-align: left; background: #fff; border: 1px solid var(--lb-line); border-radius: 12px; padding: 16px 18px; font-family: var(--sans); font-size: 15px; line-height: 1.4; color: var(--lb-ink); cursor: pointer; transition: border-color .25s, transform .25s, background .25s; }
+        .lb-qopt:hover { border-color: var(--lb-plum); background: var(--lb-linen); transform: translateX(4px); }
+        .lb-quiz-again { margin-top: 22px; background: none; border: 0; padding: 0; font-family: var(--sans); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--lb-muted); cursor: pointer; }
+        .lb-quiz-again:hover { color: var(--lb-ink); }
+        .lb-quiz-result h3 { font-family: var(--serif); font-weight: 400; font-style: italic; font-size: clamp(38px, 4vw, 56px); line-height: 1; color: var(--lb-plum); margin-top: 12px; }
+        .lb-quiz-mirror { margin-top: 18px; font-family: var(--serif); font-size: clamp(19px, 1.6vw, 23px); line-height: 1.4; }
+        .lb-quiz-result dl { margin: 26px 0 0; padding-top: 22px; border-top: 1px solid var(--lb-line); display: grid; gap: 16px; }
+        .lb-quiz-result dt { font-family: var(--sans); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--lb-gold); font-weight: 600; }
+        .lb-quiz-result dd { margin: 6px 0 0; font-size: 15px; line-height: 1.6; color: var(--lb-muted); }
+        .lb-quiz-result dd em { color: var(--lb-plum); font-style: italic; font-family: var(--serif); font-size: 17px; }
+        .lb-quiz-result .lb-ctas { margin-top: 28px; }
         .lb-fit { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 64px); margin-top: clamp(32px, 4vw, 48px); }
         .lb-fit-col h3 { font-size: clamp(26px, 2.4vw, 34px); font-style: italic; color: var(--lb-plum); margin-bottom: 18px; }
         .lb-fit-col ul { list-style: none; margin: 0; padding: 0; }
@@ -607,7 +675,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb-checkout { position: static; }
           .lb-wins-photo { max-width: 360px; }
           .lb-wall { grid-template-columns: 1fr; }
-          .lb-method, .lb-nights, .lb-after, .lb-fit { grid-template-columns: 1fr; }
+          .lb-method, .lb-nights, .lb-after, .lb-fit, .lb-quiz { grid-template-columns: 1fr; }
           .lb-after-card { grid-template-columns: 120px 1fr; }
           .lb-proof-feature { grid-template-columns: 1fr; }
           .lb-proof-portrait { max-width: 320px; }
@@ -946,6 +1014,47 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             {retreatTiles.map(([label, src], i) => (
               <figure key={i}><img src={src} alt={label} loading="lazy" /><figcaption>{label}</figcaption></figure>
             ))}
+          </div>
+        </div>
+      </section>
+
+            {/* 09b — THE MIRROR (quiz) */}
+      <section className="lb-sec lb-night" id="quiz">
+        <div className="lb-wrap lb-quiz">
+          <div className="lb-quiz-head lb-reveal">
+            <p className="lb-eyebrow">A mirror, not a diagnosis</p>
+            <h2 className="lb-display">Which pattern is running your life?</h2>
+            <p className="lb-lede" style={{ color: "rgba(251,249,246,.78)" }}>Five quick taps. Answer with your reflex, not your best self.</p>
+          </div>
+          <div className="lb-quiz-card lb-reveal" style={{ transitionDelay: ".12s" }}>
+            {quizResult ? (
+              <div className="lb-quiz-result" key="result">
+                <p className="lb-eyebrow">The pattern most present right now</p>
+                <h3>{QUIZ_RESULT[quizResult].name}</h3>
+                <p className="lb-quiz-mirror">{QUIZ_RESULT[quizResult].mirror}</p>
+                <dl>
+                  <div><dt>Where Liberate works on it</dt><dd><em>{QUIZ_RESULT[quizResult].stage}</em> — {QUIZ_RESULT[quizResult].work}</dd></div>
+                  <div><dt>What changes</dt><dd>{QUIZ_RESULT[quizResult].changes}</dd></div>
+                </dl>
+                <div className="lb-ctas">
+                  <a href="#for-you" className="lb-btn lb-btn-gold">Is this for me?</a>
+                  <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-ghost">I’m ready to Liberate</a>
+                </div>
+                <button type="button" className="lb-quiz-again" onClick={() => setQuiz([])}>Start again</button>
+              </div>
+            ) : (
+              <div className="lb-quiz-step" key={quiz.length}>
+                <div className="lb-quiz-progress" aria-hidden="true">{QUIZ.map((_, i) => <span key={i} className={i < quiz.length ? "done" : i === quiz.length ? "now" : ""} />)}</div>
+                <p className="lb-quiz-n">{quiz.length + 1} of {QUIZ.length}</p>
+                <h3>{QUIZ[quiz.length].q}</h3>
+                <div className="lb-quiz-opts">
+                  {QUIZ[quiz.length].a.map(([k, label]) => (
+                    <button key={k} type="button" className="lb-qopt" onClick={() => setQuiz((q) => [...q, k])}>{label}</button>
+                  ))}
+                </div>
+                {quiz.length > 0 && <button type="button" className="lb-quiz-again" onClick={() => setQuiz((q) => q.slice(0, -1))}>← Back</button>}
+              </div>
+            )}
           </div>
         </div>
       </section>
