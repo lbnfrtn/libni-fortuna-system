@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { OFFERS } from "@/config/offers";
 import { resolveVideo } from "@/config/site-slots";
+import { DEFAULT_LIBERATE_VIDEOS, type LiberateVideo } from "@/config/liberate-videos";
 
 type Photos = Record<string, string>;
 
@@ -51,21 +52,8 @@ const INCLUDED = [
 ];
 
 type Word = { id?: string; q: string; who: string; role?: string; photo?: string };
-type Video = { url: string; poster?: string; name?: string; role?: string; w?: number; h?: number; dur?: number };
-
-// Her students on camera — the Vimeo uploads Libni made of their testimonials (5 vertical, 5 landscape).
-const DEFAULT_VIDEOS: Video[] = [
-  { url: "https://vimeo.com/1232676253", name: "Joyce", role: "Liberate 4", w: 16, h: 9, dur: 173, poster: "/photos/liberate/vid-1232676253.jpg" },
-  { url: "https://vimeo.com/1232676156", name: "Danessa", role: "Liberate 2", w: 9, h: 16, dur: 64, poster: "/photos/liberate/vid-1232676156.jpg" },
-  { url: "https://vimeo.com/1232675412", name: "Precious", role: "Liberate 4", w: 16, h: 9, dur: 149, poster: "/photos/liberate/vid-1232675412.jpg" },
-  { url: "https://vimeo.com/1232676628", name: "Victoria", role: "Liberate 3", w: 9, h: 16, dur: 185, poster: "/photos/liberate/vid-1232676628.jpg" },
-  { url: "https://vimeo.com/1232675915", name: "Kimi", role: "Liberate 4", w: 16, h: 9, dur: 220, poster: "/photos/liberate/vid-1232675915.jpg" },
-  { url: "https://vimeo.com/1232675738", name: "Bam", role: "Liberate 3", w: 9, h: 16, dur: 163, poster: "/photos/liberate/vid-1232675738.jpg" },
-  { url: "https://vimeo.com/1232675467", name: "Mitch", role: "Liberate 4", w: 16, h: 9, dur: 97, poster: "/photos/liberate/vid-1232675467.jpg" },
-  { url: "https://vimeo.com/1232676439", name: "Tonet", role: "Liberate 3", w: 9, h: 16, dur: 277, poster: "/photos/liberate/vid-1232676439.jpg" },
-  { url: "https://vimeo.com/1232675411", name: "Ikay", role: "Liberate", w: 16, h: 9, dur: 169, poster: "/photos/liberate/vid-1232675411.jpg" },
-  { url: "https://vimeo.com/1232675409", name: "Pawla", role: "Liberate 1", w: 9, h: 16, dur: 70, poster: "/photos/liberate/vid-1232675409.jpg" },
-];
+type Video = LiberateVideo;
+const DEFAULT_VIDEOS = DEFAULT_LIBERATE_VIDEOS;
 const mmss = (n?: number) => (n ? `${Math.floor(n / 60)}:${String(n % 60).padStart(2, "0")}` : "");
 
 // Faces cropped from the photos her students posted alongside their words (LIBer highlight).

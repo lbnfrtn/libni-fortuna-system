@@ -2,12 +2,14 @@ import { SitePage } from "@/app/components/Chrome";
 import LiberateClient from "./LiberateClient";
 import { getContent } from "@/lib/content";
 import { resolveVideo } from "@/config/site-slots";
+import { enrichVideos } from "@/lib/vimeo";
 
 export const dynamic = "force-dynamic";
 
 export default async function LiberatePage() {
   const { photos, videos: videoSlots, stories, liberateWords } = await getContent();
-  const videos = Array.from({ length: 10 }, (_, i) => videoSlots[`lib_video_${i + 1}`] ?? "").filter((u) => resolveVideo(u)).map((url) => ({ url }));
+  const videoUrls = Array.from({ length: 10 }, (_, i) => videoSlots[`lib_video_${i + 1}`] ?? "").filter((u) => resolveVideo(u));
+  const videos = videoUrls.length ? await enrichVideos(videoUrls) : [];
   // Liberate's own testimonials first; then stories tagged Liberate; otherwise the featured ones from across the work.
   const tagged = stories.filter((s) => /liberate/i.test(s.program ?? ""));
   const words = liberateWords.length
