@@ -63,7 +63,13 @@ const FACES: Record<string, string> = {
   tonet: "/photos/liberate/face-tonet.jpg", bam: "/photos/liberate/face-bam.jpg", mitch: "/photos/liberate/face-mitch.jpg",
   joyce: "/photos/liberate/face-joyce.jpg", precious: "/photos/liberate/face-precious.jpg", kimi: "/photos/liberate/face-kimi.jpg", ikay: "/photos/liberate/face-ikay.jpg", tiff2: "/photos/liberate/face-tiff.jpg",
 };
-const FEATURE_PHOTO: Record<string, string> = { tiff: "/photos/liberate/feature-tiff.jpg" };
+const FEATURE_PHOTO: Record<string, string> = {
+  tiff: "/photos/liberate/feature-tiff.jpg", tonet: "/photos/liberate/feature-tonet.jpg", precious: "/photos/liberate/feature-precious.jpg",
+  mitch: "/photos/liberate/feature-mitch.jpg", joyce: "/photos/liberate/feature-joyce.jpg", kimi: "/photos/liberate/feature-kimi.jpg",
+  ikay: "/photos/liberate/feature-ikay.jpg", bam: "/photos/liberate/feature-bam.jpg", danessa: "/photos/liberate/feature-danessa.jpg",
+};
+// The spotlight rotates through the students we have a real portrait for — order is the order shown.
+const SPOTLIGHT = ["tiff", "tonet", "precious", "mitch", "joyce", "kimi", "ikay", "bam", "danessa"];
 
 // Real photos from her retreats and sessions stand in until she uploads her own to each “inside” slot.
 const INSIDE_STOCK: Record<string, string> = {
@@ -216,8 +222,17 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
   const offer = OFFERS.liberate;
   // Client words come from the Studio (“Client stories”); the published quotes are the fallback.
   const WORDS_SHOWN: Word[] = (incoming && incoming.length ? incoming : WORDS).map((w) => ({ ...w, photo: w.photo || (w.id ? FACES[w.id] : undefined) }));
-  const first = WORDS_SHOWN[0];
-  const featurePhoto = photos.libw_feature || (first.id && FEATURE_PHOTO[first.id]) || first.photo;
+  const spotlight = SPOTLIGHT.map((id) => WORDS_SHOWN.find((w) => w.id === id)).filter((w): w is Word => !!w);
+  const [feat, setFeat] = useState(0);
+  const [featAuto, setFeatAuto] = useState(true);
+  useEffect(() => {
+    if (!featAuto || spotlight.length < 2) return;
+    const t = setInterval(() => setFeat((f) => (f + 1) % spotlight.length), 8000);
+    return () => clearInterval(t);
+  }, [featAuto, spotlight.length]);
+  const goFeat = (i: number) => { setFeatAuto(false); setFeat((i + spotlight.length) % spotlight.length); };
+  const first = spotlight[feat] ?? WORDS_SHOWN[0];
+  const featurePhoto = (feat === 0 && photos.libw_feature) || (first.id && FEATURE_PHOTO[first.id]) || first.photo;
   const uploadedShots = SHOT_SLOTS.map((id) => photos[id]).filter(Boolean);
   const shots = uploadedShots.length ? uploadedShots : SHOT_FALLBACK;
   const instalment = offer.allowInstalments && offer.instalmentCount ? Math.floor((offer.pricePHP ?? 0) / offer.instalmentCount) : 0;
@@ -239,7 +254,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
   const price = offer.pricePHP ? `₱${offer.pricePHP.toLocaleString("en-PH")}` : "TBA";
 
   const heroImg = photos.hero_portrait || "/photos/libni-hero.jpg";
-  const weightImg = photos.bath_portrait || "/photos/liberate-libni-thought.jpg";
+  const weightImg = photos.bath_portrait || "/photos/liberate/you.jpg";
   const storyImg = photos.story_portrait || "/photos/liberate-libni-warm.jpg";
   const uploadedRetreat = RETREAT_TILES.filter(([id]) => photos[id]);
   const retreatTiles = (uploadedRetreat.length ? uploadedRetreat.map(([id, label]) => [label, photos[id]] as const) : RETREAT_TILES.map(([, label, src]) => [label, src] as const));
@@ -464,8 +479,22 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-proof-feature { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(28px, 5vw, 80px); align-items: center; }
         .lb-proof-portrait { max-width: 420px; }
         .lb-proof-portrait img { aspect-ratio: 4 / 5; object-position: 50% 15%; }
+        @keyframes lbSpot { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+        .lb-spot-fade { animation: lbSpot .6s cubic-bezier(.2,.7,.2,1) both; }
+        .lb-spot-nav { display: flex; align-items: center; gap: 14px; margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--lb-line); }
+        .lb-spot-nav .lb-jbtn { padding: 8px 12px; letter-spacing: 0; font-size: 14px; }
+        .lb-spot-faces { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+        .lb-spot-face { padding: 0; border: 0; background: none; cursor: pointer; border-radius: 999px; opacity: .45; transition: opacity .3s, transform .3s, box-shadow .3s; }
+        .lb-spot-face .lb-face { display: block; }
+        .lb-spot-face:hover { opacity: .85; }
+        .lb-spot-face.on { opacity: 1; transform: scale(1.12); box-shadow: 0 0 0 2px var(--lb-gold); }
         .lb-byline { display: flex; align-items: center; gap: 16px; margin-top: 26px; }
         .lb-byline .lb-who { margin-top: 0; }
+        .lb-clips { display: flex; justify-content: center; gap: clamp(12px, 2vw, 22px); margin-top: clamp(36px, 5vw, 60px); }
+        .lb-clip { margin: 0; position: relative; width: clamp(132px, 14vw, 190px); aspect-ratio: 9 / 16; border-radius: 24px; border: 6px solid #15111a; background: #000; overflow: hidden; box-shadow: 0 24px 54px rgba(0,0,0,.26); }
+        .lb-clip:nth-child(2) { transform: translateY(-16px); }
+        .lb-clip video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .lb-clip figcaption { position: absolute; left: 12px; right: 12px; bottom: 12px; font-family: var(--sans); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--lb-ivory); text-shadow: 0 1px 8px rgba(0,0,0,.7); }
         .lb-videos-wrap { margin-top: clamp(56px, 7vw, 96px); padding-top: clamp(40px, 5vw, 64px); border-top: 1px solid var(--lb-line); }
         .lb-videos { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 4px 18px; margin: 0 -4px; scrollbar-width: thin; --lb-vh: clamp(360px, 40vw, 480px); }
         .lb-video { margin: 0; position: relative; flex: 0 0 auto; height: var(--lb-vh); background: var(--lb-night); overflow: hidden; scroll-snap-align: start; }
@@ -591,7 +620,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb-sticky .lb-ctas { flex-direction: row; } .lb-sticky .lb-ctas .lb-btn { width: auto; }
           .lb { padding-bottom: 0; }
           .lb-clips { overflow-x: auto; justify-content: flex-start; padding: 20px 4px 12px; margin-left: -4px; margin-right: -4px; scroll-snap-type: x mandatory; }
-          .lb-clip { flex: 0 0 48vw; scroll-snap-align: start; }
+          .lb-clip { flex: 0 0 44vw; scroll-snap-align: start; }
           .lb-clip:nth-child(2) { transform: none; }
           .lb-devices-note { margin-top: 14px; }
           .lb-story-img { position: static; }
@@ -610,7 +639,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <p className="lb-hero-sub">A 12-week transformational group experience for people ready to break the patterns of people-pleasing, overthinking, emotional overwhelm and self-doubt — and learn to trust themselves again.</p>
           <p className="lb-hero-sub lb-hero-sub2">Live twice a week. A private community. Your own portal. An in-person retreat to close.</p>
           <ul className="lb-hero-facts"><li>12 weeks</li><li>Live Tue &amp; Thu</li><li>Private circle</li><li>Online portal</li><li>Closing retreat</li></ul>
-          <p className="lb-hero-meta"><span>We begin</span><strong>November 3, 2026 · 7 pm</strong><span className="lb-hero-meta-sep" /><span>Investment</span><strong>{price}</strong>{perMonth && <small>or {offer.instalmentCount} × {perMonth}</small>}</p>
+          <p className="lb-hero-meta"><span>We begin</span><strong>November 3, 2026 · 7 pm</strong></p>
           <div className="lb-ctas">
             <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">I’m ready to Liberate</a>
             <a href="#for-you" className="lb-btn lb-btn-light">Is this for me?</a>
@@ -636,7 +665,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
               <p className="lb-lede" style={{ color: "var(--lb-plum)" }}>To feel safe in your body. Clear in your boundaries. Free in your energy. To lead your life from your center, not from your wounds.</p>
             </div>
           </div>
-          <div className="lb-c6 lb-bleed-right lb-reveal" style={{ transitionDelay: ".15s" }}><img src={weightImg} alt="Libni" /></div>
+          <div className="lb-c6 lb-bleed-right lb-reveal" style={{ transitionDelay: ".15s" }}><img src={weightImg} alt="Two Liberate students holding each other at the retreat" /></div>
         </div>
       </section>
 
@@ -850,10 +879,25 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           )}
 
           <div className="lb-proof-feature lb-reveal">
-            {featurePhoto && <div className="lb-figure lb-proof-portrait"><img src={featurePhoto} alt={first.who} loading="lazy" /></div>}
+            <div className="lb-spot-fade" key={`p-${first.id}`}>{featurePhoto && <div className="lb-figure lb-proof-portrait"><img src={featurePhoto} alt={first.who} loading="lazy" /></div>}</div>
             <div>
-              <p className="lb-quote">{first.q}</p>
-              <div className="lb-byline"><Face src={first.photo} name={first.who} size={60} /><p className="lb-who">{first.who}{first.role && <span>{first.role}</span>}</p></div>
+              <div className="lb-spot-fade" key={`q-${first.id}`}>
+                <p className="lb-quote">{first.q}</p>
+                <div className="lb-byline"><Face src={first.photo} name={first.who} size={60} /><p className="lb-who">{first.who}{first.role && <span>{first.role}</span>}</p></div>
+              </div>
+              {spotlight.length > 1 && (
+                <div className="lb-spot-nav" aria-label="More voices">
+                  <button type="button" className="lb-jbtn" onClick={() => goFeat(feat - 1)} aria-label="Previous voice">←</button>
+                  <div className="lb-spot-faces" role="tablist">
+                    {spotlight.map((w, i) => (
+                      <button key={w.id} type="button" role="tab" aria-selected={i === feat} className={`lb-spot-face${i === feat ? " on" : ""}`} onClick={() => goFeat(i)} title={w.who}>
+                        <Face src={w.photo} name={w.who} size={40} />
+                      </button>
+                    ))}
+                  </div>
+                  <button type="button" className="lb-jbtn" onClick={() => goFeat(feat + 1)} aria-label="Next voice">→</button>
+                </div>
+              )}
             </div>
           </div>
 
@@ -863,7 +907,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             ))}
           </div>
           <div className="lb-wall">
-            {WORDS_SHOWN.slice(1).filter((w) => theme === "All" || (w.id && THEME_OF[w.id] === theme)).map((w, i) => (
+            {WORDS_SHOWN.filter((w) => w.id !== "tiff").filter((w) => theme === "All" || (w.id && THEME_OF[w.id] === theme)).map((w, i) => (
               <div key={(w.id ?? w.who) + i} className="lb-reveal is-in lb-word">
                 {w.id && THEME_OF[w.id] && <span className="lb-tag">{THEME_OF[w.id]}</span>}
                 <p className="lb-quote">{w.q}</p>
