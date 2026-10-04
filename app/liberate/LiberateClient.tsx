@@ -38,11 +38,6 @@ const ROADMAP = [
   ]},
 ];
 
-const RETREAT_SLOTS = [
-  ["retreat_1", "Nature"], ["retreat_2", "Food, the table"], ["retreat_3", "Movement"],
-  ["retreat_4", "Meditation"], ["retreat_5", "Connection"], ["retreat_6", "Golden hour"], ["retreat_7", "The place"],
-] as const;
-
 // Real, published client words (also shown on /testimony).
 const WORDS: Word[] = [
   { q: "I came with the intention to release and remember, and that’s exactly what happened. I was able to let go of the trauma I’d been carrying and reconnect with who I truly am.", who: "Pepe Herrera", role: "Actor" },
@@ -78,6 +73,26 @@ const INSIDE_STOCK: Record<string, string> = {
   inside_8: "https://images.unsplash.com/photo-1758599670008-f18f47042e46?auto=format&fit=crop&w=1200&q=75",
 };
 const SHOT_SLOTS = ["shots_1", "shots_2", "shots_3", "shots_4", "shots_5", "shots_6", "shots_7", "shots_8"];
+
+// Real screenshots from the weekly Zoom sessions (from the LIBer highlight) — what a night inside looks like.
+const SESSIONS: [string, string][] = [
+  ["session_1", "The weekly circle"],
+  ["session_2", "Wherever you are"],
+  ["session_3", "Breathwork, together"],
+  ["session_4", "The final call"],
+];
+const SESSION_FALLBACK = ["/photos/liberate/session-1.jpg", "/photos/liberate/session-2.jpg", "/photos/liberate/session-3.jpg", "/photos/liberate/session-4.jpg"];
+
+// The in-person celebration & retreat gallery (real photos from the highlight).
+const RETREAT_TILES: [string, string, string][] = [
+  ["retreat_1", "The celebration", "/photos/liberate/retreat-1.jpg"],
+  ["retreat_2", "The toast", "/photos/liberate/retreat-2.jpg"],
+  ["retreat_3", "Still together", "/photos/liberate/retreat-3.jpg"],
+  ["retreat_4", "From Zoom to real life", "/photos/liberate/retreat-4.jpg"],
+  ["retreat_5", "The retreat", "/photos/liberate/retreat-5.jpg"],
+  ["retreat_6", "Goodbyes, for now", "/photos/liberate/retreat-6.jpg"],
+];
+const RETREAT_HERO_FALLBACK = "/photos/liberate/retreat-hero.jpg";
 // Real stories her students posted (reshared in her LIBer highlight) stand in until she uploads her own.
 const SHOT_FALLBACK = Array.from({ length: 16 }, (_, i) => `/photos/liberate/words-${i + 1}.jpg`);
 
@@ -134,7 +149,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
   const momentImg = photos.moment_portrait || "/photos/libni-portrait.jpg";
   const weightImg = photos.bath_portrait || "/photos/liberate-libni-thought.jpg";
   const storyImg = photos.story_portrait || "/photos/liberate-libni-warm.jpg";
-  const retreatPhotos = RETREAT_SLOTS.filter(([id]) => photos[id]);
+  const uploadedRetreat = RETREAT_TILES.filter(([id]) => photos[id]);
+  const retreatTiles = (uploadedRetreat.length ? uploadedRetreat.map(([id, label]) => [label, photos[id]] as const) : RETREAT_TILES.map(([, label, src]) => [label, src] as const));
+  const retreatHero = photos.retreat_hero || RETREAT_HERO_FALLBACK;
 
   return (
     <div className={`lb${stuck ? " lb-stuck" : ""}`}>
@@ -256,13 +273,23 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
         .lb-finale h3 { font-size: clamp(64px, 9vw, 140px); line-height: .95; font-style: italic; color: var(--lb-plum); margin-top: 8px; }
         .lb-finale p { font-family: var(--serif); font-size: clamp(22px, 2.2vw, 30px); line-height: 1.3; max-width: 22ch; }
 
+        /* 06b sessions */
+        .lb-sessions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: clamp(40px, 5vw, 64px); }
+        .lb-sessions figure { margin: 0; position: relative; overflow: hidden; }
+        .lb-sessions img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; display: block; transition: transform 1.2s cubic-bezier(.2,.7,.2,1); }
+        .lb-sessions figure:hover img { transform: scale(1.03); }
+        .lb-sessions figcaption { position: absolute; left: 14px; bottom: 12px; font-family: var(--sans); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--lb-ivory); text-shadow: 0 1px 8px rgba(0,0,0,.55); }
+        .lb-sessions figure::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(36,28,42,0) 55%, rgba(36,28,42,.5) 100%); pointer-events: none; }
+
         /* 07 retreat */
         .lb-retreat-head { max-width: 900px; }
         .lb-retreat-head h2 span { display: block; }
         .lb-ribbon { margin-top: clamp(48px, 6vw, 84px); padding: clamp(28px, 4vw, 40px) 0; border-top: 1px solid var(--lb-line-light); border-bottom: 1px solid var(--lb-line-light); display: flex; flex-wrap: wrap; gap: 10px 0; font-family: var(--serif); font-style: italic; font-size: clamp(22px, 2.6vw, 38px); line-height: 1.2; color: rgba(251,249,246,.9); }
         .lb-ribbon span + span::before { content: "·"; color: var(--lb-gold); margin: 0 .5em; font-style: normal; }
         .lb-retreat-hero { margin-top: clamp(48px, 6vw, 84px); }
-        .lb-retreat-hero img { width: 100%; aspect-ratio: 21 / 9; object-fit: cover; }
+        .lb-retreat-hero { position: relative; }
+        .lb-retreat-hero img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+        .lb-retreat-hero figcaption { position: absolute; left: 18px; bottom: 16px; font-family: var(--serif); font-style: italic; font-size: clamp(16px, 1.8vw, 22px); color: var(--lb-ivory); text-shadow: 0 1px 10px rgba(0,0,0,.6); max-width: 24ch; }
         .lb-mosaic { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 10px; }
         .lb-mosaic figure { margin: 0; position: relative; grid-column: span 2; }
         .lb-mosaic figure:first-child { grid-column: span 4; grid-row: span 2; }
@@ -386,6 +413,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
           .lb-sticky .lb-ctas { flex-direction: row; } .lb-sticky .lb-ctas .lb-btn { width: auto; }
           .lb { padding-bottom: 0; }
           .lb-road { gap: 48px; }
+          .lb-sessions { grid-template-columns: 1fr; }
           .lb-story-img { position: static; }
           .lb-mosaic { grid-template-columns: 1fr 1fr; }
           .lb-mosaic figure, .lb-mosaic figure:first-child { grid-column: span 2; grid-row: auto; }
@@ -513,6 +541,24 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
         </div>
       </section>
 
+      {/* 06b — SESSIONS */}
+      <section className="lb-sec lb-ivory">
+        <div className="lb-wrap">
+          <div className="lb-head lb-reveal">
+            <div><p className="lb-eyebrow">What our sessions look like</p><h2 className="lb-display" style={{ marginTop: 14 }}>Come sit in the room.</h2></div>
+            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Twice a week on Zoom, wherever you are. Cameras on, hearts open — real screens from our weekly circles, so you can feel what a night in Liberate is like before you ever join one.</p>
+          </div>
+          <div className="lb-sessions lb-reveal">
+            {SESSIONS.map(([slot, label], i) => (
+              <figure key={slot} style={{ transitionDelay: `${(i % 2) * 0.08}s` }}>
+                <img src={photos[slot] || SESSION_FALLBACK[i]} alt={label} loading="lazy" />
+                <figcaption>{label}</figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* 07 — RETREAT */}
       <section className="lb-sec lb-night">
         <div className="lb-wrap">
@@ -525,20 +571,12 @@ export default function LiberateClient({ photos = {}, words: incoming, videos = 
               <p className="lb-lede" style={{ color: "var(--lb-ivory)" }}>It needs to be lived.</p>
             </div>
           </div>
-          {photos.retreat_hero && (
-            <div className="lb-retreat-hero lb-reveal"><img src={photos.retreat_hero} alt="The Liberate retreat" /></div>
-          )}
-          {retreatPhotos.length > 0 ? (
-            <div className="lb-mosaic lb-reveal">
-              {retreatPhotos.map(([id, label]) => (
-                <figure key={id}><img src={photos[id]} alt={label} /><figcaption>{label}</figcaption></figure>
-              ))}
-            </div>
-          ) : (
-            <div className="lb-ribbon lb-reveal">
-              <span>Nature</span><span>Food, the table</span><span>Movement</span><span>Meditation</span><span>Connection</span><span>Golden hour</span>
-            </div>
-          )}
+          <div className="lb-retreat-hero lb-reveal"><img src={retreatHero} alt="The Liberate retreat" /><figcaption>Out of the Zoom calls, into the present moment</figcaption></div>
+          <div className="lb-mosaic lb-reveal">
+            {retreatTiles.map(([label, src], i) => (
+              <figure key={i}><img src={src} alt={label} loading="lazy" /><figcaption>{label}</figcaption></figure>
+            ))}
+          </div>
         </div>
       </section>
 
