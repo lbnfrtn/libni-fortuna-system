@@ -57,11 +57,11 @@ const mmss = (n?: number) => (n ? `${Math.floor(n / 60)}:${String(n % 60).padSta
 
 // Faces cropped from the photos her students posted alongside their words (LIBer highlight).
 const FACES: Record<string, string> = {
-  tiff: "/photos/liberate/face-tiff.jpg", erika: "/photos/liberate/face-erika.jpg", danessa: "/photos/liberate/face-danessa.jpg",
+  tiff: "/photos/liberate/face-tiff.jpg", erika: "/photos/liberate/face-erika.jpg", danessa: "/photos/liberate/face2-danessa.jpg",
   jill: "/photos/liberate/face-jill.jpg", mims: "/photos/liberate/face-mims.jpg", zy: "/photos/liberate/face-zy.jpg",
   nick: "/photos/liberate/face-nick.jpg", sam: "/photos/liberate/face-sam.jpg", lea: "/photos/liberate/face-lea.jpg", risha: "/photos/liberate/face-risha.jpg",
-  tonet: "/photos/liberate/face-tonet.jpg", bam: "/photos/liberate/face-bam.jpg", mitch: "/photos/liberate/face-mitch.jpg",
-  joyce: "/photos/liberate/face-joyce.jpg", precious: "/photos/liberate/face-precious.jpg", kimi: "/photos/liberate/face-kimi.jpg", ikay: "/photos/liberate/face-ikay.jpg", tiff2: "/photos/liberate/face-tiff.jpg",
+  tonet: "/photos/liberate/face2-tonet.jpg", bam: "/photos/liberate/face2-bam.jpg", mitch: "/photos/liberate/face2-mitch.jpg",
+  joyce: "/photos/liberate/face2-joyce.jpg", precious: "/photos/liberate/face2-precious.jpg", kimi: "/photos/liberate/face2-kimi.jpg", ikay: "/photos/liberate/face2-ikay.jpg", tiff2: "/photos/liberate/face-tiff.jpg",
 };
 const FEATURE_PHOTO: Record<string, string> = {
   tiff: "/photos/liberate/feature-tiff.jpg", tonet: "/photos/liberate/feature-tonet.jpg", precious: "/photos/liberate/feature-precious.jpg",
@@ -69,7 +69,8 @@ const FEATURE_PHOTO: Record<string, string> = {
   ikay: "/photos/liberate/feature-ikay.jpg", bam: "/photos/liberate/feature-bam.jpg", danessa: "/photos/liberate/feature-danessa.jpg",
 };
 // The spotlight rotates through the students we have a real portrait for — order is the order shown.
-const SPOTLIGHT = ["tiff", "tonet", "precious", "mitch", "joyce", "kimi", "ikay", "bam", "danessa"];
+const YOU_VIDEO = "1232731301"; // the clip beside “They’ve called you intuitive…” (Libni’s pick)
+const SPOTLIGHT = ["tonet", "bam", "mitch", "precious", "kimi", "ikay", "joyce", "danessa", "tiff"];
 
 // Real photos from her retreats and sessions stand in until she uploads her own to each “inside” slot.
 const INSIDE_STOCK: Record<string, string> = {
@@ -82,9 +83,10 @@ const INSIDE_STOCK: Record<string, string> = {
   inside_7: "/photos/liberate/inside-7.jpg",
   inside_8: "/photos/liberate/inside-8.jpg",
 };
-const SHOT_SLOTS = ["shots_1", "shots_2", "shots_3", "shots_4", "shots_5", "shots_6", "shots_7", "shots_8"];
 
 type Clip = { src: string; poster?: string; label?: string };
+const SHOT_SLOTS = ["shots_1", "shots_2", "shots_3", "shots_4", "shots_5", "shots_6", "shots_7", "shots_8"];
+const SHOT_FALLBACK = Array.from({ length: 16 }, (_, i) => `/photos/liberate/words-${i + 1}.jpg`);
 const DEFAULT_CLIPS: Clip[] = [
   { src: "/videos/liberate/session-29.mp4", poster: "/photos/liberate/session-3.jpg", label: "Breathwork, together" },
   { src: "/videos/liberate/session-32.mp4", poster: "/photos/liberate/session-1.jpg", label: "Favourite night of the week" },
@@ -112,7 +114,6 @@ const RETREAT_TILES: [string, string, string][] = [
 ];
 const RETREAT_HERO_FALLBACK = "/photos/liberate/retreat-hero.jpg";
 // Real stories her students posted (reshared in her LIBer highlight) stand in until she uploads her own.
-const SHOT_FALLBACK = Array.from({ length: 16 }, (_, i) => `/photos/liberate/words-${i + 1}.jpg`);
 
 // What people want — each one grounded in something a student (or Libni, the night an intake closed) actually wrote.
 const WINS: [string, string, string][] = [
@@ -275,8 +276,12 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
     const t = setInterval(() => setFeat((f) => (f + 1) % spotlight.length), 8000);
     return () => clearInterval(t);
   }, [featAuto, spotlight.length]);
-  const goFeat = (i: number) => { setFeatAuto(false); setFeat((i + spotlight.length) % spotlight.length); };
+  const [playFeat, setPlayFeat] = useState(false);
+  const goFeat = (i: number) => { setFeatAuto(false); setPlayFeat(false); setFeat((i + spotlight.length) % spotlight.length); };
   const first = spotlight[feat] ?? WORDS_SHOWN[0];
+  const firstName = first.who.replace(/^@/, "").split(/\s|·/)[0];
+  const featVideo = videos.find((v) => v.name && v.name.toLowerCase() === firstName.toLowerCase());
+  const featEmbed = featVideo ? resolveVideo(featVideo.url) : null;
   const featurePhoto = (feat === 0 && photos.libw_feature) || (first.id && FEATURE_PHOTO[first.id]) || first.photo;
   const uploadedShots = SHOT_SLOTS.map((id) => photos[id]).filter(Boolean);
   const shots = uploadedShots.length ? uploadedShots : SHOT_FALLBACK;
@@ -289,6 +294,14 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
   // The sticky bar appears once the hero has scrolled away.
   const heroRef = useRef<HTMLElement | null>(null);
   const [stuck, setStuck] = useState(false);
+  const progressRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    let raf = 0;
+    const tick = () => { raf = 0; const el = progressRef.current; if (!el) return; const max = document.documentElement.scrollHeight - innerHeight; el.style.transform = `scaleX(${max > 0 ? Math.min(1, scrollY / max) : 0})`; };
+    const onScroll = () => { if (!raf) raf = requestAnimationFrame(tick); };
+    addEventListener("scroll", onScroll, { passive: true }); tick();
+    return () => { removeEventListener("scroll", onScroll); if (raf) cancelAnimationFrame(raf); };
+  }, []);
   useEffect(() => {
     const el = heroRef.current;
     if (!el || typeof IntersectionObserver === "undefined") return;
@@ -299,7 +312,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
   const price = offer.pricePHP ? `₱${offer.pricePHP.toLocaleString("en-PH")}` : "TBA";
 
   const heroImg = photos.hero_portrait || "/photos/libni-hero.jpg";
-  const weightImg = photos.bath_portrait || "/photos/liberate/you.jpg";
   const storyImg = photos.story_portrait || "/photos/liberate-libni-warm.jpg";
   const uploadedRetreat = RETREAT_TILES.filter(([id]) => photos[id]);
   const retreatTiles = (uploadedRetreat.length ? uploadedRetreat.map(([id, label]) => [label, photos[id]] as const) : RETREAT_TILES.map(([, label, src]) => [label, src] as const));
@@ -332,7 +344,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-muted { color: var(--lb-muted); }
         .lb-gold { color: var(--lb-gold-soft); font-style: italic; }
         .lb-em { font-style: italic; }
-        .lb-rule { width: 56px; height: 1px; background: var(--lb-gold); }
 
         .lb-btn { display: inline-flex; align-items: center; justify-content: center; min-height: 56px; padding: 0 34px; font-family: var(--sans); font-size: 12px; letter-spacing: .22em; text-transform: uppercase; font-weight: 600; border: 1px solid currentColor; border-radius: 0; text-decoration: none; transition: background .35s ease, color .35s ease, border-color .35s ease, transform .35s ease; white-space: nowrap; }
         .lb-btn:hover { transform: translateY(-1px); }
@@ -375,7 +386,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-hero-meta strong { font-family: var(--serif); font-size: 22px; letter-spacing: 0; text-transform: none; color: var(--lb-gold-soft); font-weight: 400; font-style: italic; }
         .lb-hero-meta { flex-wrap: wrap; row-gap: 6px; }
         .lb-hero-meta small { font-family: var(--sans); font-size: 11px; letter-spacing: .18em; color: rgba(251,249,246,.6); }
-        .lb-hero-meta-sep { width: 1px; height: 22px; background: var(--lb-line-light); margin: 0 6px; align-self: center; }
 
         /* sections */
         .lb-sec { padding: clamp(88px, 11vw, 150px) 0; }
@@ -389,11 +399,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-figure img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; }
         .lb-figure::before { content: ""; position: absolute; inset: 0; transform: translate(16px, 16px); border: 1px solid var(--lb-gold); opacity: .55; pointer-events: none; z-index: 0; }
         .lb-figure img { position: relative; z-index: 1; }
-        .lb-figure-tall img { aspect-ratio: 3 / 4; }
-        .lb-bleed-right { grid-column: 8 / span 5; margin-right: calc(-1 * (max(50vw - 640px, 0px) + clamp(20px, 5vw, 64px))); }
-        .lb-bleed-right img { width: 100%; height: clamp(560px, 80vh, 780px); object-fit: cover; object-position: 50% 12%; aspect-ratio: auto; }
-        .lb-tools { display: grid; gap: 4px; font-family: var(--serif); font-size: clamp(22px, 2vw, 28px); font-style: italic; line-height: 1.3; }
-        .lb-tools span:nth-child(2) { color: #5e5450; } .lb-tools span:nth-child(3) { color: #86796f; } .lb-tools span:nth-child(4) { color: #a89a93; }
         .lb-stack { display: grid; gap: clamp(22px, 2.6vw, 34px); }
 
         /* 04 statement */
@@ -456,13 +461,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-nights { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3vw, 44px); margin-top: clamp(40px, 5vw, 64px); }
         .lb-night { display: grid; gap: 12px; align-content: start; }
         .lb-night img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; margin-bottom: 10px; }
+        .lb-night-portal { object-fit: contain !important; background: var(--lb-linen); }
         .lb-night h3 { font-size: clamp(26px, 2.4vw, 34px); line-height: 1.1; }
         .lb-night p:not(.lb-eyebrow) { font-size: 16px; line-height: 1.65; color: var(--lb-muted); max-width: 48ch; }
-        .lb-after { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3vw, 44px); }
-        .lb-after-card { display: grid; grid-template-columns: 180px 1fr; gap: 22px; align-items: center; background: var(--lb-ivory); border: 1px solid var(--lb-line); padding: 18px; }
-        .lb-after-card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
-        .lb-after-card h3 { font-size: 26px; line-height: 1.1; margin: 6px 0 8px; }
-        .lb-after-card p:not(.lb-eyebrow) { font-size: 14.5px; line-height: 1.6; color: var(--lb-muted); }
         .lb-themes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: clamp(56px, 7vw, 96px); }
         .lb-chip { border: 1px solid var(--lb-line); background: none; padding: 9px 16px; border-radius: 999px; font-family: var(--sans); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--lb-ink); cursor: pointer; transition: background .25s, color .25s, border-color .25s; }
         .lb-chip:hover { border-color: var(--lb-plum); }
@@ -504,8 +505,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         /* 07 retreat */
         .lb-retreat-head { max-width: 900px; }
         .lb-retreat-head h2 span { display: block; }
-        .lb-ribbon { margin-top: clamp(48px, 6vw, 84px); padding: clamp(28px, 4vw, 40px) 0; border-top: 1px solid var(--lb-line-light); border-bottom: 1px solid var(--lb-line-light); display: flex; flex-wrap: wrap; gap: 10px 0; font-family: var(--serif); font-style: italic; font-size: clamp(22px, 2.6vw, 38px); line-height: 1.2; color: rgba(251,249,246,.9); }
-        .lb-ribbon span + span::before { content: "·"; color: var(--lb-gold); margin: 0 .5em; font-style: normal; }
         .lb-retreat-hero { margin-top: clamp(48px, 6vw, 84px); }
         .lb-retreat-hero { position: relative; }
         .lb-retreat-hero img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
@@ -520,23 +519,42 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         /* 08 story */
         .lb-story-img { position: sticky; top: 110px; }
         .lb-story-img img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; }
+        .lb-you-col { display: flex; justify-content: center; align-items: center; }
+        .lb-you-video { margin: 0; width: min(100%, 380px); aspect-ratio: 9 / 16; border-radius: 28px; overflow: hidden; background: #000; border: 7px solid #15111a; box-shadow: 0 30px 70px rgba(0,0,0,.3); }
+        .lb-you-video iframe { width: 100%; height: 100%; border: 0; display: block; }
+        /* motion */
+        .lb-progress { position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 60; pointer-events: none; }
+        .lb-progress > div { height: 100%; background: linear-gradient(90deg, var(--lb-gold), var(--lb-plum)); transform-origin: left; transform: scaleX(0); will-change: transform; }
+        .lb-stage { cursor: pointer; position: relative; transition: transform .5s cubic-bezier(.2,.7,.2,1), box-shadow .5s, opacity 1s ease; }
+        .lb-stage::before { content: ""; position: absolute; left: 0; right: 0; top: -1px; height: 2px; background: var(--lb-gold); transform: scaleX(0); transform-origin: left; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+        .lb-stage:hover, .lb-stage:focus-visible { transform: translateY(-6px); box-shadow: 0 30px 60px rgba(43,37,40,.12); outline: none; }
+        .lb-stage:hover::before, .lb-stage:focus-visible::before { transform: scaleX(1); }
+        .lb-stage-go { display: inline-block; margin-top: 18px; font-family: var(--sans); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--lb-gold); opacity: .55; transition: opacity .4s, transform .4s; }
+        .lb-stage:hover .lb-stage-go { opacity: 1; transform: translateX(4px); }
+        .lb-wins-list li, .lb-fit li { opacity: 0; transform: translateY(14px); transition: opacity .8s ease, transform .8s cubic-bezier(.2,.7,.2,1); transition-delay: calc(var(--i, 0) * 90ms + .15s); }
+        .lb-reveal.is-in .lb-wins-list li, .lb-wins-list.is-in li, .lb-reveal.is-in .lb-fit li, .lb-fit.is-in li { opacity: 1; transform: none; }
+        .lb-night, .lb-index figure, .lb-index > div, .lb-retreat-tile { overflow: hidden; }
+        .lb-night img, .lb-index img, .lb-retreat-tile img, .lb-word { transition: transform 1.1s cubic-bezier(.2,.7,.2,1), box-shadow .5s; }
+        .lb-night:hover img, .lb-index figure:hover img, .lb-index > div:hover img, .lb-retreat-tile:hover img { transform: scale(1.035); }
+        .lb-word:hover { transform: translateY(-4px); box-shadow: 0 24px 50px rgba(43,37,40,.08); }
+        @keyframes lbPop { 0% { transform: scale(.92); } 60% { transform: scale(1.06); } 100% { transform: scale(1); } }
+        .lb-chip.on { animation: lbPop .4s cubic-bezier(.2,.7,.2,1); }
+        .lb-spot-play { position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 2; display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 10px; border: 0; border-radius: 999px; background: rgba(21,17,26,.72); color: var(--lb-ivory); font-family: var(--sans); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(8px); transition: background .3s, transform .3s; }
+        .lb-spot-play:hover { background: rgba(21,17,26,.9); transform: translateY(-2px); }
+        .lb-spot-play-ring { width: 38px; height: 38px; border-radius: 50%; background: var(--lb-gold-soft); color: var(--lb-night); display: grid; place-items: center; flex: none; }
+        .lb-proof-player { position: relative; background: #000; width: 100%; max-width: 420px; }
+        .lb-proof-player iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+        @media (prefers-reduced-motion: reduce) { .lb-stage, .lb-night img, .lb-index img, .lb-word, .lb-chip.on { transition: none; animation: none; } .lb-wins-list li, .lb-fit li { opacity: 1; transform: none; transition: none; } }
         .lb-pull { font-family: var(--serif); font-style: italic; font-size: clamp(28px, 3vw, 42px); line-height: 1.2; color: var(--lb-plum); padding: 10px 0 10px 26px; border-left: 1px solid var(--lb-gold); margin: 10px 0; }
         .lb-sign { font-family: var(--font-signature), cursive; font-size: 46px; color: var(--lb-plum); line-height: 1; margin-top: 8px; }
         .lb-creds { margin-top: 34px; padding-top: 22px; border-top: 1px solid var(--lb-line); font-family: var(--sans); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--lb-muted); line-height: 2; }
 
         /* 09 words */
-        .lb-feature { display: grid; grid-template-columns: 7fr 5fr; gap: clamp(32px, 5vw, 80px); align-items: end; padding-bottom: clamp(40px, 5vw, 64px); border-bottom: 1px solid var(--lb-line); }
         .lb-quote { font-family: var(--serif); font-style: italic; font-size: clamp(28px, 3.3vw, 46px); line-height: 1.2; text-indent: -.4em; }
         .lb-quote::before { content: "“"; color: var(--lb-gold); }
         .lb-who { font-family: var(--sans); font-size: 11px; letter-spacing: .26em; text-transform: uppercase; font-weight: 600; margin-top: 22px; }
         .lb-who span { display: block; color: var(--lb-muted); font-weight: 500; margin-top: 4px; }
-        .lb-words { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(32px, 5vw, 80px); padding-top: clamp(40px, 5vw, 64px); }
-        .lb-words .lb-quote { font-size: clamp(22px, 2vw, 28px); }
         .lb-word { display: grid; gap: 18px; }
-        .lb-word-img { width: 72px; height: 72px; border-radius: 50%; object-fit: cover; object-position: 50% 20%; }
-        .lb-shots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
-        .lb-shots figure { margin: 0; background: var(--lb-ivory); border: 1px solid var(--lb-line); padding: 8px; }
-        .lb-shots img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; object-position: top; display: block; }
 
         .lb .lb-hero-proof { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--lb-line-light); display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; font-family: var(--serif); font-style: italic; font-size: 18px; line-height: 1.3; color: rgba(251,249,246,.82); }
         .lb-hero-proof span { font-family: var(--sans); font-style: normal; font-size: 10px; letter-spacing: .28em; text-transform: uppercase; color: var(--lb-gold-soft); }
@@ -563,6 +581,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-clip:nth-child(2) { transform: translateY(-16px); }
         .lb-clip video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
         .lb-clip figcaption { position: absolute; left: 12px; right: 12px; bottom: 12px; font-family: var(--sans); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--lb-ivory); text-shadow: 0 1px 8px rgba(0,0,0,.7); }
+        .lb-shots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+        .lb-shots figure { margin: 0; background: var(--lb-ivory); border: 1px solid var(--lb-line); padding: 8px; }
+        .lb-shots img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; object-position: top; display: block; }
         .lb-videos-wrap { margin-top: clamp(56px, 7vw, 96px); padding-top: clamp(40px, 5vw, 64px); border-top: 1px solid var(--lb-line); }
         .lb-videos { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 4px 18px; margin: 0 -4px; scrollbar-width: thin; --lb-vh: clamp(360px, 40vw, 480px); }
         .lb-video { margin: 0; position: relative; flex: 0 0 auto; height: var(--lb-vh); background: var(--lb-night); overflow: hidden; scroll-snap-align: start; }
@@ -588,8 +609,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-wall .lb-word-head { margin-bottom: 0; order: 2; padding-top: 14px; border-top: 1px solid var(--lb-line); }
         .lb-word-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
         .lb-word-head .lb-who { margin-top: 0; }
-        .lb-shots { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 4px 18px; margin: 0 -4px; scrollbar-width: thin; }
-        .lb-shots figure { flex: 0 0 clamp(200px, 19vw, 260px); scroll-snap-align: start; }
         .lb-wins { padding: clamp(72px, 9vw, 120px) 0; }
         .lb-wins .lb-wrap { display: grid; grid-template-columns: 4fr 3fr 5fr; gap: clamp(28px, 4vw, 64px); align-items: start; }
         .lb-wins-photo { position: relative; margin: 0; }
@@ -644,14 +663,12 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-faq p { padding: 0 44px 24px 0; font-size: 16px; line-height: 1.7; color: var(--lb-muted); max-width: 60ch; }
 
         /* 11 peace */
-        .lb-peace { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 5vw, 96px); align-items: start; }
-        .lb-peace .lb-copy p:first-child { font-family: var(--serif); font-size: 26px; line-height: 1.3; }
 
         /* 12 final */
         .lb-final { position: relative; color: var(--lb-ivory); text-align: center; padding: clamp(110px, 16vw, 200px) 0; background: radial-gradient(70% 60% at 50% 100%, rgba(91,68,112,.7) 0%, rgba(36,28,42,0) 70%), var(--lb-night); }
         .lb-final h2 { font-size: clamp(44px, 7vw, 108px); line-height: .98; max-width: 14ch; margin: 0 auto; }
         .lb-final .lb-copy { margin: 36px auto 0; text-align: center; color: rgba(251,249,246,.8); max-width: 52ch; }
-        .lb-final-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: 0 48px; margin: 48px auto 40px; padding: 26px 0; border-top: 1px solid var(--lb-line-light); border-bottom: 1px solid var(--lb-line-light); max-width: 720px; font-family: var(--sans); font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: rgba(251,249,246,.6); }
+        .lb-final-meta { display: flex; justify-content: center; flex-wrap: wrap; gap: 24px clamp(32px, 5vw, 72px); margin: 48px auto 40px; padding: 26px 0; border-top: 1px solid var(--lb-line-light); border-bottom: 1px solid var(--lb-line-light); max-width: 980px; text-align: center; font-family: var(--sans); font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: rgba(251,249,246,.6); }
         .lb-final-meta b { display: block; font-family: var(--serif); font-size: 26px; font-weight: 400; letter-spacing: 0; text-transform: none; color: var(--lb-ivory); margin-top: 4px; }
         .lb-final .lb-ctas { justify-content: center; }
 
@@ -662,11 +679,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb-hero-panel { padding: 8px 20px 48px; margin-top: -60px; background: none; }
           .lb-hero-title { font-size: clamp(76px, 24vw, 130px); margin: 16px 0 18px; }
           .lb-split { grid-template-columns: 1fr; gap: 36px; }
-          .lb-c5, .lb-c6, .lb-c7, .lb-off1, .lb-bleed-right { grid-column: auto; }
-          .lb-split > .lb-figure, .lb-split > .lb-bleed-right { order: -1; }
-          .lb-bleed-right { margin-right: 0; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
-          .lb-bleed-right img { height: 68svh; }
-          .lb-head, .lb-index, .lb-feature, .lb-words, .lb-invest, .lb-peace, .lb-wins .lb-wrap, .lb-faq-wrap { grid-template-columns: 1fr; }
+          .lb-c5, .lb-c6, .lb-off1 { grid-column: auto; }
+          .lb-split > .lb-figure { order: -1; }
+          .lb-head, .lb-index, .lb-invest, .lb-wins .lb-wrap, .lb-faq-wrap { grid-template-columns: 1fr; }
           .lb-journey-track { grid-template-columns: 1fr; gap: 22px; }
           .lb-journey-track::before { display: none; }
           .lb-jphase { padding-right: 0; }
@@ -675,14 +690,16 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb-checkout { position: static; }
           .lb-wins-photo { max-width: 360px; }
           .lb-wall { grid-template-columns: 1fr; }
-          .lb-method, .lb-nights, .lb-after, .lb-fit, .lb-quiz { grid-template-columns: 1fr; }
-          .lb-after-card { grid-template-columns: 120px 1fr; }
+          .lb-method, .lb-nights, .lb-fit, .lb-quiz { grid-template-columns: 1fr; }
+          .lb-shots { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 4px 18px; margin: 0 -4px; scrollbar-width: thin; }
+          .lb-shots figure { flex: 0 0 46vw; scroll-snap-align: start; }
           .lb-proof-feature { grid-template-columns: 1fr; }
           .lb-proof-portrait { max-width: 320px; }
+          .lb-sec { overflow-x: clip; }
+          .lb-figure::before { transform: translate(10px, 10px); }
           .lb-videos { align-items: center; }
           .lb-video { height: auto; width: 62vw; }
           .lb-video-wide { width: 86vw; }
-          .lb-cta-in .lb-ctas { width: 100%; }
           .lb-sticky span { display: none; }
           .lb-sticky-in { gap: 12px; }
           .lb-sticky .lb-ctas { flex-direction: row; } .lb-sticky .lb-ctas .lb-btn { width: auto; }
@@ -700,6 +717,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
 
       {/* 01 — HERO */}
       <section className="lb-hero" id="top" ref={heroRef}>
+        <div className="lb-progress" aria-hidden="true"><div ref={progressRef} /></div>
         <div className="lb-hero-panel">
           <p className="lb-eyebrow lb-hero-who"><strong>Libni Fortuna</strong>A 12-week transformational group experience</p>
           <h1 className="lb-hero-title">Liberate</h1>
@@ -733,7 +751,11 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
               <p className="lb-lede" style={{ color: "var(--lb-plum)" }}>To feel safe in your body. Clear in your boundaries. Free in your energy. To lead your life from your center, not from your wounds.</p>
             </div>
           </div>
-          <div className="lb-c6 lb-bleed-right lb-reveal" style={{ transitionDelay: ".15s" }}><img src={weightImg} alt="Two Liberate students holding each other at the retreat" /></div>
+          <div className="lb-c6 lb-reveal lb-you-col" style={{ transitionDelay: ".15s" }}>
+            <figure className="lb-you-video">
+              <iframe src={`https://player.vimeo.com/video/${YOU_VIDEO}?background=1&autoplay=1&loop=1&muted=1&autopause=0&title=0&byline=0&portrait=0&dnt=1`} title="Inside Liberate" allow="autoplay; fullscreen; picture-in-picture" loading="lazy" />
+            </figure>
+          </div>
         </div>
       </section>
 
@@ -749,7 +771,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <figure className="lb-wins-photo lb-reveal" style={{ transitionDelay: ".1s" }}><img src="/photos/liberate/wins.jpg" alt="The Liberate 4 circle together at the retreat" loading="lazy" /><figcaption>The circle · Liberate 4</figcaption></figure>
           <ol className="lb-wins-list lb-reveal" style={{ transitionDelay: ".15s" }}>
             {WINS.map(([title, note, who], i) => (
-              <li key={title}>
+              <li key={title} style={{ "--i": i } as React.CSSProperties}>
                 <span>{String(i + 1).padStart(2, "0")}</span>
                 <div><h3>{title}</h3><p>{note} <small>— {who}</small></p></div>
               </li>
@@ -787,7 +809,10 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           </div>
           <div className="lb-method lb-reveal">
             {METHOD.map((m, i) => (
-              <article className="lb-stage" key={m.stage} style={{ transitionDelay: `${i * 0.08}s` }}>
+              <article className="lb-stage" key={m.stage} style={{ transitionDelay: `${i * 0.08}s` }} role="button" tabIndex={0}
+                onClick={() => { setWeek([1, 5, 9, 12][i]); document.querySelector(".lb-journey")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setWeek([1, 5, 9, 12][i]); document.querySelector(".lb-journey")?.scrollIntoView({ behavior: "smooth", block: "start" }); } }}
+                aria-label={`${m.stage} — jump to week ${[1, 5, 9, 12][i]}`}>
                 <p className="lb-eyebrow">{m.weeks}</p>
                 <h3>{m.stage}</h3>
                 <dl>
@@ -796,6 +821,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
                   <dt>Why it matters</dt><dd>{m.matters}</dd>
                   <dt>What changes</dt><dd>{m.changes}</dd>
                 </dl>
+                <span className="lb-stage-go">Week {[1, 5, 9, 12][i]} ↓</span>
               </article>
             ))}
           </div>
@@ -858,6 +884,18 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
               <h3>7 pm, with Libni + the Liberate community</h3>
               <p>The workshop space, where this intake learns alongside previous Liberate students. You’re not joining a program — you’re entering a community that’s already walking this road, and will still be here when your twelve weeks end.</p>
             </article>
+            <article className="lb-night">
+              <img className="lb-night-portal" src={photos.inside_7 || INSIDE_STOCK.inside_7} alt="The Liberate member portal" loading="lazy" />
+              <p className="lb-eyebrow">Your portal</p>
+              <h3>Everything, in one place.</h3>
+              <p>Every replay, the roadmap, guided meditations, practices and resources — for the whole journey.</p>
+            </article>
+            <article className="lb-night">
+              <img src={photos.inside_8 || INSIDE_STOCK.inside_8} alt="Liberate students together at golden hour" loading="lazy" />
+              <p className="lb-eyebrow">After the twelve weeks</p>
+              <h3>It doesn’t end.</h3>
+              <p>Liberate alumni are invited back into Thursday Labs, so the circle you build keeps growing with you — intake after intake.</p>
+            </article>
           </div>
 
           <div className="lb-head lb-reveal" style={{ marginTop: "clamp(56px, 7vw, 96px)" }}>
@@ -887,20 +925,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
               {clips.map((c, i) => <LbClip key={c.src + i} clip={c} />)}
             </div>
           )}
-        </div>
-      </section>
-
-            {/* 06c — PORTAL + AFTER */}
-      <section className="lb-sec lb-linen" style={{ paddingTop: 0 }}>
-        <div className="lb-wrap lb-after">
-          <article className="lb-after-card lb-reveal">
-            <img src={photos.inside_7 || INSIDE_STOCK.inside_7} alt="The Liberate member portal" loading="lazy" />
-            <div><p className="lb-eyebrow">Your portal</p><h3>Everything, in one place.</h3><p>Every replay, the roadmap, guided meditations, practices and resources — for the whole journey.</p></div>
-          </article>
-          <article className="lb-after-card lb-reveal" style={{ transitionDelay: ".12s" }}>
-            <img src={photos.inside_8 || INSIDE_STOCK.inside_8} alt="Liberate students together at golden hour" loading="lazy" />
-            <div><p className="lb-eyebrow">After the twelve weeks</p><h3>It doesn’t end.</h3><p>Liberate alumni are invited back into Thursday Labs, so the circle you build keeps growing with you — intake after intake.</p></div>
-          </article>
         </div>
       </section>
 
@@ -947,7 +971,23 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           )}
 
           <div className="lb-proof-feature lb-reveal">
-            <div className="lb-spot-fade" key={`p-${first.id}`}>{featurePhoto && <div className="lb-figure lb-proof-portrait"><img src={featurePhoto} alt={first.who} loading="lazy" /></div>}</div>
+            <div className="lb-spot-fade" key={`p-${first.id}`}>
+              {playFeat && featEmbed && "embed" in featEmbed ? (
+                <div className="lb-proof-portrait lb-proof-player" style={{ aspectRatio: featVideo?.w && featVideo?.h ? `${featVideo.w} / ${featVideo.h}` : "4 / 5" }}>
+                  <iframe src={`${featEmbed.embed}${featEmbed.embed.includes("?") ? "&" : "?"}autoplay=1&title=0&byline=0&portrait=0&dnt=1`} title={`${first.who} — her Liberate story`} allow="autoplay; fullscreen; picture-in-picture" />
+                </div>
+              ) : featurePhoto ? (
+                <div className="lb-figure lb-proof-portrait">
+                  <img src={featurePhoto} alt={first.who} loading="lazy" />
+                  {featEmbed && "embed" in featEmbed && (
+                    <button type="button" className="lb-spot-play" onClick={() => { setFeatAuto(false); setPlayFeat(true); }} aria-label={`Watch ${firstName}’s story`}>
+                      <span className="lb-spot-play-ring"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>
+                      <span>Watch {firstName}’s story{featVideo?.dur ? ` · ${mmss(featVideo.dur)}` : ""}</span>
+                    </button>
+                  )}
+                </div>
+              ) : null}
+            </div>
             <div>
               <div className="lb-spot-fade" key={`q-${first.id}`}>
                 <p className="lb-quote">{first.q}</p>
@@ -1068,11 +1108,11 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <div className="lb-fit lb-reveal">
             <div className="lb-fit-col">
               <h3>Liberate is for you if…</h3>
-              <ul>{FOR_YOU.map((x) => <li key={x}>{x}</li>)}</ul>
+              <ul>{FOR_YOU.map((x, i) => <li key={x} style={{ "--i": i } as React.CSSProperties}>{x}</li>)}</ul>
             </div>
             <div className="lb-fit-col lb-fit-not">
               <h3>Liberate isn’t for you — yet — if…</h3>
-              <ul>{NOT_FOR_YOU.map((x) => <li key={x}>{x}</li>)}</ul>
+              <ul>{NOT_FOR_YOU.map((x, i) => <li key={x} style={{ "--i": i } as React.CSSProperties}>{x}</li>)}</ul>
               <p className="lb-fit-note">None of that makes you wrong. It simply means this may not be your season yet.</p>
             </div>
           </div>
