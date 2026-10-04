@@ -111,8 +111,15 @@ const RETREAT_HERO_FALLBACK = "/photos/liberate/retreat-hero.jpg";
 // Real stories her students posted (reshared in her LIBer highlight) stand in until she uploads her own.
 const SHOT_FALLBACK = Array.from({ length: 16 }, (_, i) => `/photos/liberate/words-${i + 1}.jpg`);
 
-// Libni's own words, written after the second intake closed.
-const WINS = ["Many opportunities", "Mended relationships", "Stepping into the next version", "A new car", "The courage to pursue the dream life"];
+// What people want — each one grounded in something a student (or Libni, the night an intake closed) actually wrote.
+const WINS: [string, string, string][] = [
+  ["Knowing your worth", "“I am in my happiest, most healed, successful and healthiest version of myself.”", "Tiffany · Liberate 2"],
+  ["Relationships that feel like home", "“Mended relationships.” “I didn’t just find a community. I found women who feel like home.”", "Libni · Erika Mai, Liberate 4"],
+  ["Opportunities that find you", "“Many opportunities… having new car, having the courage to pursue the dream life.”", "Libni, the night intake 2 closed"],
+  ["The courage to choose yourself", "“The moment I let go and was bold enough to prioritize myself — the flow was just easy.”", "A student, day four of Liberate 2"],
+  ["A body that finally feels safe", "“Everything feels clearer, lighter and brighter.” “I am feeling grateful, abundant and powerful.”", "Mims · Danessa"],
+  ["A sisterhood for life", "“A sisterhood who gets me and who grows with me — where conversations are expansive and make life more meaningful.”", "Libni"],
+];
 
 const MOMENT_SLOTS = [
   ["moments_1", "In session"], ["moments_2", "The circle"], ["moments_3", "The work"],
@@ -392,7 +399,10 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-wins-head { display: grid; gap: 18px; }
         .lb-wins-head .lb-display { font-size: clamp(36px, 4.4vw, 64px); }
         .lb-wins-list { list-style: none; margin: 0; padding: 0; }
-        .lb-wins-list li { display: flex; gap: 22px; align-items: baseline; padding: 20px 0; border-top: 1px solid var(--lb-line-light); font-family: var(--serif); font-style: italic; font-size: clamp(26px, 2.8vw, 40px); line-height: 1.15; }
+        .lb-wins-list li { display: flex; gap: 22px; align-items: baseline; padding: 22px 0; border-top: 1px solid var(--lb-line-light); }
+        .lb-wins-list h3 { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: clamp(26px, 2.8vw, 40px); line-height: 1.12; }
+        .lb-wins-list p { margin-top: 8px; font-size: 14.5px; line-height: 1.6; color: rgba(251,249,246,.7); max-width: 56ch; }
+        .lb-wins-list small { font-family: var(--sans); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--lb-gold-soft); white-space: nowrap; }
         .lb-wins-list li:last-child { border-bottom: 1px solid var(--lb-line-light); }
         .lb-wins-list span { font-family: var(--sans); font-style: normal; font-size: 11px; letter-spacing: .24em; color: var(--lb-gold-soft); font-weight: 600; min-width: 26px; }
         .lb-paths { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 40px); margin-top: 36px; }
@@ -715,11 +725,16 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         <div className="lb-wrap">
           <div className="lb-wins-head lb-reveal">
             <p className="lb-eyebrow" style={{ color: "var(--lb-gold-soft)" }}>After three months</p>
-            <h2 className="lb-display">What they walked away with.</h2>
-            <p className="lb-muted" style={{ color: "rgba(251,249,246,.72)", maxWidth: "42ch", fontSize: 16 }}>In Libni’s words, written the night the second intake closed — and, the best part, “a sisterhood who gets me and who grows with me.”</p>
+            <h2 className="lb-display">What you walk away with.</h2>
+            <p className="lb-muted" style={{ color: "rgba(251,249,246,.72)", maxWidth: "42ch", fontSize: 16 }}>Not promises — patterns. Every line here is something a student wrote after her twelve weeks, or something I wrote the night an intake closed.</p>
           </div>
           <ol className="lb-wins-list lb-reveal" style={{ transitionDelay: ".15s" }}>
-            {WINS.map((w, i) => <li key={w}><span>{String(i + 1).padStart(2, "0")}</span>{w}</li>)}
+            {WINS.map(([title, note, who], i) => (
+              <li key={title}>
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <div><h3>{title}</h3><p>{note} <small>— {who}</small></p></div>
+              </li>
+            ))}
           </ol>
         </div>
       </section>
