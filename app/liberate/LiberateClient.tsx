@@ -62,6 +62,7 @@ const FACES: Record<string, string> = {
   jill: "/photos/liberate/face-jill.jpg", mims: "/photos/liberate/face-mims.jpg", zy: "/photos/liberate/face-zy.jpg",
   nick: "/photos/liberate/face-nick.jpg", sam: "/photos/liberate/face-sam.jpg", lea: "/photos/liberate/face-lea.jpg", risha: "/photos/liberate/face-risha.jpg",
   tonet: "/photos/liberate/face-tonet.jpg", bam: "/photos/liberate/face-bam.jpg", mitch: "/photos/liberate/face-mitch.jpg",
+  joyce: "/photos/liberate/face-joyce.jpg", precious: "/photos/liberate/face-precious.jpg", kimi: "/photos/liberate/face-kimi.jpg", ikay: "/photos/liberate/face-ikay.jpg", tiff2: "/photos/liberate/face-tiff.jpg",
 };
 const FEATURE_PHOTO: Record<string, string> = { tiff: "/photos/liberate/feature-tiff.jpg" };
 
@@ -85,6 +86,12 @@ const SESSIONS: [string, string][] = [
   ["session_3", "Breathwork, together"],
   ["session_4", "The final call"],
 ];
+type Clip = { src: string; poster?: string; label?: string };
+const DEFAULT_CLIPS: Clip[] = [
+  { src: "/videos/liberate/session-29.mp4", poster: "/photos/liberate/session-3.jpg", label: "Breathwork, together" },
+  { src: "/videos/liberate/session-32.mp4", poster: "/photos/liberate/session-1.jpg", label: "Favourite night of the week" },
+  { src: "/videos/liberate/session-05.mp4", poster: "/photos/liberate/session-4.jpg", label: "A guest in the circle" },
+];
 const SESSION_FALLBACK = ["/photos/liberate/session-1.jpg", "/photos/liberate/session-2.jpg", "/photos/liberate/session-3.jpg", "/photos/liberate/session-4.jpg"];
 
 // The in-person celebration & retreat gallery (real photos from the highlight).
@@ -92,7 +99,7 @@ const RETREAT_TILES: [string, string, string][] = [
   ["retreat_1", "Floating — a sound bath on the water", "/photos/liberate/retreat-1.jpg"],
   ["retreat_2", "The candlelit room", "/photos/liberate/retreat-2.jpg"],
   ["retreat_3", "Morning movement, mountains behind", "/photos/liberate/retreat-3.jpg"],
-  ["retreat_4", "Golden hour, all of us", "/photos/liberate/retreat-4.jpg"],
+  ["retreat_4", "All of us, at the table", "/photos/liberate/retreat-4.jpg"],
   ["retreat_5", "Held", "/photos/liberate/retreat-5.jpg"],
   ["retreat_6", "The ice bath", "/photos/liberate/retreat-6.jpg"],
 ];
@@ -114,10 +121,27 @@ const MOMENT_SLOTS: [string, string, string][] = [
   ["moments_1", "Wherever you are — one of us joined the celebration from the screen", "/photos/liberate/moments-1.jpg"],
   ["moments_2", "The last night", "/photos/liberate/moments-2.jpg"],
   ["moments_3", "Dinner, with the whole circle at the table", "/photos/liberate/moments-3.jpg"],
-  ["moments_4", "Mid-story", "/photos/liberate/moments-4.jpg"],
+  ["moments_4", "Mid-story, in the sharing circle", "/photos/liberate/moments-4.jpg"],
   ["moments_5", "Sound bath, by candlelight", "/photos/liberate/moments-5.jpg"],
   ["moments_6", "Cake, obviously", "/photos/liberate/moments-6.jpg"],
 ];
+
+function LbClip({ clip }: { clip: Clip }) {
+  const ref = useRef<HTMLVideoElement | null>(null);
+  useEffect(() => {
+    const v = ref.current;
+    if (!v || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) v.play().catch(() => {}); else v.pause(); }, { threshold: 0.4 });
+    io.observe(v);
+    return () => io.disconnect();
+  }, []);
+  return (
+    <figure className="lb-clip">
+      <video ref={ref} src={clip.src} poster={clip.poster} muted loop playsInline preload="none" aria-label={clip.label} />
+      {clip.label && <figcaption>{clip.label}</figcaption>}
+    </figure>
+  );
+}
 
 function Face({ src, name, size = 56 }: { src?: string; name: string; size?: number }) {
   if (src) return <img className="lb-face" src={src} alt="" width={size} height={size} style={{ width: size, height: size }} loading="lazy" />;
@@ -154,7 +178,8 @@ function LbVideo({ video, n }: { video: Video; n: number }) {
   );
 }
 
-export default function LiberateClient({ photos = {}, words: incoming, videos: incomingVideos = [] }: { photos?: Photos; words?: Word[]; videos?: Video[] }) {
+export default function LiberateClient({ photos = {}, words: incoming, videos: incomingVideos = [], clips: incomingClips = [] }: { photos?: Photos; words?: Word[]; videos?: Video[]; clips?: Clip[] }) {
+  const clips: Clip[] = incomingClips.length ? incomingClips : DEFAULT_CLIPS;
   const videos: Video[] = incomingVideos.length ? incomingVideos : DEFAULT_VIDEOS;
   const offer = OFFERS.liberate;
   // Client words come from the Studio (“Client stories”); the published quotes are the fallback.
@@ -252,6 +277,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb .lb-hero-sub { max-width: 54ch; color: rgba(251,249,246,.75); font-size: 15.5px; margin-top: 18px; }
         .lb .lb-hero-meta { display: flex; align-items: baseline; gap: 16px; margin: 18px 0 16px; padding-top: 14px; border-top: 1px solid var(--lb-line-light); font-family: var(--sans); font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: rgba(251,249,246,.6); }
         .lb-hero-meta strong { font-family: var(--serif); font-size: 24px; letter-spacing: 0; text-transform: none; color: var(--lb-gold-soft); font-weight: 400; font-style: italic; }
+        .lb-hero-meta { flex-wrap: wrap; row-gap: 6px; }
+        .lb-hero-meta small { font-family: var(--sans); font-size: 11px; letter-spacing: .18em; color: rgba(251,249,246,.6); }
+        .lb-hero-meta-sep { width: 1px; height: 22px; background: var(--lb-line-light); margin: 0 6px; align-self: center; }
 
         /* sections */
         .lb-sec { padding: clamp(88px, 11vw, 150px) 0; }
@@ -277,11 +305,11 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-statement h2 { font-size: clamp(42px, 6.4vw, 92px); line-height: 1; }
         .lb-statement .lb-intro { max-width: 62ch; margin: 0 auto; display: grid; gap: 1.1em; color: rgba(251,249,246,.86); }
         .lb-logo { width: min(100%, 380px); margin: 0 auto; opacity: .95; }
-        .lb-devices { margin: clamp(48px, 6vw, 88px) auto 0; max-width: 980px; text-align: center; }
+        .lb-devices { margin: clamp(16px, 2vw, 28px) auto clamp(8px, 1vw, 16px); max-width: 980px; text-align: center; }
         .lb-mockup { width: 100%; display: block; filter: drop-shadow(0 40px 60px rgba(0,0,0,.45)); animation: lbFloat 7s ease-in-out infinite; }
         @keyframes lbFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
         @media (prefers-reduced-motion: reduce) { .lb-mockup { animation: none; } }
-        .lb-devices-note { margin-top: 22px; font-family: var(--serif); font-style: italic; font-size: clamp(17px, 1.6vw, 21px); color: rgba(251,249,246,.75); }
+        .lb-devices-note { margin-top: 18px; font-family: var(--serif); font-style: italic; font-size: clamp(17px, 1.6vw, 21px); color: rgba(251,249,246,.75); }
         .lb-video figcaption q { quotes: "“" "”"; display: block; width: 100%; font-family: var(--serif); font-style: italic; font-size: 17px; line-height: 1.3; letter-spacing: 0; text-transform: none; margin-bottom: 8px; }
 
         /* 05 inside */
@@ -313,6 +341,11 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-finale p { font-family: var(--serif); font-size: clamp(22px, 2.2vw, 30px); line-height: 1.3; max-width: 22ch; }
 
         /* 06b sessions */
+        .lb-clips { display: flex; justify-content: center; gap: clamp(12px, 2vw, 22px); margin-top: clamp(36px, 5vw, 60px); }
+        .lb-clip { margin: 0; position: relative; width: clamp(150px, 17vw, 230px); aspect-ratio: 9 / 16; border-radius: 26px; border: 7px solid #15111a; background: #000; overflow: hidden; box-shadow: 0 26px 60px rgba(0,0,0,.28); }
+        .lb-clip:nth-child(2) { transform: translateY(-18px); }
+        .lb-clip video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+        .lb-clip figcaption { position: absolute; left: 12px; right: 12px; bottom: 12px; font-family: var(--sans); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--lb-ivory); text-shadow: 0 1px 8px rgba(0,0,0,.7); }
         .lb-sessions { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: clamp(40px, 5vw, 64px); }
         .lb-sessions figure { margin: 0; position: relative; overflow: hidden; }
         .lb-sessions img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; display: block; transition: transform 1.2s cubic-bezier(.2,.7,.2,1); }
@@ -423,7 +456,8 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
 
         /* 10 investment */
         .lb-invest { display: grid; grid-template-columns: 6fr 5fr; gap: clamp(40px, 6vw, 110px); align-items: start; }
-        .lb-price { font-family: var(--serif); font-size: clamp(64px, 8vw, 112px); line-height: 1; margin: 22px 0 8px; letter-spacing: -0.02em; }
+        .lb-price { font-family: var(--serif); font-size: clamp(64px, 8vw, 112px); line-height: 1; margin: 22px 0 8px; letter-spacing: -0.02em; color: var(--lb-plum); }
+        .lb-price small { display: inline-block; margin-left: 14px; font-family: var(--sans); font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--lb-gold); vertical-align: middle; }
         .lb-plan { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--lb-muted); }
         .lb-note { font-size: 15px; color: var(--lb-muted); max-width: 44ch; margin-top: 18px; }
         .lb-list { list-style: none; margin: 0; padding: 0; }
@@ -469,6 +503,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb { padding-bottom: 0; }
           .lb-road { gap: 48px; }
           .lb-sessions { grid-template-columns: 1fr; }
+          .lb-clips { overflow-x: auto; justify-content: flex-start; padding: 20px 4px 12px; margin-left: -4px; margin-right: -4px; scroll-snap-type: x mandatory; }
+          .lb-clip { flex: 0 0 48vw; scroll-snap-align: start; }
+          .lb-clip:nth-child(2) { transform: none; }
           .lb-devices-note { margin-top: 14px; }
           .lb-story-img { position: static; }
           .lb-mosaic { grid-template-columns: 1fr 1fr; }
@@ -484,7 +521,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <h1 className="lb-hero-title">Liberate</h1>
           <p className="lb-hero-lede">For the soul-led ones ready to let go of the weight and come home to their power.</p>
           <p className="lb-hero-sub">A 3-month transformational experience for people ready to break free from emotional patterns, people-pleasing, overthinking, and the quiet exhaustion of holding it all together. We meet twice a week — twenty-four live sessions, held together.</p>
-          <p className="lb-hero-meta"><span>We begin</span><strong>October 12, 2026 · 7 pm</strong></p>
+          <p className="lb-hero-meta"><span>We begin</span><strong>October 12, 2026 · 7 pm</strong><span className="lb-hero-meta-sep" /><span>Investment</span><strong>{price}</strong>{perMonth && <small>or {offer.instalmentCount} × {perMonth}</small>}</p>
           <div className="lb-ctas">
             <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">I’m ready to Liberate</a>
             <a href="#lb-for-me" className="lb-btn lb-btn-light">Is this for me?</a>
@@ -535,15 +572,16 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <div className="lb-reveal" style={{ transitionDelay: ".2s", display: "grid", gap: 26, justifyItems: "center", paddingTop: 30 }}>
             <p className="lb-eyebrow" style={{ color: "rgba(251,249,246,.7)" }}>Introducing</p>
             <img className="lb-logo" src="/liberate-logo-white.png" alt="Liberate with Libni" />
+          <div className="lb-devices">
+            <img className="lb-mockup" src={photos.zoom_screenshot || "/photos/liberate/zoom-mockup.png"} alt="A Liberate session on Zoom — the weekly circle on a laptop and a tablet" />
+            <p className="lb-devices-note">Twice a week, from wherever you are. This is the room.</p>
+          </div>
             <div className="lb-intro">
               <p className="lb-lede">A 3-month group experience that will help you release yourself from what no longer serves, reconnect with your truth, and rise, fully and unapologetically.</p>
               <p>This is where deep healing meets grounded embodiment. You won’t just talk about change. You’ll feel it in your body, your energy, your boundaries, and your life.</p>
             </div>
           </div>
-          <div className="lb-devices lb-reveal">
-            <img className="lb-mockup" src={photos.zoom_screenshot || "/photos/liberate/zoom-mockup.png"} alt="A Liberate session on Zoom — the weekly circle on a laptop and a tablet" />
-            <p className="lb-devices-note">Twice a week, from wherever you are. This is the room.</p>
-          </div>
+
         </div>
       </section>
 
@@ -603,8 +641,13 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         <div className="lb-wrap">
           <div className="lb-head lb-reveal">
             <div><p className="lb-eyebrow">What our sessions look like</p><h2 className="lb-display" style={{ marginTop: 14 }}>Come sit in the room.</h2></div>
-            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Twice a week on Zoom, wherever you are. Cameras on, hearts open — real screens from our weekly circles, so you can feel what a night in Liberate is like before you ever join one.</p>
+            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Twice a week on Zoom, wherever you are. Cameras on, hearts open — real moments from our weekly circles, so you can feel what a night in Liberate is like before you ever join one.</p>
           </div>
+          {clips.length > 0 && (
+            <div className="lb-clips lb-reveal">
+              {clips.map((c, i) => <LbClip key={c.src + i} clip={c} />)}
+            </div>
+          )}
           <div className="lb-sessions lb-reveal">
             {SESSIONS.map(([slot, label], i) => (
               <figure key={slot} style={{ transitionDelay: `${(i % 2) * 0.08}s` }}>
@@ -628,7 +671,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
               <p className="lb-lede" style={{ color: "var(--lb-ivory)" }}>It needs to be lived.</p>
             </div>
           </div>
-          <div className="lb-retreat-hero lb-reveal"><img src={retreatHero} alt="The Liberate retreat" /><figcaption>Out of the Zoom calls, into the mountains</figcaption></div>
+          <div className="lb-retreat-hero lb-reveal"><img src={retreatHero} alt="The Liberate retreat" /><figcaption>Out of the Zoom calls, into each other’s arms</figcaption></div>
           <div className="lb-mosaic lb-reveal">
             {retreatTiles.map(([label, src], i) => (
               <figure key={i}><img src={src} alt={label} loading="lazy" /><figcaption>{label}</figcaption></figure>
@@ -748,15 +791,15 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <div className="lb-reveal">
             <p className="lb-eyebrow">The investment</p>
             <h2 className="lb-display" style={{ marginTop: 14, maxWidth: "14ch" }}>Liberate, a 3-month group coaching experience.</h2>
-            <p className="lb-price">{price}</p>
+            <p className="lb-price">{price}<small>in full</small></p>
             {offer.allowInstalments && offer.instalmentCount && (
               <p className="lb-plan">In full, or {offer.instalmentCount} monthly payments of about {perMonth}. Other payment plans are always something we can talk about.</p>
             )}
             <div className="lb-paths">
               <div className="lb-path">
                 <p className="lb-eyebrow">If it’s a yes</p>
-                <h3>Join now.</h3>
-                <p>Choose full or three monthly payments, leave your details, pay — and your place is held the moment it clears. No call needed. Opens in a new tab.</p>
+                <h3>Join now — {price}.</h3>
+                <p>Or {offer.instalmentCount} monthly payments of {perMonth}. Leave your details, pay, and your place is held the moment it clears. No call needed. Opens in a new tab.</p>
                 <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-ink">Join now</a>
               </div>
               <div className="lb-path">

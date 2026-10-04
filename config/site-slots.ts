@@ -166,6 +166,7 @@ export const SLOT_GROUPS: SlotGroup[] = [
         hint: s.section,
         aspect: s.aspectRatio,
       })),
+      ...[1, 2, 3].map((n) => ({ id: `session_clip_${n}`, label: `Session clip ${n}`, hint: "A short vertical clip from a Zoom night (a story you posted works perfectly). Plays silently on loop under “Come sit in the room”.", aspect: "9/16", kind: "video" as const })),
       ...[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => ({ id: `lib_video_${n}`, label: `Student video ${n}`, hint: "A Liberate student speaking on camera — paste a Vimeo / YouTube link or upload an MP4. Any of these replaces the built-in set under “Hear it from them”.", aspect: "9/16", kind: "video" as const })),
     ],
   },

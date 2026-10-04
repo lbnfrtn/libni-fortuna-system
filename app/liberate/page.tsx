@@ -16,6 +16,7 @@ export default async function LiberatePage() {
   const known = new Set(DEFAULT_LIBERATE_VIDEOS.map((v) => vimeoId(v.url)));
   const extras = enriched.filter((v) => (v.poster || v.name) && !known.has(vimeoId(v.url)));
   const videos = [...DEFAULT_LIBERATE_VIDEOS, ...extras];
+  const clips = [1, 2, 3].map((n) => videoSlots[`session_clip_${n}`] ?? "").filter((u) => resolveVideo(u)).map((src) => ({ src }));
   // Liberate's own testimonials first; then stories tagged Liberate; otherwise the featured ones from across the work.
   const tagged = stories.filter((s) => /liberate/i.test(s.program ?? ""));
   const words = liberateWords.length
@@ -23,7 +24,7 @@ export default async function LiberatePage() {
     : (tagged.length ? tagged : stories.filter((s) => s.featured)).map((s) => ({ id: s.id, q: s.quote, who: s.name, role: s.role, photo: photos[`story_${s.id}`] }));
   return (
     <SitePage navOverlay>
-      <LiberateClient photos={photos} words={words} videos={videos} />
+      <LiberateClient photos={photos} words={words} videos={videos} clips={clips} />
     </SitePage>
   );
 }
