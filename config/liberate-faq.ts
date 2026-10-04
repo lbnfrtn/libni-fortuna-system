@@ -2,7 +2,8 @@
 // anything she hasn't decided is written as "to be announced", never guessed.
 export const LIBERATE_FAQ: { q: string; a: string }[] = [
   { q: "When does Liberate start, and when do we meet?", a: "The next circle begins Tuesday, November 3, 2026. We meet twice a week at 7 pm (Manila time): Tuesdays and Thursdays, for twelve weeks — we rest over Christmas and New Year (December 22 and 29) and continue January 5 — with the in-person retreat in the final week." },
-  { q: "What’s the difference between Tuesday and Thursday?", a: "Tuesday is the coaching circle with Libni — a check-in to be heard, then the week’s deeper work. Thursday is a bonus workshop night: previous Liberate students join the circle, so you’re learning alongside women who have walked this road before you." },
+  { q: "What’s the difference between Tuesday and Thursday?", a: "Tuesday is the Circle — the coaching space with Libni: a check-in to be heard, then the week’s deeper work. Thursday is the Lab — the workshop space with Libni and the Liberate community, where this intake learns alongside previous Liberate students." },
+  { q: "What happens after the twelve weeks?", a: "The circle doesn’t close. Liberate alumni are invited back into Thursday Labs, so you keep learning alongside every intake that follows." },
   { q: "What if I can’t make a night?", a: "Every session is recorded. The replay lands in your portal, together with that week’s practices, so you can catch up in your own time." },
   { q: "Is it online or in person?", a: "The twelve weeks are on Zoom, from wherever you are. The final week is an in-person retreat." },
   { q: "Tell me about the retreat.", a: "It closes the journey: time to slow down, integrate and celebrate together, in person. Most likely in Batangas — exact dates will be announced inside the circle. Your stay and meals are covered as part of Liberate; you arrange your own transport there and back." },
@@ -13,5 +14,5 @@ export const LIBERATE_FAQ: { q: string; a: string }[] = [
   { q: "Who is this for?", a: "Women who have done the mindset work and still feel the old patterns pulling — the people-pleasing, the overthinking, the quiet exhaustion of holding it all together — and are ready to go beneath the surface, in a small circle, with support." },
   { q: "Do I need experience with breathwork, meditation or energy work?", a: "No. Everything is guided, and nothing is performed. You come as you are; the practices meet you where you are." },
   { q: "Is Liberate therapy?", a: "No. Liberate is group coaching, somatic and energy work — not therapy or medical care. If you are under the care of a doctor or therapist, please keep that care alongside this work." },
-  { q: "What do I get access to?", a: "Twenty-four live nights across twelve weeks, every replay, your own online portal with the roadmap, guided meditations and practices, a private community, and the closing in-person retreat." },
+  { q: "What do I get access to?", a: "Twelve weeks live — twelve Tuesday Circles with Libni and twelve Thursday Labs with the community — every replay, your own portal with the roadmap, guided meditations, practices and resources, a private community, alumni access to Thursday Labs after your intake, and the closing in-person retreat with your stay and meals covered." },
 ];

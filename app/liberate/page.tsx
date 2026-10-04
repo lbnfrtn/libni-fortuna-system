@@ -7,6 +7,11 @@ import { DEFAULT_LIBERATE_VIDEOS, vimeoId } from "@/config/liberate-videos";
 
 export const dynamic = "force-dynamic";
 
+export const metadata = {
+  title: "Liberate · a 12-week transformational group experience with Libni Fortuna",
+  description: "A 12-week transformational group experience for people ready to break the patterns of people-pleasing, overthinking, emotional overwhelm and self-doubt — and learn to trust themselves again. Live twice a week, a private community, your own portal, and an in-person retreat to close. Begins November 3, 2026.",
+};
+
 export default async function LiberatePage() {
   const { photos, videos: videoSlots, stories, liberateWords } = await getContent();
   const videoUrls = Array.from({ length: 10 }, (_, i) => videoSlots[`lib_video_${i + 1}`] ?? "").filter((u) => resolveVideo(u));

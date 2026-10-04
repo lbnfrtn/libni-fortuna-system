@@ -9,15 +9,12 @@ import { LIBERATE_FAQ } from "@/config/liberate-faq";
 
 type Photos = Record<string, string>;
 
-const INSIDE = [
-  ["Live sessions, twice a week", "Tuesdays at 7 pm: the coaching circle with Libni — a check-in to be heard, then the week’s deeper work. Thursdays at 7 pm: a bonus workshop night, where previous Liberate students join the circle. Twelve weeks, every night recorded, so if you miss one the replay is waiting for you.", "inside_1"],
-  ["Subconscious reprogramming", "Release old beliefs and patterns stored deep within, and create new ones rooted in self-trust and truth.", "inside_2"],
-  ["Energetic exploration and chakra alignment", "Understand your energy body and return to balance through breathwork and gentle practices.", "inside_3"],
-  ["Spiritual tools and intuitive activation", "Deepen your connection with intuition, inner knowing, and your spiritual path.", "inside_4"],
-  ["Journaling and breakthrough exercises", "Process each layer of your transformation with clarity and intention, guided every step of the way.", "inside_5"],
-  ["Private community", "You’re not doing this alone. You’ll be surrounded by like-hearted people walking this path with you.", "inside_6"],
-  ["Your own online portal", "Your private home for the whole journey — the replays of every session, a library of guided meditations, workshops, practices and resources to support you throughout.", "inside_7"],
-  ["In-person celebratory retreat", "Anchor everything you’ve integrated in a closing retreat designed to help you ground your growth and embody your liberation.", "inside_8"],
+// What you'll practice — four threads (Studio photo slots inside_5 / inside_4 / inside_2 / inside_6).
+const PRACTICE = [
+  ["Seeing the pattern — and its root", "Where it came from, what it protects, and the identity you built around it.", "inside_5"],
+  ["Feeling, and moving emotion through the body", "Breathwork and somatic practice, so a feeling can move instead of being managed.", "inside_4"],
+  ["Repatterning beneath the surface", "Working with the subconscious stories under the behaviour, not just the behaviour.", "inside_2"],
+  ["Self-trust, voice and boundaries", "Choosing yourself without guilt. Saying the true thing. Taking up space.", "inside_6"],
 ] as const;
 
 const ROADMAP = [
@@ -48,8 +45,9 @@ const WORDS: Word[] = [
 ];
 
 const INCLUDED = [
-  "3-month group experience", "12 Tuesday coaching circles with Libni", "12 Thursday workshop nights, with the alumni", "Replays of every session", "Subconscious work", "Shadow work", "Somatic practices", "Breathwork",
-  "Energetic exploration", "Guided meditations", "Private community", "Your own online portal", "Celebratory overnight retreat, in person",
+  "12 weeks, live", "12 Tuesday Circles with Libni", "12 Thursday Labs with the Liberate community", "Every replay",
+  "Your own portal — roadmap, guided meditations, practices, resources", "A private community",
+  "Alumni access to Thursday Labs after your intake", "The closing in-person retreat — stay and meals covered",
 ];
 
 type Word = { id?: string; q: string; who: string; role?: string; photo?: string };
@@ -112,22 +110,50 @@ const SHOT_FALLBACK = Array.from({ length: 16 }, (_, i) => `/photos/liberate/wor
 
 // What people want — each one grounded in something a student (or Libni, the night an intake closed) actually wrote.
 const WINS: [string, string, string][] = [
-  ["Knowing your worth", "“I am in my happiest, most healed, successful and healthiest version of myself.”", "Tiffany · Liberate 2"],
-  ["Relationships that feel like home", "“I didn’t just find a community. I found women who feel like home.”", "Erika Mai · Liberate 4"],
-  ["Opportunities that find you", "“I quit the grind, and the wins rolled in.” New rooms, new work, a new car.", "Zy · Liberate 2"],
-  ["The courage to choose yourself", "“The moment I let go and was bold enough to prioritize myself — the flow was just easy.”", "A student · Liberate 2"],
-  ["A body that finally feels safe", "“Everything feels clearer, lighter and brighter. I am feeling grateful, abundant and powerful.”", "Mims & Danessa"],
-  ["A sisterhood for life", "“Even if we haven’t met each other in person, it’s like we’re sisters already.”", "Danessa · Liberate 2"],
+  ["You’ll recognise your patterns without becoming them.", "“Everything feels clearer, lighter and brighter.”", "Mims · Liberate 1"],
+  ["You’ll set boundaries without drowning in guilt.", "“The moment I let go and was bold enough to prioritize myself — the flow was just easy.”", "A student · Liberate 2"],
+  ["You’ll trust yourself instead of outsourcing every decision.", "“I just became so confident in myself that I trust myself, and I know I can do anything.”", "Tonet · Liberate 3"],
+  ["You’ll feel your emotions without being consumed by them.", "“Ang sarap huminga ng malaya, ng wala kang iniisip na kahit ano.”", "Precious · Liberate 4"],
+  ["You’ll take up space without apologising for existing.", "“It taught me to be more authentic and more accepting of who I am.”", "Mitch · Liberate 4"],
+  ["You’ll create from self-trust instead of survival.", "“I quit the grind, and the wins rolled in.”", "Zy · Liberate 2"],
 ];
 
-const MOMENT_SLOTS: [string, string, string][] = [
-  ["moments_1", "Wherever you are — one of us joined the celebration from the screen", "/photos/liberate/moments-1.jpg"],
-  ["moments_2", "The last night", "/photos/liberate/moments-2.jpg"],
-  ["moments_3", "Dinner, with the whole circle at the table", "/photos/liberate/moments-3.jpg"],
-  ["moments_4", "Mid-story, in the sharing circle", "/photos/liberate/moments-4.jpg"],
-  ["moments_5", "Sound bath, by candlelight", "/photos/liberate/moments-5.jpg"],
-  ["moments_6", "Cake, obviously", "/photos/liberate/moments-6.jpg"],
+const METHOD: { stage: string; weeks: string; happens: string; explore: string; matters: string; changes: string }[] = [
+  { stage: "See", weeks: "Weeks 1–4", happens: "We slow down enough to look.", explore: "The patterns, beliefs and conditioning that have been running your life — and the identities you built around them.", matters: "You can’t change what you can’t see.", changes: "You catch the pattern while it’s happening, instead of after." },
+  { stage: "Feel", weeks: "Weeks 5–8", happens: "We go beneath understanding.", explore: "The emotions you learned to suppress, the subconscious stories under them, your own voice, your boundaries.", matters: "A pattern isn’t only a thought. It’s often a feeling, a reflex, a response you’ve learned to repeat.", changes: "You can feel something fully and stay with yourself." },
+  { stage: "Become", weeks: "Weeks 9–11", happens: "Practice, in real life.", explore: "New ways of choosing, speaking, relating and showing up; a nervous system with more room for safety and receiving.", matters: "Insight fades; practice stays.", changes: "The new way starts to feel like you." },
+  { stage: "Arrival", weeks: "Week 12 + the retreat", happens: "Integration, in person.", explore: "How it all lands in your actual life.", matters: "Transformation needs to be lived, not just understood.", changes: "You leave more self-trusting, grounded, expressed — and free." },
 ];
+
+const THEMES = ["Self-trust", "Community", "Emotional freedom", "Boundaries", "Self-expression", "Confidence"] as const;
+type Theme = (typeof THEMES)[number];
+const THEME_OF: Record<string, Theme> = {
+  tonet: "Self-trust", mitch: "Self-trust", joyce: "Self-trust",
+  erika: "Community", danessa: "Community", zy: "Community", vivs: "Community", risha: "Community",
+  precious: "Emotional freedom", ikay: "Emotional freedom", mims: "Emotional freedom", bam: "Emotional freedom",
+  jilla: "Boundaries",
+  nick: "Self-expression", petalio: "Self-expression", tiff2: "Self-expression", dayone: "Self-expression",
+  tiff: "Confidence", jill: "Confidence", sam: "Confidence", kimi: "Confidence", lea: "Confidence",
+};
+
+const FOR_YOU = [
+  "You’re tired of repeating the same patterns — and you can finally admit it.",
+  "You’re ready to look at yourself honestly, with kindness.",
+  "You want to feel, not just understand.",
+  "You want to build self-trust, not borrow someone else’s certainty.",
+  "You’re ready to stop abandoning yourself.",
+  "You want company while you do deep work.",
+  "You’re willing to take responsibility for your own transformation.",
+];
+const NOT_FOR_YOU = [
+  "You’d like someone else to fix you.",
+  "You want content to watch, not work to do.",
+  "You’re looking for a quick mindset hack.",
+  "You’d rather not look at your own patterns right now.",
+  "You want things to change without practising anything differently.",
+];
+
+
 
 function LbClip({ clip }: { clip: Clip }) {
   const ref = useRef<HTMLVideoElement | null>(null);
@@ -185,14 +211,13 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
   const clips: Clip[] = incomingClips.length ? incomingClips : DEFAULT_CLIPS;
   const [week, setWeek] = useState(1);
   const [plan, setPlan] = useState<"full" | "instalment">("full");
+  const [theme, setTheme] = useState<Theme | "All">("All");
   const videos: Video[] = incomingVideos.length ? incomingVideos : DEFAULT_VIDEOS;
   const offer = OFFERS.liberate;
   // Client words come from the Studio (“Client stories”); the published quotes are the fallback.
   const WORDS_SHOWN: Word[] = (incoming && incoming.length ? incoming : WORDS).map((w) => ({ ...w, photo: w.photo || (w.id ? FACES[w.id] : undefined) }));
   const first = WORDS_SHOWN[0];
   const featurePhoto = photos.libw_feature || (first.id && FEATURE_PHOTO[first.id]) || first.photo;
-  const uploadedMoments = MOMENT_SLOTS.filter(([id]) => photos[id]);
-  const momentPhotos: [string, string][] = uploadedMoments.length ? uploadedMoments.map(([id, label]) => [label, photos[id]]) : MOMENT_SLOTS.map(([, label, src]) => [label, src]);
   const uploadedShots = SHOT_SLOTS.map((id) => photos[id]).filter(Boolean);
   const shots = uploadedShots.length ? uploadedShots : SHOT_FALLBACK;
   const instalment = offer.allowInstalments && offer.instalmentCount ? Math.floor((offer.pricePHP ?? 0) / offer.instalmentCount) : 0;
@@ -214,7 +239,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
   const price = offer.pricePHP ? `₱${offer.pricePHP.toLocaleString("en-PH")}` : "TBA";
 
   const heroImg = photos.hero_portrait || "/photos/libni-hero.jpg";
-  const momentImg = photos.moment_portrait || "/photos/libni-portrait.jpg";
   const weightImg = photos.bath_portrait || "/photos/liberate-libni-thought.jpg";
   const storyImg = photos.story_portrait || "/photos/liberate-libni-warm.jpg";
   const uploadedRetreat = RETREAT_TILES.filter(([id]) => photos[id]);
@@ -282,9 +306,13 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-hero-who strong { display: block; color: var(--lb-ivory); font-weight: 600; letter-spacing: .3em; margin-bottom: 6px; }
         .lb-hero-title { font-size: clamp(84px, 12.5vw, 172px); line-height: .9; letter-spacing: -0.03em; margin: 12px 0 14px; font-weight: 400; }
         .lb-hero-lede { font-family: var(--serif); font-size: clamp(24px, 2.4vw, 34px); line-height: 1.16; font-style: italic; max-width: 25ch; color: var(--lb-ivory); }
-        .lb .lb-hero-sub { max-width: 54ch; color: rgba(251,249,246,.75); font-size: 15.5px; margin-top: 18px; }
+        .lb .lb-hero-sub { max-width: 54ch; color: rgba(251,249,246,.78); font-size: 15.5px; margin-top: 16px; }
+        .lb .lb-hero-sub2 { margin-top: 14px; color: var(--lb-ivory); font-family: var(--serif); font-size: 19px; line-height: 1.45; font-style: italic; }
+        .lb .lb-hero-facts { list-style: none; display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 22px 0 0; padding: 0; font-family: var(--sans); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--lb-gold-soft); }
+        .lb .lb-hero-facts li { white-space: nowrap; }
+        .lb .lb-hero-facts li + li::before { content: "·"; margin-right: 18px; color: rgba(251,249,246,.35); }
         .lb .lb-hero-meta { display: flex; align-items: baseline; gap: 16px; margin: 18px 0 16px; padding-top: 14px; border-top: 1px solid var(--lb-line-light); font-family: var(--sans); font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: rgba(251,249,246,.6); }
-        .lb-hero-meta strong { font-family: var(--serif); font-size: 24px; letter-spacing: 0; text-transform: none; color: var(--lb-gold-soft); font-weight: 400; font-style: italic; }
+        .lb-hero-meta strong { font-family: var(--serif); font-size: 22px; letter-spacing: 0; text-transform: none; color: var(--lb-gold-soft); font-weight: 400; font-style: italic; }
         .lb-hero-meta { flex-wrap: wrap; row-gap: 6px; }
         .lb-hero-meta small { font-family: var(--sans); font-size: 11px; letter-spacing: .18em; color: rgba(251,249,246,.6); }
         .lb-hero-meta-sep { width: 1px; height: 22px; background: var(--lb-line-light); margin: 0 6px; align-self: center; }
@@ -356,6 +384,39 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-jbtn { background: none; border: 1px solid var(--lb-line); padding: 10px 18px; font-family: var(--sans); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; cursor: pointer; color: var(--lb-ink); transition: border-color .3s, background .3s; }
         .lb-jbtn:hover:not(:disabled) { border-color: var(--lb-ink); background: var(--lb-ivory); }
         .lb-jbtn:disabled { opacity: .35; cursor: default; }
+
+        .lb-quiet { display: inline-block; margin-top: 6px; font-family: var(--sans); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--lb-gold-soft); text-decoration: none; border-bottom: 1px solid rgba(216,195,154,.5); padding-bottom: 4px; }
+        .lb-method { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: clamp(40px, 5vw, 64px); }
+        .lb-stage { background: var(--lb-ivory); border: 1px solid var(--lb-line); padding: clamp(22px, 2.4vw, 32px); display: grid; gap: 12px; align-content: start; }
+        .lb-stage h3 { font-size: clamp(40px, 4vw, 56px); line-height: 1; font-style: italic; color: var(--lb-plum); }
+        .lb-stage dl { display: grid; gap: 10px; margin-top: 6px; }
+        .lb-stage dt { font-family: var(--sans); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--lb-gold); font-weight: 600; }
+        .lb-stage dd { margin: 0 0 4px; font-size: 14.5px; line-height: 1.55; color: var(--lb-muted); }
+        .lb-stage dd:last-child { color: var(--lb-ink); font-family: var(--serif); font-size: 18px; line-height: 1.35; }
+        .lb-nights { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3vw, 44px); margin-top: clamp(40px, 5vw, 64px); }
+        .lb-night { display: grid; gap: 12px; align-content: start; }
+        .lb-night img { width: 100%; aspect-ratio: 3 / 2; object-fit: cover; margin-bottom: 10px; }
+        .lb-night h3 { font-size: clamp(26px, 2.4vw, 34px); line-height: 1.1; }
+        .lb-night p:not(.lb-eyebrow) { font-size: 16px; line-height: 1.65; color: var(--lb-muted); max-width: 48ch; }
+        .lb-after { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 3vw, 44px); }
+        .lb-after-card { display: grid; grid-template-columns: 180px 1fr; gap: 22px; align-items: center; background: var(--lb-ivory); border: 1px solid var(--lb-line); padding: 18px; }
+        .lb-after-card img { width: 100%; aspect-ratio: 1; object-fit: cover; }
+        .lb-after-card h3 { font-size: 26px; line-height: 1.1; margin: 6px 0 8px; }
+        .lb-after-card p:not(.lb-eyebrow) { font-size: 14.5px; line-height: 1.6; color: var(--lb-muted); }
+        .lb-themes { display: flex; flex-wrap: wrap; gap: 8px; margin-top: clamp(56px, 7vw, 96px); }
+        .lb-chip { border: 1px solid var(--lb-line); background: none; padding: 9px 16px; border-radius: 999px; font-family: var(--sans); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--lb-ink); cursor: pointer; transition: background .25s, color .25s, border-color .25s; }
+        .lb-chip:hover { border-color: var(--lb-plum); }
+        .lb-chip.on { background: var(--lb-plum); border-color: var(--lb-plum); color: var(--lb-ivory); }
+        .lb-tag { font-family: var(--sans); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--lb-gold); font-weight: 600; }
+        .lb-fit { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 64px); margin-top: clamp(32px, 4vw, 48px); }
+        .lb-fit-col h3 { font-size: clamp(26px, 2.4vw, 34px); font-style: italic; color: var(--lb-plum); margin-bottom: 18px; }
+        .lb-fit-col ul { list-style: none; margin: 0; padding: 0; }
+        .lb-fit-col li { padding: 14px 0 14px 28px; border-top: 1px solid var(--lb-line); font-size: 17px; line-height: 1.5; position: relative; }
+        .lb-fit-col li::before { content: "—"; position: absolute; left: 0; color: var(--lb-gold); }
+        .lb-fit-col li:last-child { border-bottom: 1px solid var(--lb-line); }
+        .lb-fit-not h3 { color: var(--lb-muted); }
+        .lb-fit-note { margin-top: 20px; font-family: var(--serif); font-style: italic; font-size: 20px; color: var(--lb-muted); }
+        .lb-refund { margin-top: 16px; font-size: 13px; line-height: 1.6; color: var(--lb-muted); max-width: 52ch; }
 
         /* 07 retreat */
         .lb-retreat-head { max-width: 900px; }
@@ -430,10 +491,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-wall .lb-word-head { margin-bottom: 0; order: 2; padding-top: 14px; border-top: 1px solid var(--lb-line); }
         .lb-word-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
         .lb-word-head .lb-who { margin-top: 0; }
-        .lb-cta-strip { background: var(--lb-night); color: var(--lb-ivory); padding: clamp(56px, 7vw, 96px) 0; }
-        .lb-cta-in { display: flex; justify-content: space-between; align-items: center; gap: 32px; flex-wrap: wrap; }
-        .lb-cta-in h2 { font-size: clamp(34px, 4vw, 56px); font-style: italic; line-height: 1.05; margin: 10px 0 12px; }
-        .lb-cta-in p:not(.lb-eyebrow) { color: rgba(251,249,246,.72); font-size: 16px; max-width: 46ch; }
         .lb-shots { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 4px 18px; margin: 0 -4px; scrollbar-width: thin; }
         .lb-shots figure { flex: 0 0 clamp(200px, 19vw, 260px); scroll-snap-align: start; }
         .lb-wins { padding: clamp(72px, 9vw, 120px) 0; }
@@ -521,6 +578,8 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb-checkout { position: static; }
           .lb-wins-photo { max-width: 360px; }
           .lb-wall { grid-template-columns: 1fr; }
+          .lb-method, .lb-nights, .lb-after, .lb-fit { grid-template-columns: 1fr; }
+          .lb-after-card { grid-template-columns: 120px 1fr; }
           .lb-proof-feature { grid-template-columns: 1fr; }
           .lb-proof-portrait { max-width: 320px; }
           .lb-videos { align-items: center; }
@@ -545,51 +604,60 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
       {/* 01 — HERO */}
       <section className="lb-hero" id="top" ref={heroRef}>
         <div className="lb-hero-panel">
-          <p className="lb-eyebrow lb-hero-who"><strong>Libni Fortuna</strong>Life Strategist · Transformational mentor · Experience curator</p>
+          <p className="lb-eyebrow lb-hero-who"><strong>Libni Fortuna</strong>A 12-week transformational group experience</p>
           <h1 className="lb-hero-title">Liberate</h1>
-          <p className="lb-hero-lede">For the soul-led ones ready to let go of the weight and come home to their power.</p>
-          <p className="lb-hero-sub">A 3-month transformational experience for people ready to break free from emotional patterns, people-pleasing, overthinking, and the quiet exhaustion of holding it all together. We meet twice a week — twelve Tuesday circles with Libni, and twelve Thursday workshop nights with the Liberate alumni.</p>
+          <p className="lb-hero-lede">Stop abandoning yourself to keep everything else together.</p>
+          <p className="lb-hero-sub">A 12-week transformational group experience for people ready to break the patterns of people-pleasing, overthinking, emotional overwhelm and self-doubt — and learn to trust themselves again.</p>
+          <p className="lb-hero-sub lb-hero-sub2">Live twice a week. A private community. Your own portal. An in-person retreat to close.</p>
+          <ul className="lb-hero-facts"><li>12 weeks</li><li>Live Tue &amp; Thu</li><li>Private circle</li><li>Online portal</li><li>Closing retreat</li></ul>
           <p className="lb-hero-meta"><span>We begin</span><strong>November 3, 2026 · 7 pm</strong><span className="lb-hero-meta-sep" /><span>Investment</span><strong>{price}</strong>{perMonth && <small>or {offer.instalmentCount} × {perMonth}</small>}</p>
           <div className="lb-ctas">
             <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">I’m ready to Liberate</a>
-            <a href="#lb-for-me" className="lb-btn lb-btn-light">Is this for me?</a>
+            <a href="#for-you" className="lb-btn lb-btn-light">Is this for me?</a>
           </div>
           <p className="lb-hero-proof"><span>Four intakes since 2024</span>“I found women who feel like home.” <em>Erika Mai · Liberate 4</em></p>
         </div>
         <div className="lb-hero-media"><img src={heroImg} alt="Libni Fortuna" /></div>
       </section>
 
-      {/* 02 — THE MOMENT */}
-      <section className="lb-sec lb-ivory">
-        <div className="lb-wrap lb-split">
-          <div className="lb-figure lb-c5 lb-reveal"><img src={momentImg} alt="Libni, seated and still" /></div>
-          <div className="lb-off1 lb-stack lb-reveal" style={{ transitionDelay: ".15s" }}>
-            <h2 className="lb-display">There comes a moment when the tools stop working.</h2>
-            <div className="lb-tools"><span>The affirmation.</span><span>The mindset shift.</span><span>The journaling.</span><span>The spiritual checklist.</span></div>
-            <div className="lb-copy">
-              <p>They once brought comfort, but now they feel like surface noise.</p>
-              <p>Not because you’re doing it wrong. Because you’re ready for something deeper.</p>
-              <p>Liberate is a 3-month group coaching experience for soul-led humans ready to break free from emotional patterns, people-pleasing, and the quiet burnout of holding it all together, and step into their next level of wholeness, power, and spiritual expansion.</p>
-            </div>
-            <div className="lb-ctas"><a href="#lb-for-me" className="lb-btn lb-btn-ghost">Is this for me?</a></div>
-          </div>
-        </div>
-      </section>
-
-      {/* 03 — THE WEIGHT */}
+            {/* 02 — THIS IS YOU */}
       <section className="lb-sec lb-linen" id="lb-for-me">
         <div className="lb-wrap lb-split">
           <div className="lb-c6 lb-stack lb-reveal">
             <h2 className="lb-display">They’ve called you intuitive. Grounded. <span className="lb-em" style={{ color: "var(--lb-plum)" }}>Even strong.</span></h2>
             <p className="lb-lede">But what they don’t see is the quiet weight you carry.</p>
             <div className="lb-copy">
-              <p>The overthinking. The people-pleasing. The constant shapeshifting just to feel safe or seen.</p>
-              <p>You’ve built a life, maybe even a business, but deep down, you still question your worth. You still feel the pull of old stories, emotional loops, and spiritual disconnection.</p>
-              <p>And yet there’s a whisper beneath it all. A part of you that knows it’s time to break the cycle. To stop managing your healing and start embodying it.</p>
+              <p>The overthinking. The people-pleasing. The constant shapeshifting just to feel safe or seen. You’ve built a life, maybe even a business — and deep down you still question your worth, still feel the pull of old stories and emotional loops.</p>
+              <p>Here’s the part nobody says out loud: <strong>you already know better.</strong> You’ve read the books. You’ve done the affirmations, the journaling, the mindset work. You can name the pattern while you’re inside it.</p>
             </div>
-            <p className="lb-pull">To feel safe in your body. Clear in your boundaries. Free in your energy. To lead your life from your center, not from your wounds.</p>
+            <p className="lb-pull">Knowing better isn’t the same as living differently.</p>
+            <div className="lb-copy">
+              <p>The pattern isn’t always changed by knowing. It can live in your body, your nervous system, your reflexes — in the places a good idea can’t reach on its own. That’s where Liberate works.</p>
+              <p className="lb-lede" style={{ color: "var(--lb-plum)" }}>To feel safe in your body. Clear in your boundaries. Free in your energy. To lead your life from your center, not from your wounds.</p>
+            </div>
           </div>
           <div className="lb-c6 lb-bleed-right lb-reveal" style={{ transitionDelay: ".15s" }}><img src={weightImg} alt="Libni" /></div>
+        </div>
+      </section>
+
+{/* 03 — WHAT CHANGES */}
+      <section className="lb-sec lb-plum lb-wins" id="changes">
+        <div className="lb-wrap">
+          <div className="lb-wins-head lb-reveal">
+            <p className="lb-eyebrow" style={{ color: "var(--lb-gold-soft)" }}>After twelve weeks</p>
+            <h2 className="lb-display">What will actually be different.</h2>
+            <p className="lb-muted" style={{ color: "rgba(251,249,246,.72)", maxWidth: "42ch", fontSize: 16 }}>Not promises. Patterns. Each of these is something a student wrote after her twelve weeks.</p>
+            <a href="#method" className="lb-quiet">See how the twelve weeks work ↓</a>
+          </div>
+          <figure className="lb-wins-photo lb-reveal" style={{ transitionDelay: ".1s" }}><img src="/photos/liberate/wins.jpg" alt="The Liberate 4 circle together at the retreat" loading="lazy" /><figcaption>The circle · Liberate 4</figcaption></figure>
+          <ol className="lb-wins-list lb-reveal" style={{ transitionDelay: ".15s" }}>
+            {WINS.map(([title, note, who], i) => (
+              <li key={title}>
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                <div><h3>{title}</h3><p>{note} <small>— {who}</small></p></div>
+              </li>
+            ))}
+          </ol>
         </div>
       </section>
 
@@ -605,47 +673,38 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             <p className="lb-devices-note">Twice a week, from wherever you are. This is the room.</p>
           </div>
             <div className="lb-intro">
-              <p className="lb-lede">A 3-month group experience that will help you release yourself from what no longer serves, reconnect with your truth, and rise, fully and unapologetically.</p>
-              <p>This is where deep healing meets grounded embodiment. You won’t just talk about change. You’ll feel it in your body, your energy, your boundaries, and your life.</p>
+              <p className="lb-lede">Twelve weeks to release what no longer serves you, reconnect with your truth, and rise fully into the person you’re becoming.</p>
+              <p>Deep inner work meets grounded, everyday change. You won’t just talk about it. You’ll practice it in your body, your boundaries, your relationships and your life.</p>
             </div>
           </div>
 
         </div>
       </section>
 
-      {/* 05 — INSIDE */}
-      <section className="lb-sec lb-ivory">
+            {/* 05 — THE METHOD */}
+      <section className="lb-sec lb-linen" id="method">
         <div className="lb-wrap">
           <div className="lb-head lb-reveal">
-            <div><p className="lb-eyebrow">What happens inside</p><h2 className="lb-display" style={{ marginTop: 14 }}>Here’s what you’ll experience inside.</h2></div>
-            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Eight threads, woven over twelve weeks. Nothing you have to perform. Everything you get to feel.</p>
+            <div><p className="lb-eyebrow">The Liberate Method</p><h2 className="lb-display" style={{ marginTop: 14 }}>See → Feel → Become → Arrival.</h2></div>
+            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Twelve weeks. Four movements. One shift: from knowing yourself to living as yourself.</p>
           </div>
-          <div className="lb-index">
-            {INSIDE.map(([title, body, slot], i) => (
-              <div className="lb-item lb-reveal" key={slot} style={{ transitionDelay: `${(i % 2) * 0.1}s` }}>
-                <img src={photos[slot] || INSIDE_STOCK[slot]} alt={title} loading="lazy" />
-                <div className="lb-item-n">{String(i + 1).padStart(2, "0")}</div>
-                <div><h3>{title}</h3><p>{body}</p></div>
-              </div>
+          <div className="lb-method lb-reveal">
+            {METHOD.map((m, i) => (
+              <article className="lb-stage" key={m.stage} style={{ transitionDelay: `${i * 0.08}s` }}>
+                <p className="lb-eyebrow">{m.weeks}</p>
+                <h3>{m.stage}</h3>
+                <dl>
+                  <dt>What happens</dt><dd>{m.happens}</dd>
+                  <dt>What you explore</dt><dd>{m.explore}</dd>
+                  <dt>Why it matters</dt><dd>{m.matters}</dd>
+                  <dt>What changes</dt><dd>{m.changes}</dd>
+                </dl>
+              </article>
             ))}
           </div>
-          {momentPhotos.length > 0 && (
-            <div className="lb-mosaic lb-reveal" style={{ marginTop: "clamp(48px, 6vw, 84px)" }}>
-              <p className="lb-eyebrow" style={{ gridColumn: "1 / -1", marginBottom: 6 }}>Moments from Liberate</p>
-              {momentPhotos.map(([label, src], i) => (
-                <figure key={i}><img src={src} alt={label} loading="lazy" /><figcaption>{label}</figcaption></figure>
-              ))}
-            </div>
-          )}
-        </div>
-      </section>
-
-      {/* 06 — ROADMAP */}
-      <section className="lb-sec lb-linen">
-        <div className="lb-wrap">
-          <div className="lb-head lb-reveal">
-            <div><p className="lb-eyebrow">The roadmap</p><h2 className="lb-display" style={{ marginTop: 14 }}>Your 12-week journey.</h2></div>
-            <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Tuesdays, the circle. Thursdays, the workshop — with the Liberate alumni in the room. Each week goes a little deeper than the last. You start by seeing the pattern. You end by living without it.</p>
+          <div className="lb-head lb-reveal" style={{ marginTop: "clamp(56px, 7vw, 96px)", marginBottom: 0 }}>
+            <div><p className="lb-eyebrow">Week by week</p><h3 className="lb-h3">Your twelve weeks, dated.</h3></div>
+            <p className="lb-muted" style={{ fontSize: 15, maxWidth: "40ch" }}>Tap a week. Tuesdays are the Circle, Thursdays the Lab. We begin November 3 and rest over Christmas and New Year.</p>
           </div>
           <div className="lb-journey lb-reveal">
             <div className="lb-journey-track" role="tablist" aria-label="The twelve weeks">
@@ -682,7 +741,44 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         </div>
       </section>
 
-      {/* 06b — SESSIONS */}
+      {/* 06 — THE EXPERIENCE */}
+      <section className="lb-sec lb-ivory" id="experience">
+        <div className="lb-wrap">
+          <div className="lb-head lb-reveal">
+            <div><p className="lb-eyebrow">The experience</p><h2 className="lb-display" style={{ marginTop: 14 }}>Two live sessions a week. One living community.</h2></div>
+            <p className="lb-lede lb-muted" style={{ maxWidth: "28ch" }}>Online, from wherever you are — 7 pm Manila, Tuesdays and Thursdays.</p>
+          </div>
+          <div className="lb-nights lb-reveal">
+            <article className="lb-night">
+              <img src={photos.inside_1 || INSIDE_STOCK.inside_1} alt="A Tuesday Circle on Zoom" loading="lazy" />
+              <p className="lb-eyebrow">Tuesday · The Circle</p>
+              <h3>7 pm, with Libni</h3>
+              <p>The coaching space. A check-in to be heard, then the week’s work: guided coaching, reflection, processing, breakthroughs — and support when something cracks open. This is where the method happens.</p>
+            </article>
+            <article className="lb-night">
+              <img src="/photos/liberate/moments-1.jpg" alt="The Liberate community together, one member joining from a laptop" loading="lazy" />
+              <p className="lb-eyebrow">Thursday · The Lab</p>
+              <h3>7 pm, with Libni + the Liberate community</h3>
+              <p>The workshop space, where this intake learns alongside previous Liberate students. You’re not joining a program — you’re entering a community that’s already walking this road, and will still be here when your twelve weeks end.</p>
+            </article>
+          </div>
+
+          <div className="lb-head lb-reveal" style={{ marginTop: "clamp(56px, 7vw, 96px)" }}>
+            <div><p className="lb-eyebrow">What you’ll practice</p><h3 className="lb-h3">Nothing you have to perform. Everything you get to feel.</h3></div>
+          </div>
+          <div className="lb-index">
+            {PRACTICE.map(([title, body, slot], i) => (
+              <div className="lb-item lb-reveal" key={slot} style={{ transitionDelay: `${(i % 2) * 0.1}s` }}>
+                <img src={photos[slot] || INSIDE_STOCK[slot]} alt={title} loading="lazy" />
+                <div className="lb-item-n">{String(i + 1).padStart(2, "0")}</div>
+                <div><h3>{title}</h3><p>{body}</p></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+{/* 06b — SESSIONS */}
       <section className="lb-sec lb-ivory">
         <div className="lb-wrap">
           <div className="lb-head lb-reveal">
@@ -697,34 +793,27 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         </div>
       </section>
 
-      {/* 07 — RETREAT */}
-      <section className="lb-sec lb-night">
-        <div className="lb-wrap">
-          <div className="lb-retreat-head lb-stack lb-reveal">
-            <p className="lb-eyebrow">The retreat</p>
-            <h2 className="lb-display"><span>It doesn’t end on Zoom.</span><span className="lb-gold">It ends with a celebration.</span></h2>
-            <div className="lb-copy" style={{ color: "rgba(251,249,246,.82)" }}>
-              <p>The journey culminates in an in-person retreat where we slow down, connect, integrate, celebrate, and embody everything you’ve experienced. Most likely Batangas, dates to be announced. Your stay and meals are covered; you arrange your own transport.</p>
-              <p>Because sometimes transformation needs more than another Zoom call.</p>
-              <p className="lb-lede" style={{ color: "var(--lb-ivory)" }}>It needs to be lived.</p>
-            </div>
-          </div>
-          <div className="lb-retreat-hero lb-reveal"><img src={retreatHero} alt="The Liberate retreat" /><figcaption>Out of the Zoom calls, into each other’s arms</figcaption></div>
-          <div className="lb-mosaic lb-reveal">
-            {retreatTiles.map(([label, src], i) => (
-              <figure key={i}><img src={src} alt={label} loading="lazy" /><figcaption>{label}</figcaption></figure>
-            ))}
-          </div>
+            {/* 06c — PORTAL + AFTER */}
+      <section className="lb-sec lb-linen" style={{ paddingTop: 0 }}>
+        <div className="lb-wrap lb-after">
+          <article className="lb-after-card lb-reveal">
+            <img src={photos.inside_7 || INSIDE_STOCK.inside_7} alt="The Liberate member portal" loading="lazy" />
+            <div><p className="lb-eyebrow">Your portal</p><h3>Everything, in one place.</h3><p>Every replay, the roadmap, guided meditations, practices and resources — for the whole journey.</p></div>
+          </article>
+          <article className="lb-after-card lb-reveal" style={{ transitionDelay: ".12s" }}>
+            <img src={photos.inside_8 || INSIDE_STOCK.inside_8} alt="Liberate students together at golden hour" loading="lazy" />
+            <div><p className="lb-eyebrow">After the twelve weeks</p><h3>It doesn’t end.</h3><p>Liberate alumni are invited back into Thursday Labs, so the circle you build keeps growing with you — intake after intake.</p></div>
+          </article>
         </div>
       </section>
 
-      {/* 08 — STORY */}
+{/* 07 — WHY LIBNI */}
       <section className="lb-sec lb-ivory">
         <div className="lb-wrap lb-split" style={{ alignItems: "start" }}>
           <div className="lb-c5 lb-reveal"><div className="lb-story-img lb-figure"><img src={storyImg} alt="Libni Fortuna" /></div></div>
           <div className="lb-off1 lb-stack lb-reveal" style={{ transitionDelay: ".15s" }}>
-            <p className="lb-eyebrow">My story</p>
-            <h2 className="lb-display">Why I created Liberate.</h2>
+            <p className="lb-eyebrow">Why Libni</p>
+            <h2 className="lb-display">I didn’t learn this from a book. I built it from the inside.</h2>
             <div className="lb-copy">
               <p>If you’re reading this, I want you to know I see you. I know that feeling.</p>
               <p>For years, I carried so much that wasn’t mine: the weight of expectations, emotional baggage I didn’t even realize I was holding, and patterns that kept me stuck in cycles I desperately wanted to break.</p>
@@ -733,7 +822,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             <p className="lb-pull">It wasn’t until I went beyond mindset work and into deep subconscious and energetic healing that everything changed.</p>
             <div className="lb-copy">
               <p>I started working with my chakras, rewiring my subconscious mind, releasing stored trauma, and integrating the spiritual side of healing. And for the first time, I felt free.</p>
-              <p>That’s why I created Liberate. Because I know you’ve done the work, but something still isn’t clicking. And I want to take you beyond surface-level healing into the deep, soul-shifting work that truly sets you free.</p>
+              <p>Liberate is that process — the one that finally worked for me — shaped over years of guiding others through subconscious work, hypnotherapy and NLP, breathwork and somatic practice, retreats and one-to-one coaching. I’m not here to give you information. I’m here to walk you through it.</p>
               <p>If you’re ready for that, welcome home. This is your space.</p>
             </div>
             <p className="lb-sign">Libni</p>
@@ -742,13 +831,23 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         </div>
       </section>
 
-      {/* 09 — PROOF */}
+      {/* 08 — PROOF */}
       <section className="lb-sec lb-linen" id="words">
         <div className="lb-wrap">
           <div className="lb-head lb-reveal">
-            <div><p className="lb-eyebrow">From the people of Liberate</p><h2 className="lb-display" style={{ marginTop: 14 }}>Four intakes. One circle.</h2></div>
-            <p className="lb-lede lb-muted" style={{ maxWidth: "26ch" }}>Not reviews. Turning points — in their words, their faces, their own stories.</p>
+            <div><p className="lb-eyebrow">From the people of Liberate</p><h2 className="lb-display" style={{ marginTop: 14 }}>Four intakes since 2024. One growing circle.</h2></div>
+            <p className="lb-lede lb-muted" style={{ maxWidth: "26ch" }}>Not reviews — turning points. Liberate has been lived by four intakes. These are their words, faces and voices.</p>
           </div>
+
+          {videos.length > 0 && (
+            <div className="lb-videos-wrap lb-videos-first lb-reveal">
+              <div className="lb-head" style={{ marginBottom: 26 }}>
+                <div><p className="lb-eyebrow">Hear it from them</p><h3 className="lb-h3">{videos.length} students, in their own voice.</h3></div>
+                <p className="lb-muted" style={{ fontSize: 15, maxWidth: "36ch" }}>Unscripted, on camera, from four intakes. Tap any one to play — sound on. Swipe for more →</p>
+              </div>
+              <div className="lb-videos">{videos.map((v, i) => <LbVideo key={v.url + i} video={v} n={i + 1} />)}</div>
+            </div>
+          )}
 
           <div className="lb-proof-feature lb-reveal">
             {featurePhoto && <div className="lb-figure lb-proof-portrait"><img src={featurePhoto} alt={first.who} loading="lazy" /></div>}
@@ -758,21 +857,17 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             </div>
           </div>
 
-          {videos.length > 0 && (
-            <div className="lb-videos-wrap lb-reveal">
-              <div className="lb-head" style={{ marginBottom: 26 }}>
-                <div><p className="lb-eyebrow">Hear it from them</p><h3 className="lb-h3">{videos.length} students, in their own voice.</h3></div>
-                <p className="lb-muted" style={{ fontSize: 15, maxWidth: "36ch" }}>Unscripted, on camera, from four intakes. Tap any one to play — sound on. Swipe for more →</p>
-              </div>
-              <div className="lb-videos">{videos.map((v, i) => <LbVideo key={v.url + i} video={v} n={i + 1} />)}</div>
-            </div>
-          )}
-
+          <div className="lb-themes lb-reveal" role="tablist" aria-label="Filter by theme">
+            {(["All", ...THEMES] as const).map((t) => (
+              <button key={t} type="button" role="tab" aria-selected={theme === t} className={`lb-chip${theme === t ? " on" : ""}`} onClick={() => setTheme(t)}>{t}</button>
+            ))}
+          </div>
           <div className="lb-wall">
-            {WORDS_SHOWN.slice(1).map((w, i) => (
-              <div key={(w.id ?? w.who) + i} className="lb-reveal lb-word" style={{ transitionDelay: `${(i % 3) * 0.1}s` }}>
-                <div className="lb-word-head"><Face src={w.photo} name={w.who} /><p className="lb-who">{w.who}{w.role && <span>{w.role}</span>}</p></div>
+            {WORDS_SHOWN.slice(1).filter((w) => theme === "All" || (w.id && THEME_OF[w.id] === theme)).map((w, i) => (
+              <div key={(w.id ?? w.who) + i} className="lb-reveal is-in lb-word">
+                {w.id && THEME_OF[w.id] && <span className="lb-tag">{THEME_OF[w.id]}</span>}
                 <p className="lb-quote">{w.q}</p>
+                <div className="lb-word-head"><Face src={w.photo} name={w.who} /><p className="lb-who">{w.who}{w.role && <span>{w.role}</span>}</p></div>
               </div>
             ))}
           </div>
@@ -789,42 +884,49 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         </div>
       </section>
 
-      {/* 09a — CTA */}
-      <section className="lb-cta-strip">
-        <div className="lb-wrap lb-cta-in lb-reveal">
-          <div>
-            <p className="lb-eyebrow" style={{ color: "var(--lb-gold-soft)" }}>The next circle</p>
-            <h2>Begins November 3, 2026.</h2>
-            <p>{price} in full, or {offer.instalmentCount} × {perMonth}. Pay and your place is held — or talk to me first.</p>
-          </div>
-          <div className="lb-ctas">
-            <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">Join now</a>
-            <Link href="/liberate/apply" className="lb-btn lb-btn-light">Talk to me first</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* 09b — WINS */}
-      <section className="lb-sec lb-plum lb-wins">
+      {/* 09 — THE RETREAT */}
+      <section className="lb-sec lb-night">
         <div className="lb-wrap">
-          <div className="lb-wins-head lb-reveal">
-            <p className="lb-eyebrow" style={{ color: "var(--lb-gold-soft)" }}>After three months</p>
-            <h2 className="lb-display">What you walk away with.</h2>
-            <p className="lb-muted" style={{ color: "rgba(251,249,246,.72)", maxWidth: "42ch", fontSize: 16 }}>Not promises — patterns. Every line here is a student’s own words, written after her twelve weeks.</p>
+          <div className="lb-retreat-head lb-stack lb-reveal">
+            <p className="lb-eyebrow">The retreat · The arrival</p>
+            <h2 className="lb-display"><span>You don’t just complete Liberate.</span><span className="lb-gold">You arrive.</span></h2>
+            <div className="lb-copy" style={{ color: "rgba(251,249,246,.82)" }}>
+              <p>After twelve weeks of inner work, we come together in person — to integrate, celebrate, connect, and feel the transformation outside the screen. It’s not a bonus. It’s where everything lands.</p>
+              <p>Because sometimes transformation needs more than another Zoom call.</p>
+              <p className="lb-lede" style={{ color: "var(--lb-ivory)" }}>It needs to be lived.</p>
+            </div>
+            <div className="lb-ctas"><a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">I’m ready to Liberate</a></div>
           </div>
-          <figure className="lb-wins-photo lb-reveal" style={{ transitionDelay: ".1s" }}><img src="/photos/liberate/wins.jpg" alt="The Liberate 4 circle together at the retreat" loading="lazy" /><figcaption>The circle · Liberate 4</figcaption></figure>
-          <ol className="lb-wins-list lb-reveal" style={{ transitionDelay: ".15s" }}>
-            {WINS.map(([title, note, who], i) => (
-              <li key={title}>
-                <span>{String(i + 1).padStart(2, "0")}</span>
-                <div><h3>{title}</h3><p>{note} <small>— {who}</small></p></div>
-              </li>
+          <div className="lb-retreat-hero lb-reveal"><img src={retreatHero} alt="The Liberate retreat" /><figcaption>Out of the Zoom calls, into each other’s arms</figcaption></div>
+          <div className="lb-mosaic lb-reveal">
+            {retreatTiles.map(([label, src], i) => (
+              <figure key={i}><img src={src} alt={label} loading="lazy" /><figcaption>{label}</figcaption></figure>
             ))}
-          </ol>
+          </div>
         </div>
       </section>
 
-      {/* 10 — INVESTMENT */}
+            {/* 10 — IS IT FOR YOU */}
+      <section className="lb-sec lb-ivory" id="for-you">
+        <div className="lb-wrap">
+          <div className="lb-head lb-reveal">
+            <div><p className="lb-eyebrow">Before you decide</p><h2 className="lb-display" style={{ marginTop: 14 }}>Is Liberate for you?</h2></div>
+          </div>
+          <div className="lb-fit lb-reveal">
+            <div className="lb-fit-col">
+              <h3>Liberate is for you if…</h3>
+              <ul>{FOR_YOU.map((x) => <li key={x}>{x}</li>)}</ul>
+            </div>
+            <div className="lb-fit-col lb-fit-not">
+              <h3>Liberate isn’t for you — yet — if…</h3>
+              <ul>{NOT_FOR_YOU.map((x) => <li key={x}>{x}</li>)}</ul>
+              <p className="lb-fit-note">None of that makes you wrong. It simply means this may not be your season yet.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+{/* 11 — THE INVESTMENT */}
       <section className="lb-sec lb-ivory" id="investment">
         <div className="lb-wrap lb-invest">
           <div className="lb-reveal">
@@ -832,8 +934,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             <h2 className="lb-display" style={{ marginTop: 14, maxWidth: "12ch" }}>One payment, or three.</h2>
             <p className="lb-lede lb-muted" style={{ marginTop: 18, maxWidth: "26ch" }}>Your place is held the moment it clears.</p>
             <p className="lb-note" style={{ marginTop: 18, maxWidth: "46ch" }}>Nothing is charged until you choose to. GCash, Maya, cards and bank transfer all work. Need a different arrangement? <Link href="/liberate/apply" style={{ textDecoration: "underline" }}>Talk to me first</Link>.</p>
+            <p className="lb-lede" style={{ marginTop: 30, maxWidth: "30ch", fontSize: "clamp(20px, 1.9vw, 25px)" }}>This isn’t an investment in more information. It’s an investment in having the space, structure and community to actually live what you already know.</p>
             <div style={{ marginTop: 34 }}>
-              <p className="lb-eyebrow" style={{ marginBottom: 14 }}>What’s included</p>
+              <p className="lb-eyebrow" style={{ marginBottom: 14 }}>What you receive</p>
               <ul className="lb-list">{INCLUDED.map((x) => <li key={x}>{x}</li>)}</ul>
             </div>
           </div>
@@ -862,11 +965,12 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
               <p className="lb-checkout-fine">Opens in a new tab · GCash · Maya · Cards · Bank transfer</p>
               <p className="lb-checkout-fine" style={{ marginTop: 6 }}>Not sure yet? <Link href="/liberate/apply" style={{ textDecoration: "underline", color: "var(--lb-ink)" }}>Talk to me first</Link></p>
             </div>
+            <p className="lb-refund">Liberate does not offer refunds — this space is built on alignment, not urgency. If you’re unsure, take your time and say yes only when it’s a full yes. Retreat stay and meals are covered; transport is your own.</p>
           </div>
         </div>
       </section>
 
-      {/* 10b — FAQ */}
+      {/* 12 — FAQ */}
       <section className="lb-sec lb-ivory" id="faq">
         <div className="lb-wrap lb-faq-wrap">
           <div className="lb-reveal">
@@ -882,30 +986,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         </div>
       </section>
 
-      {/* 11 — PEACE OF MIND */}
-      <section className="lb-sec lb-linen">
-        <div className="lb-wrap lb-peace">
-          <div className="lb-reveal">
-            <p className="lb-eyebrow">Before you say yes</p>
-            <h2 className="lb-display" style={{ marginTop: 14 }}>Your peace of mind matters.</h2>
-            <div className="lb-rule" style={{ marginTop: 28 }} />
-          </div>
-          <div className="lb-stack lb-reveal" style={{ transitionDelay: ".15s" }}>
-            <div className="lb-copy">
-              <p>Liberate is a sacred container, and joining it is a meaningful choice.</p>
-              <p>We honor the depth of this kind of work, and we believe it deserves a full-body yes.</p>
-              <p>That’s why Liberate does not offer refunds. Not because we don’t care, but because we do.</p>
-              <p>Because this space isn’t built on urgency, pressure, or impulse decisions. It’s built on alignment, trust, and mutual devotion.</p>
-              <p>If you’re unsure, it’s okay to take your time. Feel into it. Ask your questions. Breathe with the decision.</p>
-              <p>And when you say yes, let it be a full yes, one your whole being can stand behind.</p>
-              <p className="lb-em" style={{ fontFamily: "var(--serif)", fontSize: 24 }}>We’ll meet you there.</p>
-            </div>
-            <div className="lb-ctas"><a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-ink">I’m ready to be held</a></div>
-          </div>
-        </div>
-      </section>
-
-      {/* 12 — FINAL */}
+      {/* 13 — FINAL */}
       <section className="lb-final">
         <div className="lb-wrap">
           <h2 className="lb-reveal">You don’t need to become someone else. <span className="lb-gold">You need the freedom to be yourself.</span></h2>
