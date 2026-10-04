@@ -88,6 +88,12 @@ const DEFAULT_CLIPS: Clip[] = [
 ];
 
 // The in-person celebration & retreat gallery (real photos from the highlight).
+type JourneyWeek = { n: number; phase: "See" | "Feel" | "Become" | "Arrival"; title: string; desc: string };
+const WEEKS: JourneyWeek[] = [
+  ...ROADMAP.flatMap((m) => m.weeks.map(([n, title, desc]) => ({ n: Number(n), phase: m.theme as JourneyWeek["phase"], title, desc }))),
+  { n: 12, phase: "Arrival", title: "Liberation", desc: "Step into greater freedom and choice. Not a new you — the one who was here all along. Then the final week: the in-person retreat." },
+];
+
 // Tuesday circle dates for the November 2026 cohort. Thursdays follow two days later.
 // We rest on Dec 22 and 29 and continue January 5.
 const WEEK_DATES = ["Nov 3", "Nov 10", "Nov 17", "Nov 24", "Dec 1", "Dec 8", "Dec 15", "Jan 5", "Jan 12", "Jan 19", "Jan 26", "Feb 2"];
@@ -107,11 +113,11 @@ const SHOT_FALLBACK = Array.from({ length: 16 }, (_, i) => `/photos/liberate/wor
 // What people want — each one grounded in something a student (or Libni, the night an intake closed) actually wrote.
 const WINS: [string, string, string][] = [
   ["Knowing your worth", "“I am in my happiest, most healed, successful and healthiest version of myself.”", "Tiffany · Liberate 2"],
-  ["Relationships that feel like home", "“Mended relationships.” “I didn’t just find a community. I found women who feel like home.”", "Libni · Erika Mai, Liberate 4"],
-  ["Opportunities that find you", "“Many opportunities… having new car, having the courage to pursue the dream life.”", "Libni, the night intake 2 closed"],
-  ["The courage to choose yourself", "“The moment I let go and was bold enough to prioritize myself — the flow was just easy.”", "A student, day four of Liberate 2"],
-  ["A body that finally feels safe", "“Everything feels clearer, lighter and brighter.” “I am feeling grateful, abundant and powerful.”", "Mims · Danessa"],
-  ["A sisterhood for life", "“A sisterhood who gets me and who grows with me — where conversations are expansive and make life more meaningful.”", "Libni"],
+  ["Relationships that feel like home", "“I didn’t just find a community. I found women who feel like home.”", "Erika Mai · Liberate 4"],
+  ["Opportunities that find you", "“I quit the grind, and the wins rolled in.” New rooms, new work, a new car.", "Zy · Liberate 2"],
+  ["The courage to choose yourself", "“The moment I let go and was bold enough to prioritize myself — the flow was just easy.”", "A student · Liberate 2"],
+  ["A body that finally feels safe", "“Everything feels clearer, lighter and brighter. I am feeling grateful, abundant and powerful.”", "Mims & Danessa"],
+  ["A sisterhood for life", "“Even if we haven’t met each other in person, it’s like we’re sisters already.”", "Danessa · Liberate 2"],
 ];
 
 const MOMENT_SLOTS: [string, string, string][] = [
@@ -177,6 +183,8 @@ function LbVideo({ video, n }: { video: Video; n: number }) {
 
 export default function LiberateClient({ photos = {}, words: incoming, videos: incomingVideos = [], clips: incomingClips = [] }: { photos?: Photos; words?: Word[]; videos?: Video[]; clips?: Clip[] }) {
   const clips: Clip[] = incomingClips.length ? incomingClips : DEFAULT_CLIPS;
+  const [week, setWeek] = useState(1);
+  const [plan, setPlan] = useState<"full" | "instalment">("full");
   const videos: Video[] = incomingVideos.length ? incomingVideos : DEFAULT_VIDEOS;
   const offer = OFFERS.liberate;
   // Client words come from the Studio (“Client stories”); the published quotes are the fallback.
@@ -189,6 +197,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
   const shots = uploadedShots.length ? uploadedShots : SHOT_FALLBACK;
   const instalment = offer.allowInstalments && offer.instalmentCount ? Math.floor((offer.pricePHP ?? 0) / offer.instalmentCount) : 0;
   const perMonth = instalment ? `₱${instalment.toLocaleString("en-PH")}` : "";
+  const firstPay = offer.pricePHP && offer.instalmentCount ? offer.pricePHP - instalment * (offer.instalmentCount - 1) : 0;
+  const firstPayLabel = firstPay ? `₱${firstPay.toLocaleString("en-PH")}` : "";
+  const cur = WEEKS[week - 1];
 
   // The sticky bar appears once the hero has scrolled away.
   const heroRef = useRef<HTMLElement | null>(null);
@@ -319,33 +330,32 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-item img { grid-column: 1 / -1; width: 100%; aspect-ratio: 3 / 2; object-fit: cover; margin-bottom: 8px; }
 
         /* 06 roadmap */
-        .lb-road { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(32px, 5vw, 72px); margin-top: clamp(48px, 6vw, 80px); }
-        .lb-col { position: relative; padding-left: 34px; }
-        .lb-col::before { content: ""; position: absolute; left: 6px; top: 6px; bottom: 0; width: 1px; background: linear-gradient(180deg, var(--lb-gold), rgba(184,149,90,.2)); transform: scaleY(0); transform-origin: top; transition: transform 1.6s cubic-bezier(.2,.7,.2,1) .2s; }
-        .is-in .lb-col::before { transform: scaleY(1); }
-        .lb-col-head { margin-bottom: 30px; position: relative; }
-        .lb-col-head::before { content: ""; position: absolute; left: -34px; top: 4px; width: 13px; height: 13px; border-radius: 50%; background: var(--lb-plum); box-shadow: 0 0 0 4px var(--lb-linen); }
-        .lb-col-head .lb-eyebrow { color: var(--lb-muted); }
-        .lb-col-head h3 { font-size: clamp(38px, 4vw, 56px); line-height: 1; font-style: italic; color: var(--lb-plum); margin-top: 6px; }
-        .lb-week { position: relative; padding: 0 0 28px; }
-        .lb-week::before { content: ""; position: absolute; left: -31px; top: 12px; width: 7px; height: 7px; border-radius: 50%; background: var(--lb-gold); }
-        .lb-week small { font-family: var(--sans); font-size: 11px; letter-spacing: .26em; color: var(--lb-gold); font-weight: 600; }
-        .lb-week h4 { font-family: var(--serif); font-weight: 400; font-size: 26px; line-height: 1.1; margin: 4px 0 4px; }
-        .lb-week p { font-size: 15px; color: var(--lb-muted); }
-        .lb-pause { margin-top: 18px; padding: 12px 14px; border-left: 1px solid var(--lb-gold); background: rgba(184,149,90,.08); }
-        .lb-pause small { color: var(--lb-muted); }
-        .lb-pause p { margin-top: 2px; font-size: 13.5px; }
-        .lb-finale { margin-top: clamp(24px, 4vw, 48px); padding-top: clamp(40px, 5vw, 64px); border-top: 1px solid var(--lb-gold); display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: end; }
-        .lb-finale small { font-family: var(--sans); font-size: 11px; letter-spacing: .3em; color: var(--lb-gold); font-weight: 600; }
-        .lb-finale h3 { font-size: clamp(64px, 9vw, 140px); line-height: .95; font-style: italic; color: var(--lb-plum); margin-top: 8px; }
-        .lb-finale p { font-family: var(--serif); font-size: clamp(22px, 2.2vw, 30px); line-height: 1.3; max-width: 22ch; }
-
-        /* 06b sessions */
-        .lb-clips { display: flex; justify-content: center; gap: clamp(12px, 2vw, 22px); margin-top: clamp(36px, 5vw, 60px); }
-        .lb-clip { margin: 0; position: relative; width: clamp(150px, 17vw, 230px); aspect-ratio: 9 / 16; border-radius: 26px; border: 7px solid #15111a; background: #000; overflow: hidden; box-shadow: 0 26px 60px rgba(0,0,0,.28); }
-        .lb-clip:nth-child(2) { transform: translateY(-18px); }
-        .lb-clip video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-        .lb-clip figcaption { position: absolute; left: 12px; right: 12px; bottom: 12px; font-family: var(--sans); font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--lb-ivory); text-shadow: 0 1px 8px rgba(0,0,0,.7); }
+        .lb-journey { margin-top: clamp(40px, 5vw, 64px); display: grid; grid-template-columns: 1fr; gap: clamp(28px, 3vw, 44px); }
+        .lb-journey-track { display: grid; grid-template-columns: 4fr 4fr 3fr 1fr; gap: 0; position: relative; }
+        .lb-journey-track::before { content: ""; position: absolute; left: 0; right: 0; top: 46px; height: 1px; background: var(--lb-line); }
+        .lb-jphase { position: relative; padding-right: 18px; }
+        .lb-jphase-label { display: block; font-family: var(--serif); font-style: italic; font-size: clamp(22px, 2.2vw, 30px); color: var(--lb-plum); margin-bottom: 18px; line-height: 1; }
+        .lb-jdots { display: flex; gap: 8px; }
+        .lb-dot { position: relative; z-index: 1; display: grid; justify-items: center; gap: 8px; flex: 1 1 0; min-width: 0; padding: 0; border: 0; background: none; cursor: pointer; font-family: var(--sans); color: var(--lb-muted); }
+        .lb-dot span { width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; font-size: 11px; letter-spacing: .08em; font-weight: 600; background: var(--lb-linen); border: 1px solid var(--lb-line); color: var(--lb-ink); transition: background .3s, color .3s, border-color .3s, transform .3s; }
+        .lb-dot em { font-style: normal; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; white-space: nowrap; }
+        .lb-dot:hover span { border-color: var(--lb-plum); transform: translateY(-2px); }
+        .lb-dot.done span { background: var(--lb-sand); border-color: var(--lb-sand); }
+        .lb-dot.on span { background: var(--lb-plum); border-color: var(--lb-plum); color: var(--lb-ivory); transform: scale(1.15); box-shadow: 0 0 0 5px rgba(91,68,112,.15); }
+        .lb-dot.on em { color: var(--lb-plum); font-weight: 600; }
+        .lb-dot-end span { background: var(--lb-gold-soft); border-color: var(--lb-gold-soft); }
+        .lb-dot-end.on span { background: var(--lb-gold); border-color: var(--lb-gold); color: var(--lb-night); box-shadow: 0 0 0 5px rgba(184,149,90,.2); }
+        .lb-jpanel { background: var(--lb-ivory); border: 1px solid var(--lb-line); padding: clamp(28px, 3.5vw, 48px); display: grid; gap: 14px; animation: lbPanel .45s cubic-bezier(.2,.7,.2,1) both; }
+        @keyframes lbPanel { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+        .lb-jpanel h3 { font-size: clamp(36px, 4.6vw, 64px); line-height: 1; font-style: italic; color: var(--lb-plum); }
+        .lb-jdesc { font-family: var(--serif); font-size: clamp(20px, 2vw, 26px); line-height: 1.35; max-width: 34ch; }
+        .lb-jmeta { font-size: 14px; color: var(--lb-muted); display: flex; flex-wrap: wrap; gap: 6px 10px; align-items: baseline; }
+        .lb-jmeta span { font-family: var(--sans); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--lb-gold); font-weight: 600; }
+        .lb-jrest { font-size: 14px; color: var(--lb-muted); padding: 10px 14px; border-left: 1px solid var(--lb-gold); background: rgba(184,149,90,.08); }
+        .lb-jnav { display: flex; gap: 10px; margin-top: 6px; }
+        .lb-jbtn { background: none; border: 1px solid var(--lb-line); padding: 10px 18px; font-family: var(--sans); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; cursor: pointer; color: var(--lb-ink); transition: border-color .3s, background .3s; }
+        .lb-jbtn:hover:not(:disabled) { border-color: var(--lb-ink); background: var(--lb-ivory); }
+        .lb-jbtn:disabled { opacity: .35; cursor: default; }
 
         /* 07 retreat */
         .lb-retreat-head { max-width: 900px; }
@@ -411,9 +421,13 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-video figcaption span { color: rgba(251,249,246,.75); }
         .lb-video figcaption em { font-style: normal; color: rgba(251,249,246,.6); margin-left: auto; }
         .lb-video iframe + figcaption, .lb-video video + figcaption { display: none; }
-        .lb-wall { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0 clamp(28px, 4vw, 56px); margin-top: clamp(56px, 7vw, 96px); padding-top: clamp(8px, 1vw, 16px); border-top: 1px solid var(--lb-line); }
-        .lb-wall .lb-word { display: block; padding: clamp(28px, 3vw, 40px) 0; border-bottom: 1px solid var(--lb-line); }
-        .lb-wall .lb-quote { font-size: clamp(20px, 1.6vw, 24px); line-height: 1.3; }
+        .lb-wall { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: clamp(56px, 7vw, 96px); }
+        .lb-wall .lb-word { display: flex; flex-direction: column; gap: 18px; padding: clamp(24px, 2.6vw, 34px); background: var(--lb-ivory); border: 1px solid var(--lb-line); border-radius: 18px; position: relative; transition: transform .4s cubic-bezier(.2,.7,.2,1), box-shadow .4s; }
+        .lb-wall .lb-word:hover { transform: translateY(-4px); box-shadow: 0 24px 50px rgba(43,37,40,.08); }
+        .lb-wall .lb-word::before { content: "“"; position: absolute; right: 24px; top: 10px; font-family: var(--serif); font-size: 72px; line-height: 1; color: var(--lb-gold-soft); opacity: .6; }
+        .lb-wall .lb-quote { font-size: clamp(19px, 1.5vw, 22px); line-height: 1.38; text-indent: 0; }
+        .lb-wall .lb-quote::before { content: none; }
+        .lb-wall .lb-word-head { margin-bottom: 0; order: 2; padding-top: 14px; border-top: 1px solid var(--lb-line); }
         .lb-word-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
         .lb-word-head .lb-who { margin-top: 0; }
         .lb-cta-strip { background: var(--lb-night); color: var(--lb-ivory); padding: clamp(56px, 7vw, 96px) 0; }
@@ -423,7 +437,10 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-shots { display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; padding: 4px 4px 18px; margin: 0 -4px; scrollbar-width: thin; }
         .lb-shots figure { flex: 0 0 clamp(200px, 19vw, 260px); scroll-snap-align: start; }
         .lb-wins { padding: clamp(72px, 9vw, 120px) 0; }
-        .lb-wins .lb-wrap { display: grid; grid-template-columns: 5fr 7fr; gap: clamp(32px, 5vw, 96px); align-items: start; }
+        .lb-wins .lb-wrap { display: grid; grid-template-columns: 4fr 3fr 5fr; gap: clamp(28px, 4vw, 64px); align-items: start; }
+        .lb-wins-photo { position: relative; margin: 0; }
+        .lb-wins-photo img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 30%; border: 1px solid rgba(251,249,246,.14); }
+        .lb-wins-photo figcaption { position: absolute; left: 14px; bottom: 12px; font-family: var(--sans); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: rgba(251,249,246,.85); text-shadow: 0 1px 8px rgba(0,0,0,.6); }
         .lb-wins-head { display: grid; gap: 18px; }
         .lb-wins-head .lb-display { font-size: clamp(36px, 4.4vw, 64px); }
         .lb-wins-list { list-style: none; margin: 0; padding: 0; }
@@ -433,27 +450,29 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-wins-list small { font-family: var(--sans); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; color: var(--lb-gold-soft); white-space: nowrap; }
         .lb-wins-list li:last-child { border-bottom: 1px solid var(--lb-line-light); }
         .lb-wins-list span { font-family: var(--sans); font-style: normal; font-size: 11px; letter-spacing: .24em; color: var(--lb-gold-soft); font-weight: 600; min-width: 26px; }
-        .lb-paths { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(20px, 3vw, 40px); margin-top: 36px; }
-        .lb-path { display: grid; gap: 14px; padding: 28px 0 0; border-top: 1px solid var(--lb-ink); align-content: start; }
-        .lb-path h3 { font-size: clamp(28px, 2.6vw, 36px); line-height: 1.05; font-style: italic; }
-        .lb-path p:not(.lb-eyebrow) { font-size: 15.5px; color: var(--lb-muted); max-width: 34ch; }
-        .lb-path .lb-btn { justify-self: start; margin-top: 8px; }
-        .lb-sticky { position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: rgba(36,28,42,.94); backdrop-filter: blur(10px); color: var(--lb-ivory); border-top: 1px solid var(--lb-line-light); transform: translateY(110%); transition: transform .5s cubic-bezier(.2,.7,.2,1); }
-        .lb-sticky.is-on { transform: none; }
-        .lb-stuck { padding-bottom: 72px; }
-        .lb-sticky-in { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 12px; padding-bottom: 12px; }
-        .lb-sticky p { display: flex; align-items: baseline; gap: 16px; min-width: 0; }
-        .lb-sticky strong { font-family: var(--serif); font-weight: 400; font-size: 24px; letter-spacing: -0.01em; }
-        .lb-sticky span { font-family: var(--sans); font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: rgba(251,249,246,.65); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .lb-sticky .lb-ctas { flex-wrap: nowrap; gap: 10px; }
-        .lb-sticky .lb-btn { min-height: 44px; padding: 0 22px; font-size: 11px; }
-
-        /* 10 investment */
         .lb-invest { display: grid; grid-template-columns: 6fr 5fr; gap: clamp(40px, 6vw, 110px); align-items: start; }
-        .lb-price { font-family: var(--serif); font-size: clamp(64px, 8vw, 112px); line-height: 1; margin: 22px 0 8px; letter-spacing: -0.02em; color: var(--lb-plum); }
-        .lb-price small { display: inline-block; margin-left: 14px; font-family: var(--sans); font-size: 11px; letter-spacing: .28em; text-transform: uppercase; color: var(--lb-gold); vertical-align: middle; }
-        .lb-plan { font-family: var(--serif); font-style: italic; font-size: 22px; color: var(--lb-muted); }
-        .lb-note { font-size: 15px; color: var(--lb-muted); max-width: 44ch; margin-top: 18px; }
+        .lb-checkout { background: var(--lb-ivory); border: 1px solid var(--lb-line); border-radius: 22px; padding: clamp(24px, 3vw, 36px); box-shadow: 0 30px 70px rgba(43,37,40,.10); position: sticky; top: 110px; }
+        .lb-checkout-head { display: flex; justify-content: space-between; align-items: baseline; font-family: var(--sans); font-size: 10px; letter-spacing: .26em; text-transform: uppercase; color: var(--lb-muted); padding-bottom: 16px; border-bottom: 1px solid var(--lb-line); }
+        .lb-checkout-head span:first-child { font-family: var(--serif); font-size: 24px; letter-spacing: 0; text-transform: none; color: var(--lb-ink); }
+        .lb-checkout-k { margin: 22px 0 12px; font-family: var(--sans); font-size: 11px; letter-spacing: .24em; text-transform: uppercase; color: var(--lb-gold); font-weight: 600; }
+        .lb-plans { display: grid; gap: 10px; }
+        .lb-plan-opt { display: grid; grid-template-columns: 22px 1fr auto; gap: 14px; align-items: center; width: 100%; text-align: left; padding: 16px 18px; border: 1.5px solid var(--lb-line); border-radius: 14px; background: #fff; cursor: pointer; font-family: var(--sans); transition: border-color .25s, box-shadow .25s, background .25s; }
+        .lb-plan-opt:hover { border-color: var(--lb-plum); }
+        .lb-plan-opt.on { border-color: var(--lb-plum); background: rgba(91,68,112,.04); box-shadow: 0 0 0 3px rgba(91,68,112,.12); }
+        .lb-plan-radio { width: 20px; height: 20px; border-radius: 50%; border: 1.5px solid var(--lb-line); position: relative; transition: border-color .25s; }
+        .lb-plan-opt.on .lb-plan-radio { border-color: var(--lb-plum); }
+        .lb-plan-opt.on .lb-plan-radio::after { content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--lb-plum); }
+        .lb-plan-main { display: grid; gap: 3px; min-width: 0; }
+        .lb-plan-main b { font-weight: 600; font-size: 15px; color: var(--lb-ink); }
+        .lb-plan-main small { font-size: 12.5px; color: var(--lb-muted); }
+        .lb-plan-amt { font-family: var(--serif); font-size: 24px; color: var(--lb-ink); white-space: nowrap; }
+        .lb-plan-amt i { font-style: normal; font-family: var(--sans); font-size: 11px; color: var(--lb-muted); margin-left: 2px; }
+        .lb-checkout-rows { margin-top: 20px; display: grid; gap: 10px; font-size: 14px; color: var(--lb-muted); }
+        .lb-checkout-rows > div { display: flex; justify-content: space-between; gap: 16px; }
+        .lb-checkout-due { padding-top: 14px; border-top: 1px solid var(--lb-line); align-items: baseline; color: var(--lb-ink); }
+        .lb-checkout-due strong { font-family: var(--serif); font-weight: 400; font-size: clamp(32px, 3vw, 40px); color: var(--lb-plum); line-height: 1; }
+        .lb-checkout-cta { width: 100%; margin-top: 20px; min-height: 60px; }
+        .lb-checkout-fine { margin-top: 12px; text-align: center; font-size: 12px; color: var(--lb-muted); letter-spacing: .02em; }
         .lb-list { list-style: none; margin: 0; padding: 0; }
         .lb-list li { padding: 14px 0; border-top: 1px solid var(--lb-line); font-family: var(--serif); font-size: 21px; display: flex; gap: 16px; align-items: baseline; }
         .lb-list li::before { content: counter(lb) ; counter-increment: lb; font-family: var(--sans); font-size: 10px; letter-spacing: .2em; color: var(--lb-gold); font-weight: 600; min-width: 20px; }
@@ -493,7 +512,14 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb-split > .lb-figure, .lb-split > .lb-bleed-right { order: -1; }
           .lb-bleed-right { margin-right: 0; margin-left: calc(50% - 50vw); margin-right: calc(50% - 50vw); }
           .lb-bleed-right img { height: 68svh; }
-          .lb-head, .lb-index, .lb-road, .lb-finale, .lb-feature, .lb-words, .lb-invest, .lb-peace, .lb-wins .lb-wrap, .lb-paths, .lb-faq-wrap { grid-template-columns: 1fr; }
+          .lb-head, .lb-index, .lb-feature, .lb-words, .lb-invest, .lb-peace, .lb-wins .lb-wrap, .lb-faq-wrap { grid-template-columns: 1fr; }
+          .lb-journey-track { grid-template-columns: 1fr; gap: 22px; }
+          .lb-journey-track::before { display: none; }
+          .lb-jphase { padding-right: 0; }
+          .lb-jdots { flex-wrap: wrap; gap: 10px; }
+          .lb-dot { flex: 0 0 auto; }
+          .lb-checkout { position: static; }
+          .lb-wins-photo { max-width: 360px; }
           .lb-wall { grid-template-columns: 1fr; }
           .lb-proof-feature { grid-template-columns: 1fr; }
           .lb-proof-portrait { max-width: 320px; }
@@ -505,7 +531,6 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           .lb-sticky-in { gap: 12px; }
           .lb-sticky .lb-ctas { flex-direction: row; } .lb-sticky .lb-ctas .lb-btn { width: auto; }
           .lb { padding-bottom: 0; }
-          .lb-road { gap: 48px; }
           .lb-clips { overflow-x: auto; justify-content: flex-start; padding: 20px 4px 12px; margin-left: -4px; margin-right: -4px; scroll-snap-type: x mandatory; }
           .lb-clip { flex: 0 0 48vw; scroll-snap-align: start; }
           .lb-clip:nth-child(2) { transform: none; }
@@ -622,21 +647,37 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             <div><p className="lb-eyebrow">The roadmap</p><h2 className="lb-display" style={{ marginTop: 14 }}>Your 12-week journey.</h2></div>
             <p className="lb-lede lb-muted" style={{ maxWidth: "30ch" }}>Tuesdays, the circle. Thursdays, the workshop — with the Liberate alumni in the room. Each week goes a little deeper than the last. You start by seeing the pattern. You end by living without it.</p>
           </div>
-          <div className="lb-road lb-reveal">
-            {ROADMAP.map((m) => (
-              <div className="lb-col" key={m.theme}>
-                <div className="lb-col-head"><p className="lb-eyebrow">{m.month}</p><h3>{m.theme}</h3></div>
-                {m.weeks.map(([n, t, d]) => (
-                  <div className="lb-week" key={n}><small>Week {n} · {WEEK_DATES[Number(n) - 1]}</small><h4>{t}</h4><p>{d}</p>
-                    {n === "07" && <div className="lb-pause"><small>Dec 22 &amp; 29 · we rest</small><p>Christmas and New Year with our families. We continue January 5.</p></div>}
+          <div className="lb-journey lb-reveal">
+            <div className="lb-journey-track" role="tablist" aria-label="The twelve weeks">
+              {(["See", "Feel", "Become", "Arrival"] as const).map((phase) => (
+                <div className={`lb-jphase lb-jphase-${phase.toLowerCase()}`} key={phase}>
+                  <span className="lb-jphase-label">{phase}</span>
+                  <div className="lb-jdots">
+                    {WEEKS.filter((w) => w.phase === phase).map((w) => (
+                      <button key={w.n} type="button" role="tab" aria-selected={week === w.n} className={`lb-dot${week === w.n ? " on" : ""}${w.n < week ? " done" : ""}${w.n === 12 ? " lb-dot-end" : ""}`} onClick={() => setWeek(w.n)}>
+                        <span>{String(w.n).padStart(2, "0")}</span>
+                        <em>{WEEK_DATES[w.n - 1]}</em>
+                      </button>
+                    ))}
                   </div>
-                ))}
+                </div>
+              ))}
+            </div>
+            <div className="lb-jpanel" key={week}>
+              <p className="lb-eyebrow">{cur.phase === "Arrival" ? "The arrival" : `Month ${cur.phase === "See" ? "one" : cur.phase === "Feel" ? "two" : "three"} · ${cur.phase}`} · Week {String(cur.n).padStart(2, "0")} · {WEEK_DATES[cur.n - 1]}</p>
+              <h3>{cur.title}</h3>
+              <p className="lb-jdesc">{cur.desc}</p>
+              {cur.n < 12 ? (
+                <p className="lb-jmeta"><span>Tue 7 pm</span> the circle, with Libni <span>Thu 7 pm</span> the workshop, with the alumni</p>
+              ) : (
+                <p className="lb-jmeta"><span>In person</span> most likely Batangas · dates announced inside the circle · stay and meals covered, transport your own</p>
+              )}
+              {cur.n === 7 && <p className="lb-jrest">After this week we rest for Christmas and New Year (Dec 22 &amp; 29) and continue January 5.</p>}
+              <div className="lb-jnav">
+                <button type="button" className="lb-jbtn" onClick={() => setWeek((w) => Math.max(1, w - 1))} disabled={week === 1}>← Previous</button>
+                <button type="button" className="lb-jbtn" onClick={() => setWeek((w) => Math.min(12, w + 1))} disabled={week === 12}>Next week →</button>
               </div>
-            ))}
-          </div>
-          <div className="lb-finale lb-reveal">
-            <div><small>Week 12 · Feb 2 · The arrival</small><h3>Liberation.</h3></div>
-            <div className="lb-copy"><p>Step into greater freedom and choice. Not a new you. The one who was here all along.</p><p><strong style={{ color: "var(--lb-plum)" }}>Then, the final week: the in-person retreat.</strong> Most likely Batangas — dates announced inside the circle. Your stay and meals are covered; you arrange your own transport.</p></div>
+            </div>
           </div>
         </div>
       </section>
@@ -769,8 +810,9 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <div className="lb-wins-head lb-reveal">
             <p className="lb-eyebrow" style={{ color: "var(--lb-gold-soft)" }}>After three months</p>
             <h2 className="lb-display">What you walk away with.</h2>
-            <p className="lb-muted" style={{ color: "rgba(251,249,246,.72)", maxWidth: "42ch", fontSize: 16 }}>Not promises — patterns. Every line here is something a student wrote after her twelve weeks, or something I wrote the night an intake closed.</p>
+            <p className="lb-muted" style={{ color: "rgba(251,249,246,.72)", maxWidth: "42ch", fontSize: 16 }}>Not promises — patterns. Every line here is a student’s own words, written after her twelve weeks.</p>
           </div>
+          <figure className="lb-wins-photo lb-reveal" style={{ transitionDelay: ".1s" }}><img src="/photos/liberate/wins.jpg" alt="The Liberate 4 circle together at the retreat" loading="lazy" /><figcaption>The circle · Liberate 4</figcaption></figure>
           <ol className="lb-wins-list lb-reveal" style={{ transitionDelay: ".15s" }}>
             {WINS.map(([title, note, who], i) => (
               <li key={title}>
@@ -787,30 +829,39 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         <div className="lb-wrap lb-invest">
           <div className="lb-reveal">
             <p className="lb-eyebrow">The investment</p>
-            <h2 className="lb-display" style={{ marginTop: 14, maxWidth: "14ch" }}>Liberate, a 3-month group coaching experience.</h2>
-            <p className="lb-price">{price}<small>in full</small></p>
-            {offer.allowInstalments && offer.instalmentCount && (
-              <p className="lb-plan">In full, or {offer.instalmentCount} monthly payments of about {perMonth}. Other payment plans are always something we can talk about.</p>
-            )}
-            <div className="lb-paths">
-              <div className="lb-path">
-                <p className="lb-eyebrow">If it’s a yes</p>
-                <h3>Join now — {price}.</h3>
-                <p>Or {offer.instalmentCount} monthly payments of {perMonth}. Leave your details, pay, and your place is held the moment it clears. No call needed. Opens in a new tab.</p>
-                <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-ink">Join now</a>
-              </div>
-              <div className="lb-path">
-                <p className="lb-eyebrow">If you have questions</p>
-                <h3>Talk to me first.</h3>
-                <p>If the investment is within reach and you want clarity before you say yes, answer a few honest questions and book a call with me.</p>
-                <Link href="/liberate/apply" className="lb-btn lb-btn-ghost">Talk to me first</Link>
-              </div>
+            <h2 className="lb-display" style={{ marginTop: 14, maxWidth: "12ch" }}>One payment, or three.</h2>
+            <p className="lb-lede lb-muted" style={{ marginTop: 18, maxWidth: "26ch" }}>Your place is held the moment it clears.</p>
+            <p className="lb-note" style={{ marginTop: 18, maxWidth: "46ch" }}>Nothing is charged until you choose to. GCash, Maya, cards and bank transfer all work. Need a different arrangement? <Link href="/liberate/apply" style={{ textDecoration: "underline" }}>Talk to me first</Link>.</p>
+            <div style={{ marginTop: 34 }}>
+              <p className="lb-eyebrow" style={{ marginBottom: 14 }}>What’s included</p>
+              <ul className="lb-list">{INCLUDED.map((x) => <li key={x}>{x}</li>)}</ul>
             </div>
-            <p className="lb-note">Nothing is charged until you choose to. GCash, Maya, cards and bank transfer all work.</p>
           </div>
-          <div className="lb-reveal" style={{ transitionDelay: ".15s" }}>
-            <p className="lb-eyebrow" style={{ marginBottom: 18 }}>What’s included</p>
-            <ul className="lb-list">{INCLUDED.map((x) => <li key={x}>{x}</li>)}</ul>
+          <div className="lb-reveal" style={{ transitionDelay: ".12s" }}>
+            <div className="lb-checkout">
+              <div className="lb-checkout-head"><span>Liberate</span><span>November 2026 circle</span></div>
+              <p className="lb-checkout-k">Choose how you’d like to pay</p>
+              <div className="lb-plans" role="radiogroup" aria-label="Payment plan">
+                <button type="button" role="radio" aria-checked={plan === "full"} className={`lb-plan-opt${plan === "full" ? " on" : ""}`} onClick={() => setPlan("full")}>
+                  <span className="lb-plan-radio" aria-hidden />
+                  <span className="lb-plan-main"><b>Pay in full</b><small>One payment. Done.</small></span>
+                  <span className="lb-plan-amt">{price}</span>
+                </button>
+                <button type="button" role="radio" aria-checked={plan === "instalment"} className={`lb-plan-opt${plan === "instalment" ? " on" : ""}`} onClick={() => setPlan("instalment")}>
+                  <span className="lb-plan-radio" aria-hidden />
+                  <span className="lb-plan-main"><b>{offer.instalmentCount} monthly payments</b><small>{firstPayLabel} today, then {perMonth} a month</small></span>
+                  <span className="lb-plan-amt">{perMonth}<i>/mo</i></span>
+                </button>
+              </div>
+              <div className="lb-checkout-rows">
+                <div><span>Program</span><span>12 weeks · 24 live nights · retreat</span></div>
+                <div><span>Total</span><span>{price}</span></div>
+                <div className="lb-checkout-due"><span>Due today</span><strong>{plan === "full" ? price : firstPayLabel}</strong></div>
+              </div>
+              <a href={`/liberate/join${plan === "instalment" ? "?plan=monthly" : ""}`} target="_blank" rel="noreferrer" className="lb-btn lb-btn-ink lb-checkout-cta">Join Liberate →</a>
+              <p className="lb-checkout-fine">Opens in a new tab · GCash · Maya · Cards · Bank transfer</p>
+              <p className="lb-checkout-fine" style={{ marginTop: 6 }}>Not sure yet? <Link href="/liberate/apply" style={{ textDecoration: "underline", color: "var(--lb-ink)" }}>Talk to me first</Link></p>
+            </div>
           </div>
         </div>
       </section>
