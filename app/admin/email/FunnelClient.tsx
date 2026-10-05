@@ -161,6 +161,8 @@ function SequenceCard({ seq: initial, open, onOpen, inIt, busy, onSave, onTest }
                   <span className="muted" style={{ fontSize: 13 }}>{i === 0 ? "sent" : "days after the previous"}</span>
                   <input type="number" min={0} max={90} value={st.delayDays} onChange={(e) => setStep(i, { delayDays: Number(e.target.value) })} style={{ width: 70 }} />
                   <span className="muted" style={{ fontSize: 13 }}>{i === 0 ? (st.delayDays === 0 ? "straight away" : "days after they act") : "days later"}</span>
+                  <span className="muted" style={{ fontSize: 13 }}>· not before</span>
+                  <input type="date" value={st.sendOn ?? ""} onChange={(e) => setStep(i, { sendOn: e.target.value || undefined })} title="Optional: the letter waits for this date (e.g. the day before the program starts)" />
                 </span>
               </div>
               <label>Subject</label><input value={st.subject} onChange={(e) => setStep(i, { subject: e.target.value })} />

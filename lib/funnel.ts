@@ -15,6 +15,8 @@ export interface FunnelStep {
   id: string;
   /** Days after the previous letter (0 = straight away). */
   delayDays: number;
+  /** Optional calendar date (YYYY-MM-DD, Manila). The letter waits for this date even if the delay has passed — for "tomorrow we begin" style letters. */
+  sendOn?: string;
   subject: string;
   body: string;
 }
@@ -29,6 +31,8 @@ export interface Sequence {
   stopOnPaid?: boolean;
   /** Stops when Libni marks the call booked / proposal sent / not now. */
   stopOnStage?: boolean;
+  /** Set once Libni saves it from /admin/email — from then on the saved words win over the code defaults. */
+  edited?: boolean;
   steps: FunnelStep[];
 }
 export interface Enrolment {
@@ -62,9 +66,9 @@ const DAY = 86_400_000;
 // Written in Libni's voice; she edits them in /admin/email. {{first_name}},
 // {{offer}}, {{payment_link}}, {{booking_link}}, {{welcome_link}}, {{portal_link}},
 // {{access_code}}, {{amount}}, {{due}}, {{site}} are filled in at send time.
-const S = (id: string, name: string, description: string, triggers: string[], steps: [number, string, string][], extra: Partial<Sequence> = {}): Sequence => ({
+const S = (id: string, name: string, description: string, triggers: string[], steps: [number, string, string, string?][], extra: Partial<Sequence> = {}): Sequence => ({
   id, name, description, triggers, active: true, ...extra,
-  steps: steps.map(([delayDays, subject, body], i) => ({ id: `${id}-${i + 1}`, delayDays, subject, body })),
+  steps: steps.map(([delayDays, subject, body, sendOn], i) => ({ id: `${id}-${i + 1}`, delayDays, subject, body, ...(sendOn ? { sendOn } : {}) })),
 });
 
 export const DEFAULT_SEQUENCES: Sequence[] = [
@@ -237,7 +241,7 @@ If the intake isn't done yet, it's here: {{welcome_link}}
 — Libni`],
   ]),
 
-  S("paid-liberate", "Liberate · welcome to the circle", "Liberate is paid. First letter opens the member portal.", ["paid:liberate"], [
+  S("paid-liberate", "Liberate · welcome to the circle", "Liberate is paid. Welcome, then the letters before we begin, through the first week, the holiday pause and after week twelve. Dated letters wait for their date.", ["paid:liberate"], [
     [0, "Welcome to Liberate, {{first_name}}", `{{first_name}},
 
 Welcome to the circle.
@@ -246,9 +250,62 @@ Everything for our twelve weeks together lives in your portal — the roadmap, e
 
 Sign in with this email. Your access code: {{access_code}}
 
+We begin Tuesday, November 3, at 7 pm (Manila). Tuesdays are the Circle, with me. Thursdays are the Lab, with the Liberate community. The link to join is in your portal.
+
 Take what you need, when you need it. See you in week one.
 
 — Libni`],
+    [3, "Before we begin", `{{first_name}},
+
+A few things before week one, so nothing is a surprise.
+
+Your portal is open now: {{portal_link}} — the roadmap shows all twelve weeks, and Week 01, Awareness, is where we start.
+
+We meet twice a week, live, on Zoom. Cameras on when you can. A quiet corner helps. If you miss a night, the replay is in your portal within the day.
+
+The in-person retreat closes our twelve weeks — I'll share dates and the place inside the circle.
+
+Nothing else to prepare. Just come as you are.
+
+— Libni`],
+    [1, "Tomorrow, 7 pm", `{{first_name}},
+
+Tomorrow we begin.
+
+Tuesday, 7 pm (Manila). The link is in your portal: {{portal_link}}. Come five minutes early if you can, so we can start together.
+
+I'll be there before you are.
+
+— Libni`, "2026-11-02"],
+    [2, "After our first night", `{{first_name}},
+
+Thank you for last night. The first Circle is always the one that asks the most of you.
+
+The replay is in your portal: {{portal_link}}. On Thursday at 7 pm we meet again for the first Lab — the Liberate community will be there with us.
+
+If anything came up for you, write it down before it fades. That's the work beginning.
+
+— Libni`, "2026-11-04"],
+    [1, "We rest for a while", `{{first_name}},
+
+We pause for the holidays. No sessions on December 22, 24, 29 and 31 — we gather again on Tuesday, January 5, at 7 pm.
+
+Rest is part of the work too. Your portal stays open: {{portal_link}}.
+
+See you in January.
+
+— Libni`, "2026-12-21"],
+    [1, "After week twelve", `{{first_name}},
+
+Twelve weeks. Look at where you started.
+
+You don't just complete Liberate — the retreat is still ahead of us, and after that, the door stays open: Liberate alumni are welcome back into the Thursday Labs, with every intake that follows.
+
+Your portal — the replays, the practices — stays with you: {{portal_link}}.
+
+I'm proud of you. Thank you for trusting the room.
+
+— Libni`, "2027-02-03"],
   ]),
 
   S("paid-general", "Paid · everything else", "Any other program is paid — studio sessions, workshops, retreats, bespoke experiences.", ["paid:*"], [
@@ -324,7 +381,10 @@ async function firestoreDoc(): Promise<any> {
 function normalise(raw: Partial<FunnelData> | null | undefined): FunnelData {
   // Sequences she has never touched follow the code defaults; edited ones are kept as saved. New defaults are added.
   const saved = Array.isArray(raw?.sequences) ? raw!.sequences : [];
-  const sequences = [...saved];
+  const sequences = saved.map((s) => {
+    const d = DEFAULT_SEQUENCES.find((x) => x.id === s.id);
+    return d && !s.edited ? { ...d, active: s.active ?? d.active } : s;
+  });
   for (const d of DEFAULT_SEQUENCES) if (!sequences.some((s) => s.id === d.id)) sequences.push(d);
   return {
     sequences,
@@ -393,7 +453,7 @@ async function deliver(d: FunnelData, e: Enrolment, seq: Sequence, step: FunnelS
     e.step += 1;
     const next = seq.steps[e.step];
     if (!next) e.status = "done";
-    else e.nextAt = new Date(now + next.delayDays * DAY).toISOString();
+    else e.nextAt = new Date(dueAt(now, next)).toISOString();
   } else {
     // Try again next run.
     e.nextAt = new Date(now + 60 * 60 * 1000).toISOString();
@@ -421,11 +481,11 @@ export async function enrol(input: EnrolInput): Promise<{ enrolled: string[] }> 
     const e: Enrolment = {
       id: `${seq.id}-${now.toString(36)}-${Math.random().toString(36).slice(2, 6)}`,
       email, name: input.name, sequenceId: seq.id, step: 0,
-      nextAt: new Date(now + seq.steps[0].delayDays * DAY).toISOString(),
+      nextAt: new Date(dueAt(now, seq.steps[0])).toISOString(),
       status: "active", startedAt: new Date(now).toISOString(), vars: input.vars ?? {}, history: [], key: input.key,
     };
     d.enrolments.push(e);
-    if (seq.steps[0].delayDays === 0) await deliver(d, e, seq, seq.steps[0], now);
+    if (dueAt(now, seq.steps[0]) <= now) await deliver(d, e, seq, seq.steps[0], now);
     enrolled.push(seq.id);
   }
   if (enrolled.length) await saveFunnel(d);
@@ -473,6 +533,14 @@ export async function resubscribe(rawEmail: string): Promise<void> {
 }
 
 /** Send every letter that is due. Called by the hourly cron; safe to call any time. */
+/** When a letter is due: the delay, but never before its calendar date (9 am Manila). */
+function dueAt(now: number, step: FunnelStep): number {
+  const byDelay = now + step.delayDays * DAY;
+  if (!step.sendOn) return byDelay;
+  const onDate = Date.parse(`${step.sendOn}T09:00:00+08:00`);
+  return Number.isFinite(onDate) ? Math.max(byDelay, onDate) : byDelay;
+}
+
 export async function runDue(now = Date.now(), max = 60): Promise<{ sent: number; failed: number }> {
   const d = await getFunnel();
   let sent = 0, failed = 0, changed = false;
@@ -497,8 +565,8 @@ export async function saveSequence(seq: Sequence): Promise<FunnelData> {
   const clean: Sequence = {
     id: seq.id, name: seq.name.trim().slice(0, 120), description: seq.description.trim().slice(0, 300),
     triggers: seq.triggers.map((t) => t.trim()).filter(Boolean).slice(0, 12), active: Boolean(seq.active),
-    stopOnPaid: seq.stopOnPaid, stopOnStage: seq.stopOnStage,
-    steps: seq.steps.slice(0, 12).map((s, i) => ({ id: s.id || `${seq.id}-${i + 1}`, delayDays: Math.max(0, Math.min(90, Number(s.delayDays) || 0)), subject: s.subject.trim().slice(0, 200), body: s.body.slice(0, 8000) })).filter((s) => s.subject && s.body),
+    stopOnPaid: seq.stopOnPaid, stopOnStage: seq.stopOnStage, edited: true,
+    steps: seq.steps.slice(0, 12).map((s, i) => ({ id: s.id || `${seq.id}-${i + 1}`, delayDays: Math.max(0, Math.min(90, Number(s.delayDays) || 0)), sendOn: /^\d{4}-\d{2}-\d{2}$/.test(s.sendOn || "") ? s.sendOn : undefined, subject: s.subject.trim().slice(0, 200), body: s.body.slice(0, 8000) })).filter((s) => s.subject && s.body),
   };
   const i = d.sequences.findIndex((s) => s.id === clean.id);
   if (i === -1) d.sequences.push(clean); else d.sequences[i] = clean;
