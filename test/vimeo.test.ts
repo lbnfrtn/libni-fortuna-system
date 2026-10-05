@@ -14,6 +14,6 @@ describe("Liberate videos", () => {
     expect(v.role).toContain("Liberate 4");
     expect(v.quote).toBeTruthy();
     expect(v.poster).toBe("/photos/liberate/poster-kimi.jpg");
-    expect(DEFAULT_LIBERATE_VIDEOS).toHaveLength(10);
+    expect(DEFAULT_LIBERATE_VIDEOS).toHaveLength(15);
   });
 });

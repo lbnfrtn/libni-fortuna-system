@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { OFFERS } from "@/config/offers";
 import { resolveVideo } from "@/config/site-slots";
-import { DEFAULT_LIBERATE_VIDEOS, type LiberateVideo } from "@/config/liberate-videos";
+import { DEFAULT_LIBERATE_VIDEOS, vimeoId, type LiberateVideo } from "@/config/liberate-videos";
 import { LIBERATE_FAQ } from "@/config/liberate-faq";
 
 type Photos = Record<string, string>;
@@ -61,6 +61,7 @@ const FACES: Record<string, string> = {
   jill: "/photos/liberate/face-jill.jpg", mims: "/photos/liberate/face-mims.jpg", zy: "/photos/liberate/face-zy.jpg",
   nick: "/photos/liberate/face-nick.jpg", sam: "/photos/liberate/face-sam.jpg", lea: "/photos/liberate/face-lea.jpg", risha: "/photos/liberate/face-risha.jpg",
   pawla: "/photos/liberate/face2-pawla.jpg", victoria: "/photos/liberate/face2-victoria.jpg",
+  reel1: "/photos/liberate/face2-reel1.jpg", reel2a: "/photos/liberate/face2-reel2a.jpg", reel2b: "/photos/liberate/face2-reel2b.jpg", reel4: "/photos/liberate/face2-reel4.jpg",
   tonet: "/photos/liberate/face2-tonet.jpg", bam: "/photos/liberate/face2-bam.jpg", mitch: "/photos/liberate/face2-mitch.jpg",
   joyce: "/photos/liberate/face2-joyce.jpg", precious: "/photos/liberate/face2-precious.jpg", kimi: "/photos/liberate/face2-kimi.jpg", ikay: "/photos/liberate/face2-ikay.jpg", tiff2: "/photos/liberate/face-tiff.jpg",
 };
@@ -69,11 +70,18 @@ const FEATURE_PHOTO: Record<string, string> = {
   mitch: "/photos/liberate/feature-mitch.jpg", joyce: "/photos/liberate/feature-joyce.jpg", kimi: "/photos/liberate/feature-kimi.jpg",
   ikay: "/photos/liberate/feature-ikay.jpg", bam: "/photos/liberate/feature-bam.jpg", danessa: "/photos/liberate/feature-danessa.jpg",
   pawla: "/photos/liberate/feature-pawla.jpg", victoria: "/photos/liberate/feature-victoria.jpg",
+  reel1: "/photos/liberate/feature-reel1.jpg", reel2a: "/photos/liberate/feature-reel2a.jpg", reel2b: "/photos/liberate/feature-reel2b.jpg", reel4: "/photos/liberate/feature-reel4.jpg",
 };
 // The spotlight rotates through the students we have a real portrait for — order is the order shown.
 const YOU_VIDEO = "1232731301"; // the clip beside “They’ve called you intuitive…” (Libni’s pick)
-const SPOTLIGHT = ["pawla", "tonet", "bam", "mitch", "precious", "kimi", "ikay", "joyce", "danessa", "victoria", "tiff"];
-const VIDEO_ONLY: Record<string, string> = { pawla: "Pawla", victoria: "Victoria" }; // on video, no written quote yet
+// The spotlight, per intake. `video` is the Vimeo id; `hl` marks the highlight Libni chose for that intake.
+const SPOTLIGHT: { id: string; batch: 1 | 2 | 3 | 4; video?: string; hl?: boolean }[] = [
+  { id: "reel1", batch: 1, video: "1232731153", hl: true }, { id: "pawla", batch: 1, video: "1232675409" },
+  { id: "reel2a", batch: 2, video: "1232914568", hl: true }, { id: "reel2b", batch: 2, video: "1232914627", hl: true }, { id: "danessa", batch: 2, video: "1232676156" }, { id: "tiff", batch: 2 },
+  { id: "victoria", batch: 3, video: "1232914629", hl: true }, { id: "tonet", batch: 3, video: "1232676439" }, { id: "bam", batch: 3, video: "1232675738" },
+  { id: "reel4", batch: 4, video: "1232731301", hl: true }, { id: "mitch", batch: 4, video: "1232675467" }, { id: "precious", batch: 4, video: "1232675412" }, { id: "kimi", batch: 4, video: "1232675915" }, { id: "ikay", batch: 4, video: "1232675411" }, { id: "joyce", batch: 4, video: "1232676253" },
+];
+type Spot = Word & { batch: 1 | 2 | 3 | 4; video?: Video; hl?: boolean };
 
 // Real photos from her retreats and sessions stand in until she uploads her own to each “inside” slot.
 const INSIDE_STOCK: Record<string, string> = {
@@ -143,7 +151,7 @@ const THEME_OF: Record<string, Theme> = {
   precious: "Emotional freedom", ikay: "Emotional freedom", mims: "Emotional freedom", bam: "Emotional freedom",
   jilla: "Boundaries",
   nick: "Self-expression", petalio: "Self-expression", tiff2: "Self-expression", dayone: "Self-expression",
-  tiff: "Confidence", jill: "Confidence", sam: "Confidence", kimi: "Confidence", lea: "Confidence",
+  tiff: "Confidence", jill: "Confidence", sam: "Confidence", kimi: "Confidence", lea: "Confidence", victoria: "Self-trust",
 };
 
 type Pattern = "pleasing" | "overthinking" | "overwhelm" | "doubt";
@@ -242,12 +250,12 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
   const offer = OFFERS.liberate;
   // Client words come from the Studio (“Client stories”); the published quotes are the fallback.
   const WORDS_SHOWN: Word[] = (incoming && incoming.length ? incoming : WORDS).map((w) => ({ ...w, photo: w.photo || (w.id ? FACES[w.id] : undefined) }));
-  const spotlight = SPOTLIGHT.map((id) => {
+  const spotlight: Spot[] = SPOTLIGHT.map(({ id, batch, video, hl }): Spot | undefined => {
+    const v = video ? videos.find((x) => vimeoId(x.url) === video) : undefined;
     const w = WORDS_SHOWN.find((x) => x.id === id);
-    if (w) return w;
-    const v = VIDEO_ONLY[id] ? videos.find((x) => x.name === VIDEO_ONLY[id]) : undefined;
-    return v ? ({ id, who: v.name!, role: v.role, q: "", photo: FACES[id] } as Word) : undefined;
-  }).filter((w): w is Word => !!w);
+    if (!w && !v) return undefined;
+    return { id, batch, hl, video: v, q: w?.q ?? "", who: w?.who ?? v!.name ?? "A student", role: w?.role ?? v?.role, photo: w?.photo ?? FACES[id] };
+  }).filter((w): w is Spot => !!w);
   const wallRef = useRef<HTMLDivElement>(null);
   const [feat, setFeat] = useState(0);
   const [featAuto, setFeatAuto] = useState(true);
@@ -259,8 +267,8 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
   const [playFeat, setPlayFeat] = useState(false);
   const goFeat = (i: number) => { setFeatAuto(false); setPlayFeat(false); setFeat((i + spotlight.length) % spotlight.length); };
   const first = spotlight[feat] ?? WORDS_SHOWN[0];
-  const firstName = first.who.replace(/^@/, "").split(/\s|·/)[0];
-  const featVideo = videos.find((v) => v.name && v.name.toLowerCase() === firstName.toLowerCase());
+  const firstName = /^Liberate \d/.test(first.who) ? "the circle" : first.who.split(/\s|·/)[0];
+  const featVideo = (first as Spot).video;
   const featEmbed = featVideo ? resolveVideo(featVideo.url) : null;
   const featurePhoto = (feat === 0 && photos.libw_feature) || (first.id && FEATURE_PHOTO[first.id]) || first.photo;
   const uploadedShots = SHOT_SLOTS.map((id) => photos[id]).filter(Boolean);
@@ -550,7 +558,12 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
         .lb-spot-fade { animation: lbSpot .6s cubic-bezier(.2,.7,.2,1) both; }
         .lb-spot-nav { display: flex; align-items: center; gap: 14px; margin-top: 34px; padding-top: 26px; border-top: 1px solid var(--lb-line); }
         .lb-spot-nav .lb-jbtn { padding: 8px 12px; letter-spacing: 0; font-size: 14px; }
-        .lb-spot-faces { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+        .lb-spot-faces { display: flex; flex-wrap: wrap; gap: 10px 22px; flex: 1; }
+        .lb-spot-group { display: grid; gap: 6px; }
+        .lb-spot-group-label { font-family: var(--sans); font-size: 9px; letter-spacing: .24em; text-transform: uppercase; color: var(--lb-muted); }
+        .lb-spot-group-faces { display: flex; gap: 6px; }
+        .lb-spot-face.hl { opacity: .7; }
+        .lb-spot-face.hl .lb-face { box-shadow: 0 0 0 1.5px var(--lb-gold); }
         .lb-spot-face { padding: 0; border: 0; background: none; cursor: pointer; border-radius: 999px; opacity: .45; transition: opacity .3s, transform .3s, box-shadow .3s; }
         .lb-spot-face .lb-face { display: block; }
         .lb-spot-face:hover { opacity: .85; }
@@ -927,8 +940,8 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           </div>
 
           <div className="lb-head lb-reveal" style={{ marginTop: "clamp(40px, 5vw, 64px)", marginBottom: 0 }}>
-            <div><p className="lb-eyebrow">In their own voice</p><h3 className="lb-h3">{spotlight.length} students. Tap a face.</h3></div>
-            <p className="lb-muted" style={{ fontSize: 15, maxWidth: "36ch" }}>Every on-camera story plays right here — sound on.</p>
+            <div><p className="lb-eyebrow">In their own voice</p><h3 className="lb-h3">Tap a face.</h3></div>
+            <p className="lb-muted" style={{ fontSize: 15, maxWidth: "36ch" }}>Every story plays right here — sound on. Four intakes, each with its own highlight.</p>
           </div>
           <div className="lb-proof-feature lb-reveal">
             <div className="lb-spot-fade" key={`p-${first.id}`}>
@@ -942,7 +955,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
                   {featEmbed && "embed" in featEmbed && (
                     <button type="button" className="lb-spot-play" onClick={() => { setFeatAuto(false); setPlayFeat(true); }} aria-label={`Watch ${firstName}’s story`}>
                       <span className="lb-spot-play-ring"><svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M8 5v14l11-7z" fill="currentColor" /></svg></span>
-                      <span>Watch {firstName}’s story{featVideo?.dur ? ` · ${mmss(featVideo.dur)}` : ""}</span>
+                      <span>{firstName === "the circle" ? "Watch the circle" : `Watch ${firstName}’s story`}{featVideo?.dur ? ` · ${mmss(featVideo.dur)}` : ""}</span>
                     </button>
                   )}
                 </div>
@@ -957,10 +970,17 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
                 <div className="lb-spot-nav" aria-label="More voices">
                   <button type="button" className="lb-jbtn" onClick={() => goFeat(feat - 1)} aria-label="Previous voice">←</button>
                   <div className="lb-spot-faces" role="tablist">
-                    {spotlight.map((w, i) => (
-                      <button key={w.id} type="button" role="tab" aria-selected={i === feat} className={`lb-spot-face${i === feat ? " on" : ""}`} onClick={() => goFeat(i)} title={w.who}>
-                        <Face src={w.photo} name={w.who} size={40} />
-                      </button>
+                    {([1, 2, 3, 4] as const).map((b) => (
+                      <div className="lb-spot-group" key={b}>
+                        <span className="lb-spot-group-label">Liberate {b}</span>
+                        <div className="lb-spot-group-faces">
+                          {spotlight.map((w, i) => w.batch === b && (
+                            <button key={w.id} type="button" role="tab" aria-selected={i === feat} className={`lb-spot-face${i === feat ? " on" : ""}${w.hl ? " hl" : ""}`} onClick={() => goFeat(i)} title={w.who}>
+                              <Face src={w.photo} name={w.who} size={40} />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
                     ))}
                   </div>
                   <button type="button" className="lb-jbtn" onClick={() => goFeat(feat + 1)} aria-label="Next voice">→</button>
@@ -981,7 +1001,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             </div>
           </div>
           <div className="lb-wall" ref={wallRef}>
-            {WORDS_SHOWN.filter((w) => w.id !== "tiff").filter((w) => theme === "All" || (w.id && THEME_OF[w.id] === theme)).map((w, i) => (
+            {WORDS_SHOWN.filter((w) => w.id !== "tiff" && !(w.id ?? "").startsWith("reel")).filter((w) => theme === "All" || (w.id && THEME_OF[w.id] === theme)).map((w, i) => (
               <div key={(w.id ?? w.who) + i} className="lb-reveal is-in lb-word">
                 {w.id && THEME_OF[w.id] && <span className="lb-tag">{THEME_OF[w.id]}</span>}
                 <p className="lb-quote">{w.q}</p>
@@ -994,7 +1014,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             <div className="lb-reveal" style={{ marginTop: "clamp(56px, 7vw, 96px)" }}>
               <div className="lb-head" style={{ marginBottom: 26 }}>
                 <div><p className="lb-eyebrow">Straight from their stories</p><h3 className="lb-h3">As they posted them.</h3></div>
-                <p className="lb-muted" style={{ fontSize: 15, maxWidth: "40ch" }}>{shots.length} posts, untouched. Swipe →</p>
+                <p className="lb-muted" style={{ fontSize: 15, maxWidth: "40ch" }}>Untouched. Swipe →</p>
               </div>
               <div className="lb-shots">{shots.map((src, i) => <figure key={i}><img src={src} alt={`A message from a Liberate student, ${i + 1}`} loading="lazy" /></figure>)}</div>
             </div>

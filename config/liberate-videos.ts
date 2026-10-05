@@ -13,6 +13,12 @@ export interface LiberateVideo {
 }
 
 export const DEFAULT_LIBERATE_VIDEOS: LiberateVideo[] = [
+  // Intake highlights Libni picked (reels she posted; the on-screen line is the caption).
+  { url: "https://vimeo.com/1232731153", name: "Liberate 1", role: "The circle", w: 9, h: 16, dur: 67, poster: "/photos/liberate/vid-1232731153.jpg", quote: "I appreciate you for creating a safe space." },
+  { url: "https://vimeo.com/1232914568", name: "Liberate 2", role: "The circle", w: 9, h: 16, dur: 99, poster: "/photos/liberate/vid-1232914568.jpg", quote: "POV: You finally found your tribe." },
+  { url: "https://vimeo.com/1232914627", name: "Liberate 2", role: "The circle", w: 9, h: 16, dur: 94, poster: "/photos/liberate/vid-1232914627.jpg" },
+  { url: "https://vimeo.com/1232914629", name: "Victoria", role: "Liberate 3", w: 9, h: 16, dur: 77, poster: "/photos/liberate/vid-1232914629.jpg", quote: "It’s just so clear with what I want in my life now." },
+  { url: "https://vimeo.com/1232731301", name: "Liberate 4", role: "The circle", w: 9, h: 16, dur: 46, poster: "/photos/liberate/vid-1232731301.jpg" },
   { url: "https://vimeo.com/1232675409", name: "Pawla", role: "Liberate 1", w: 9, h: 16, dur: 70, poster: "/photos/liberate/vid-1232675409.jpg" },
   { url: "https://vimeo.com/1232676253", name: "Joyce", role: "Liberate 4 · business owner", w: 16, h: 9, dur: 173, poster: "/photos/liberate/poster-joyce.jpg", quote: "It’s more of a space that you can really be you. You can be all out." },
   { url: "https://vimeo.com/1232676156", name: "Danessa", role: "Liberate 2", w: 9, h: 16, dur: 64, poster: "/photos/liberate/vid-1232676156.jpg" },

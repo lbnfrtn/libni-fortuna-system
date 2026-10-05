@@ -342,6 +342,9 @@ export const DEFAULT_LIBERATE_WORDS: Story[] = [
   { id: "ikay", name: "Ikay", role: "Liberate 4", quote: "The reason I joined Liberate was because I was a very angry daughter. Liberate helped me process it — to lessen the tightness in the chest, and just really let go." },
   { id: "tiff2", name: "Tiffany Galvez", role: "Liberate 2 · by message", quote: "It was Liberate that pushed me to try pageantry again. I learned from you, coach, that there is always something more. I’m celebrating the person I’ve become after these experiences." },
   { id: "jilla", name: "Jill Almendral", role: "Liberate · by message", quote: "Nakalipat na ako — finally. Sa Liberate ko talaga na-push gawin ’to. The right time is always today. Take the first step." },
+  { id: "victoria", name: "Victoria", role: "Liberate 3", quote: "It’s just so clear with what I want in my life now." },
+  { id: "reel1", name: "Liberate 1", role: "The circle", quote: "I appreciate you for creating a safe space." },
+  { id: "reel2a", name: "Liberate 2", role: "The circle", quote: "POV: You finally found your tribe." },
 ];
 
 export const EMPTY_CONTENT: SiteContent = {
