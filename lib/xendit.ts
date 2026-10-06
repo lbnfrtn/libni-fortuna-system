@@ -42,19 +42,6 @@ function isMock(): boolean {
   return !process.env.XENDIT_SECRET_KEY;
 }
 
-/** Map our method names to Xendit's payment_methods channel codes. */
-function xenditMethods(methods: PaymentMethod[]): string[] {
-  const map: Record<PaymentMethod, string | null> = {
-    GCASH: "GCASH",
-    PAYMAYA: "PAYMAYA",
-    QRPH: "QRPH",
-    CREDIT_CARD: "CREDIT_CARD",
-    DIRECT_DEBIT: "DIRECT_DEBIT",
-    BANK_TRANSFER: null, // handled by OUR manual path, not by Xendit
-  };
-  return methods.map((m) => map[m]).filter((x): x is string => !!x);
-}
-
 export async function createInvoice(input: CreateInvoiceInput): Promise<CreateInvoiceResult> {
   if (input.amountPHP <= 0) throw new Error("invoice amount must be positive");
 
@@ -72,7 +59,9 @@ export async function createInvoice(input: CreateInvoiceInput): Promise<CreateIn
     description: input.description,
     success_redirect_url: input.successRedirectUrl,
     failure_redirect_url: input.successRedirectUrl,
-    payment_methods: xenditMethods(input.methods),
+    // No `payment_methods`: let Xendit present every channel activated on the
+    // account (GCash, Maya, QRPh now; cards / direct debit automatically once
+    // enabled). Forcing a list 400s if any listed method isn't activated yet.
     invoice_duration: input.durationSec ?? 7 * 24 * 3600,
   };
 
