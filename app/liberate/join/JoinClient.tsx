@@ -1,7 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { peso } from "@/lib/util";
-import type { SelfPay } from "@/lib/lead";
+
+// Pay-now goes through the real Xendit flow (/api/liberate/join). Pay-by-QR is
+// self-serve: scan GCash/PNB/BPI and email the proof to hello@libni.co.
+const QR_METHODS = [
+  { tag: "GCash", src: "/photos/liberate/qr-gcash.png" },
+  { tag: "PNB", src: "/photos/liberate/qr-pnb.png" },
+  { tag: "BPI", src: "/photos/liberate/qr-bpi.png" },
+];
 
 export default function JoinClient({ price, count, refundNote }: { price: number; count: number; refundNote?: string }) {
   const [plan, setPlan] = useState<"full" | "instalment">("full");
@@ -9,11 +16,11 @@ export default function JoinClient({ price, count, refundNote }: { price: number
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [consent, setConsent] = useState(false);
-  const [honeypot, setHoneypot] = useState("");
   const [src, setSrc] = useState("");
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState("");
-  const [pay, setPay] = useState<SelfPay | null>(null);
+  const [link, setLink] = useState<string | null>(null);
+  const [qrOk, setQrOk] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     const p = new URLSearchParams(window.location.search);
@@ -23,6 +30,9 @@ export default function JoinClient({ price, count, refundNote }: { price: number
 
   const monthly = Math.floor(price / count);
   const firstPayment = price - monthly * (count - 1);
+  const dueNow = plan === "full" ? price : firstPayment;
+  const anyQr = Object.values(qrOk).some(Boolean);
+  const mailto = `mailto:hello@libni.co?subject=${encodeURIComponent("I'm in Liberate")}&body=${encodeURIComponent("Hi Libni, I've paid for Liberate — my proof of payment is attached.")}`;
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -32,80 +42,116 @@ export default function JoinClient({ price, count, refundNote }: { price: number
       const res = await fetch("/api/liberate/join", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan, name, email, phone: phone || undefined, consent, source: src || undefined, company_website: honeypot || undefined }),
+        body: JSON.stringify({ plan, name, email, phone: phone || undefined, consent, source: src || undefined }),
       });
       const j = await res.json();
       if (!res.ok || !j.ok) throw new Error(j.error || "Something went wrong. Please try again.");
-      setPay(j.pay);
+      if (j.pay?.link) {
+        window.location.href = j.pay.link; // straight to the secure Xendit checkout
+        return;
+      }
+      setLink(j.pay?.manualPayUrl || null);
     } catch (x) {
       setErr(x instanceof Error ? x.message : "Something went wrong. Please try again.");
-    } finally {
       setBusy(false);
     }
   }
 
-  if (pay)
-    return (
-      <div className="card">
-        <p className="serif" style={{ fontSize: 24 }}>You’re almost in. 🤍</p>
-        <p className="muted">Your place is held the moment this clears. The same link is in your inbox.</p>
-        <p style={{ margin: "18px 0 12px" }}>
-          <b>{peso(pay.amount)}</b> {pay.plan === "instalment" ? `now — payment 1 of ${pay.instalments.length}` : "in full"}
-          {pay.plan === "instalment" && (
-            <span className="muted" style={{ display: "block", fontSize: 14 }}>Then {pay.instalments.slice(1).map((i) => `${peso(i.amount)} on ${i.dueDate}`).join(" · ")}</span>
-          )}
-        </p>
-        <div className="row">
-          {pay.link && <a className="btn" href={pay.link}>Pay with GCash, Maya or card</a>}
-          <a className="btn ghost" href={pay.manualPayUrl}>Pay by bank transfer</a>
-        </div>
-        <p className="muted" style={{ fontSize: 13, marginTop: 12 }}>If you close this page, the link in your email still works.</p>
-      </div>
-    );
-
   return (
-    <form onSubmit={submit} className="card">
-      <label>How would you like to pay?</label>
-      <div className="multi">
-        <label className={`multi-opt${plan === "full" ? " on" : ""}`}>
-          <input type="radio" name="plan" checked={plan === "full"} onChange={() => setPlan("full")} />
-          Pay in full — {peso(price)}
-        </label>
-        <label className={`multi-opt${plan === "instalment" ? " on" : ""}`}>
-          <input type="radio" name="plan" checked={plan === "instalment"} onChange={() => setPlan("instalment")} />
-          {count} monthly payments — {peso(firstPayment)} today, then {peso(monthly)} a month
-        </label>
-      </div>
-      <p className="muted" style={{ fontSize: 14, marginTop: 8 }}>Another arrangement in mind? <a href="/liberate/apply">Talk to me first</a> — payment plans are always something we can talk about.</p>
+    <div className="ck">
+      {/* OPTION 1 — PAY NOW */}
+      <p className="ck-opt">Option 1 · Pay now — GCash, Maya, Card or QR</p>
+      <form onSubmit={submit} className="ck-card">
+        <div className="ck-h"><b>Your details</b><span>Fill these in, then continue to our secure checkout.</span></div>
 
-      <div className="grid2" style={{ marginTop: 18 }}>
-        <div>
-          <label>Your name</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} required />
+        <label>Full name</label>
+        <input value={name} onChange={(e) => setName(e.target.value)} required />
+        <label>Email</label>
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+        <label>WhatsApp number</label>
+        <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+63…" required />
+
+        <label>Choose your plan</label>
+        <div className="ck-plans">
+          <button type="button" className={`ck-plan${plan === "full" ? " on" : ""}`} onClick={() => setPlan("full")}>
+            <b>{peso(price)}</b><small>Pay in full</small>
+          </button>
+          <button type="button" className={`ck-plan${plan === "instalment" ? " on" : ""}`} onClick={() => setPlan("instalment")}>
+            <b>{peso(firstPayment)}</b><small>today, then {peso(monthly)} ×{count - 1}</small>
+          </button>
         </div>
-        <div>
-          <label>Email</label>
-          <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+
+        <div className="ck-sum">
+          <p className="ck-k">Order summary</p>
+          <div className="ck-row"><span>Liberate — 12-week group experience</span><span>{peso(price)}</span></div>
+          <div className="ck-row ck-sub"><span>{plan === "full" ? "Pay in full" : `${count} monthly payments`}</span><span>Begins Nov 3, 2026</span></div>
+          <div className="ck-row ck-total"><span>Due today</span><b>{peso(dueNow)}</b></div>
+        </div>
+
+        <label className="ck-consent">
+          <input type="checkbox" checked={consent} onChange={(e) => setConsent(e.target.checked)} required />
+          <span>I agree to be contacted about Liberate and to my details being stored, per the Philippine Data Privacy Act.</span>
+        </label>
+        {refundNote && <p className="ck-note">{refundNote}</p>}
+        {err && <p className="ck-err">{err}</p>}
+
+        <button className="ck-pay" disabled={busy}>{busy ? "One moment…" : "Continue to secure checkout →"}</button>
+        {link && <p className="ck-note" style={{ textAlign: "center" }}>Your link is ready: <a href={link}>open it here →</a></p>}
+        <p className="ck-secure">🔒 100% secure payment via Xendit · GCash · Maya · Card · QR</p>
+        <p className="ck-talk">Prefer to talk first? <a href="/liberate/apply">Book a quick call →</a></p>
+      </form>
+
+      {/* OPTION 2 — QR */}
+      <p className="ck-opt">Option 2 · GCash, PNB or BPI QR</p>
+      <div className="ck-card">
+        <div className="ck-h"><b>Pay by QR</b><span>Scan with GCash or your bank app, then send me your proof by email.</span></div>
+
+        {anyQr ? (
+          <>
+            <div className="ck-qrgrid">
+              {QR_METHODS.map((m) => (
+                <div key={m.tag} className="ck-qrtile" style={{ display: qrOk[m.tag] ? "flex" : "none" }}>
+                  <span className="ck-tag">{m.tag}</span>
+                  <img src={m.src} alt={`${m.tag} QR`} onError={() => setQrOk((s) => ({ ...s, [m.tag]: false }))} onLoad={() => setQrOk((s) => ({ ...s, [m.tag]: true }))} />
+                </div>
+              ))}
+            </div>
+            <p className="ck-qrcap">Scan to pay {peso(dueNow)}</p>
+          </>
+        ) : (
+          // Preload probes (hidden) so we know which QR images exist.
+          <div style={{ display: "none" }}>
+            {QR_METHODS.map((m) => (
+              <img key={m.tag} src={m.src} alt="" onError={() => setQrOk((s) => ({ ...s, [m.tag]: false }))} onLoad={() => setQrOk((s) => ({ ...s, [m.tag]: true }))} />
+            ))}
+          </div>
+        )}
+
+        {!anyQr && (
+          <p className="ck-note" style={{ textAlign: "center", margin: "6px 0 16px" }}>
+            Paying by GCash, PNB or BPI? Email <strong>hello@libni.co</strong> and I&rsquo;ll send you the QR.
+          </p>
+        )}
+
+        <div className="ck-mail">
+          <b>Then send your proof</b>
+          <p>Once you&rsquo;ve paid, email your receipt or screenshot to <strong>hello@libni.co</strong> with the subject &ldquo;I&rsquo;m in Liberate.&rdquo; I&rsquo;ll confirm and send your welcome within a few hours.</p>
+          <a className="ck-mailbtn" href={mailto}>Email my proof to hello@libni.co</a>
         </div>
       </div>
-      <label>WhatsApp number</label>
-      <input type="tel" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="+63…" required />
 
-      <div style={{ position: "absolute", left: "-9999px" }} aria-hidden>
-        <label>Company website</label>
-        <input tabIndex={-1} autoComplete="off" value={honeypot} onChange={(e) => setHoneypot(e.target.value)} />
+      {/* AFTER PAYMENT */}
+      <div className="ck-after">
+        <h3>What happens after you pay</h3>
+        <p className="ck-lead">Whether you pay instantly or by QR, here&rsquo;s exactly what comes next.</p>
+        <div className="ck-steps">
+          <div className="ck-step"><span className="ck-n">1</span><div><b>I confirm your payment</b><p>Pay-now orders confirm automatically. Paid by QR? Email your proof and I&rsquo;ll verify it — usually within a few hours.</p></div></div>
+          <div className="ck-step"><span className="ck-n">2</span><div><b>Your welcome email arrives</b><p>It has your portal access code and the full schedule. Sign in at libni.co/portal with the email you used here.</p></div></div>
+          <div className="ck-step"><span className="ck-n">3</span><div><b>You&rsquo;re in the circle</b><p>We begin Tuesday, November 3 at 7 pm (Manila) — Tuesdays with me, Thursdays with the community.</p></div></div>
+        </div>
+        <p className="ck-afternote">Don&rsquo;t see the email within a few minutes? Check spam / promotions, or just reply and I&rsquo;ll sort it.</p>
       </div>
 
-      <label style={{ display: "flex", gap: 10, alignItems: "flex-start", marginTop: 18, fontWeight: 400 }}>
-        <input type="checkbox" style={{ width: "auto", marginTop: 4 }} checked={consent} onChange={(e) => setConsent(e.target.checked)} required />
-        <span className="muted" style={{ fontSize: 14 }}>I agree to be contacted about Liberate and to my details being stored, per the Philippine Data Privacy Act.</span>
-      </label>
-      {refundNote && <p className="note" style={{ marginTop: 16 }}>{refundNote}</p>}
-
-      {err && <p style={{ color: "var(--terracotta)", marginTop: 12 }}>{err}</p>}
-      <div style={{ marginTop: 18 }}>
-        <button className="btn" disabled={busy}>{busy ? "One moment…" : "Continue to payment"}</button>
-      </div>
-    </form>
+    </div>
   );
 }

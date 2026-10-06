@@ -392,3 +392,56 @@ th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: 
 .multi-opt:hover { border-color: var(--plum); }
 .multi-opt.on { border-color: var(--plum); background: var(--lilac-tint); }
 .multi-opt input { width: auto; margin: 0; accent-color: var(--plum); }
+
+
+/* ---- /liberate/join: two-option checkout (ck-*) ---- */
+.ck { --ck-gold: #b8955a; --ck-gold-soft: #d8c39a; --ck-line: rgba(43,37,40,.14); max-width: 640px; margin: 0 auto; }
+.ck-opt { text-align: center; font-size: 12px; letter-spacing: .22em; text-transform: uppercase; color: var(--ck-gold); font-weight: 700; margin: clamp(34px,5vw,52px) 0 16px; }
+.ck-card { background: var(--ivory); border: 1px solid var(--ck-line); border-radius: 20px; box-shadow: 0 10px 40px rgba(43,37,40,.06); padding: clamp(22px,4vw,36px); }
+.ck-h { text-align: center; margin-bottom: 20px; }
+.ck-h b { font-family: var(--font-serif), Georgia, serif; font-size: 24px; color: var(--plum); font-weight: 500; }
+.ck-h span { display: block; font-size: 13.5px; color: var(--muted); margin-top: 4px; }
+.ck label { display: block; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); font-weight: 600; margin: 14px 0 6px; }
+.ck input[type="text"], .ck input[type="email"], .ck input[type="tel"], .ck input:not([type]) { width: 100%; padding: 13px 15px; border: 1px solid var(--ck-line); border-radius: 10px; font-size: 15px; background: #fff; color: var(--ink); font-family: inherit; }
+.ck input:focus { outline: none; border-color: var(--plum); box-shadow: 0 0 0 3px rgba(91,68,112,.12); }
+.ck-plans { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 6px; }
+.ck-plan { border: 1.5px solid var(--ck-line); border-radius: 12px; padding: 14px 16px; cursor: pointer; background: #fff; text-align: left; transition: border-color .25s, background .25s, box-shadow .25s; }
+.ck-plan.on { border-color: var(--plum); background: rgba(91,68,112,.04); box-shadow: 0 0 0 3px rgba(91,68,112,.1); }
+.ck-plan b { font-family: var(--font-serif), Georgia, serif; font-size: 18px; display: block; color: var(--ink); }
+.ck-plan small { color: var(--muted); font-size: 12.5px; }
+.ck-sum { margin-top: 24px; border-top: 1px solid var(--ck-line); padding-top: 18px; }
+.ck-k { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ck-gold); font-weight: 700; margin-bottom: 10px; }
+.ck-row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 7px 0; font-size: 15px; }
+.ck-row.ck-sub { color: var(--muted); font-size: 13px; }
+.ck-row.ck-total { border-top: 1px solid var(--ck-line); margin-top: 6px; padding-top: 12px; }
+.ck-row.ck-total b { font-family: var(--font-serif), Georgia, serif; font-size: 26px; color: var(--plum); }
+.ck .ck-consent { display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; color: var(--muted); font-size: 14px; }
+.ck .ck-consent, .ck .ck-consent span { text-transform: none; letter-spacing: 0; font-weight: 400; }
+.ck-consent input { width: auto; margin-top: 4px; }
+.ck-consent span { font-size: 14px; }
+.ck-note { font-size: 13px; color: var(--muted); margin-top: 12px; }
+.ck-err { color: #8a3b3b; margin-top: 12px; font-size: 14px; }
+.ck-pay { width: 100%; margin-top: 20px; background: var(--ck-gold-soft); color: var(--ink); border: none; border-radius: 999px; padding: 16px; font-size: 13px; letter-spacing: .16em; text-transform: uppercase; font-weight: 700; cursor: pointer; transition: transform .3s; font-family: var(--font-body); }
+.ck-pay:hover:not(:disabled) { transform: translateY(-2px); }
+.ck-pay:disabled { opacity: .6; cursor: default; }
+.ck-secure { text-align: center; font-size: 12px; color: var(--muted); margin-top: 12px; }
+.ck-talk { text-align: center; font-size: 13.5px; color: var(--muted); margin-top: 14px; }
+.ck-qrgrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin: 6px 0 14px; }
+.ck-qrtile { display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 16px; background: #fff; border: 1px solid var(--ck-line); border-radius: 16px; }
+.ck-qrtile img { width: 100%; max-width: 170px; aspect-ratio: 1/1; object-fit: contain; }
+.ck-tag { font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ck-gold); font-weight: 700; }
+.ck-qrcap { text-align: center; font-family: var(--font-serif), Georgia, serif; font-style: italic; font-size: 18px; color: var(--plum); margin-bottom: 18px; }
+.ck-mail { background: #fff; border: 1px solid var(--ck-line); border-radius: 14px; padding: 22px; text-align: center; }
+.ck-mail b { font-family: var(--font-serif), Georgia, serif; font-size: 20px; color: var(--plum); }
+.ck-mail p { font-size: 14px; color: var(--muted); max-width: 46ch; margin: 8px auto 0; }
+.ck-mailbtn { display: inline-block; margin-top: 14px; background: var(--plum); color: #fff; text-decoration: none; border-radius: 999px; padding: 13px 26px; font-size: 12px; letter-spacing: .14em; text-transform: uppercase; font-weight: 700; }
+.ck-after { background: var(--lilac-tint); border: 1px solid rgba(91,68,112,.18); border-radius: 20px; padding: clamp(24px,4vw,38px); margin: clamp(32px,5vw,48px) 0 10px; }
+.ck-after h3 { font-family: var(--font-serif), Georgia, serif; font-weight: 500; font-size: clamp(24px,3vw,32px); color: var(--plum); text-align: center; }
+.ck-lead { text-align: center; color: var(--muted); font-size: 14px; margin: 8px auto 22px; max-width: 44ch; }
+.ck-steps { display: grid; gap: 16px; }
+.ck-step { display: flex; gap: 16px; align-items: flex-start; }
+.ck-n { flex: none; width: 34px; height: 34px; border-radius: 50%; background: var(--plum); color: #fff; display: flex; align-items: center; justify-content: center; font-family: var(--font-serif), Georgia, serif; font-size: 17px; }
+.ck-step b { font-family: var(--font-serif), Georgia, serif; font-size: 19px; display: block; color: var(--ink); }
+.ck-step p { font-size: 14px; color: var(--muted); margin-top: 2px; }
+.ck-afternote { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(91,68,112,.18); font-size: 13px; color: var(--muted); text-align: center; }
+@media (max-width: 560px) { .ck-plans, .ck-qrgrid { grid-template-columns: 1fr; } }
