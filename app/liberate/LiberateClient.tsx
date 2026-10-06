@@ -1005,7 +1005,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
               <div key={(w.id ?? w.who) + i} className="lb-reveal is-in lb-word">
                 {w.id && THEME_OF[w.id] && <span className="lb-tag">{THEME_OF[w.id]}</span>}
                 <p className="lb-quote">{w.q}</p>
-                <p className="lb-who lb-word-who">{w.who}{w.role && <span>{w.role}</span>}</p>
+                <div className="lb-word-head">{w.photo && <Face src={w.photo} name={w.who} size={48} />}<p className="lb-who">{w.who}{w.role && <span>{w.role}</span>}</p></div>
               </div>
             ))}
           </div>
