@@ -14,7 +14,7 @@ const schema = z.object({
   phone: z.string().max(40).optional(),
   consent: z.literal(true, { errorMap: () => ({ message: "Please tick the box so I'm allowed to contact you." }) }),
   source: z.string().max(120).optional(),
-  company_website: z.string().max(0).optional(),
+  company_website: z.string().optional(), // ignored (was a honeypot; autofill tripped real buyers)
 });
 
 export async function POST(req: Request) {

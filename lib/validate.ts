@@ -15,7 +15,7 @@ export const leadSchema = z.object({
   sourceDetail: z.string().max(200).optional(),
   utm: z.record(z.string(), z.string().max(200)).optional(),
   // simple honeypot: must be empty
-  company_website: z.string().max(0).optional(),
+  company_website: z.string().optional(), // ignored (was a honeypot; autofill tripped real buyers)
 });
 export type LeadInput = z.infer<typeof leadSchema>;
 

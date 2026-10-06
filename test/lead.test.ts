@@ -9,9 +9,9 @@ describe("lead validation", () => {
     const r = leadSchema.safeParse({ name: "A", email: "a@e.com", offerSlug: "ignite", consent: false });
     expect(r.success).toBe(false);
   });
-  it("rejects a filled honeypot", () => {
+  it("ignores a filled honeypot instead of blocking (autofill-safe)", () => {
     const r = leadSchema.safeParse({ name: "A", email: "a@e.com", offerSlug: "ignite", consent: true, company_website: "spam" });
-    expect(r.success).toBe(false);
+    expect(r.success).toBe(true);
   });
   it("accepts a clean consumer lead", () => {
     const r = leadSchema.safeParse({ name: "Ana", email: "ana@e.com", offerSlug: "ignite", consent: true, source: "instagram" });
