@@ -28,6 +28,17 @@ export default function JoinClient({ price, count, refundNote }: { price: number
     if (p.get("plan") === "monthly") setPlan("instalment");
   }, []);
 
+  // Reliably detect which QR images exist (onLoad on a rendered <img> can be
+  // missed when the image is already cached at hydration).
+  useEffect(() => {
+    QR_METHODS.forEach((m) => {
+      const img = new Image();
+      img.onload = () => setQrOk((s) => ({ ...s, [m.tag]: true }));
+      img.onerror = () => setQrOk((s) => ({ ...s, [m.tag]: false }));
+      img.src = m.src;
+    });
+  }, []);
+
   const monthly = Math.floor(price / count);
   const firstPayment = price - monthly * (count - 1);
   const dueNow = plan === "full" ? price : firstPayment;
@@ -106,25 +117,18 @@ export default function JoinClient({ price, count, refundNote }: { price: number
       <div className="ck-card">
         <div className="ck-h"><b>Pay by QR</b><span>Scan with GCash or your bank app, then send me your proof by email.</span></div>
 
-        {anyQr ? (
+        {anyQr && (
           <>
             <div className="ck-qrgrid">
-              {QR_METHODS.map((m) => (
-                <div key={m.tag} className="ck-qrtile" style={{ display: qrOk[m.tag] ? "flex" : "none" }}>
+              {QR_METHODS.filter((m) => qrOk[m.tag]).map((m) => (
+                <div key={m.tag} className="ck-qrtile">
                   <span className="ck-tag">{m.tag}</span>
-                  <img src={m.src} alt={`${m.tag} QR`} onError={() => setQrOk((s) => ({ ...s, [m.tag]: false }))} onLoad={() => setQrOk((s) => ({ ...s, [m.tag]: true }))} />
+                  <img src={m.src} alt={`${m.tag} QR`} />
                 </div>
               ))}
             </div>
             <p className="ck-qrcap">Scan to pay {peso(dueNow)}</p>
           </>
-        ) : (
-          // Preload probes (hidden) so we know which QR images exist.
-          <div style={{ display: "none" }}>
-            {QR_METHODS.map((m) => (
-              <img key={m.tag} src={m.src} alt="" onError={() => setQrOk((s) => ({ ...s, [m.tag]: false }))} onLoad={() => setQrOk((s) => ({ ...s, [m.tag]: true }))} />
-            ))}
-          </div>
         )}
 
         {!anyQr && (
