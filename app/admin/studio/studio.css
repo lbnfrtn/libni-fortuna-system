@@ -1,0 +1,78 @@
+/* ============================================================================
+   Studio — an Apple-Settings-style shell: a calm sidebar of sections on the
+   left, one roomy section at a time on the right. Uses the site's own palette.
+   ========================================================================== */
+
+.st { display: grid; grid-template-columns: 312px minmax(0, 1fr); min-height: 100vh; background: var(--bg); }
+
+/* ---- sidebar ---- */
+.st-side { position: sticky; top: 0; align-self: start; height: 100vh; overflow-y: auto; border-right: 1px solid var(--line); background: var(--ivory); padding: 26px 14px 60px; }
+.st-brand { padding: 4px 12px 14px; }
+.st-brand h1 { font-size: 27px; line-height: 1; margin: 0 0 4px; }
+.st-brand a { font-size: 13px; color: var(--muted); }
+.st-brand a:hover { color: var(--plum); }
+.st-search { position: relative; margin: 2px 4px 18px; }
+.st-search input { width: 100%; box-sizing: border-box; margin: 0; padding: 10px 14px 10px 36px; border-radius: 11px; font-size: 14px; background: #fff; }
+.st-search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); width: 15px; height: 15px; color: var(--mist); pointer-events: none; }
+
+.st-group { margin-bottom: 18px; }
+.st-group > p { font-size: 11px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--mist); font-weight: 700; padding: 0 12px; margin: 0 0 4px; }
+.st-item { display: flex; align-items: center; gap: 12px; width: 100%; box-sizing: border-box; text-align: left; border: 0; background: transparent; padding: 8px 12px; border-radius: 12px; cursor: pointer; color: var(--ink); font-family: inherit; font-size: 15px; line-height: 1.25; transition: background 0.15s; }
+.st-item:hover { background: var(--linen); }
+.st-item.on { background: var(--plum); color: #fff; }
+.st-tile { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--lilac-tint); color: var(--plum); flex: 0 0 auto; }
+.st-tile svg { width: 17px; height: 17px; }
+.st-item.on .st-tile { background: rgba(255, 255, 255, 0.22); color: #fff; }
+.st-item-label { flex: 1; min-width: 0; }
+.st-item-label b { display: block; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.st-item-label small { display: block; font-size: 11.5px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 1px; }
+.st-item.on .st-item-label small { color: rgba(255, 255, 255, 0.78); }
+.st-count { font-size: 12px; color: var(--muted); background: var(--linen); border-radius: 999px; padding: 1px 9px; flex: 0 0 auto; }
+.st-item.on .st-count { background: rgba(255, 255, 255, 0.24); color: #fff; }
+.st-chevron { display: none; }
+
+/* ---- main panel ---- */
+.st-main { padding: 44px clamp(20px, 4vw, 60px) 120px; max-width: 940px; width: 100%; box-sizing: border-box; }
+.st-back { display: none; }
+.st-head { margin-bottom: 28px; }
+.st-head .kicker { margin-bottom: 8px; }
+.st-head h2 { font-size: 32px; line-height: 1.1; margin: 0 0 8px; }
+.st-head p { color: var(--muted); max-width: 68ch; margin: 0; font-size: 15.5px; }
+.st-head-live { display: inline-flex; align-items: center; gap: 5px; margin-top: 12px; font-size: 13px; font-weight: 600; color: var(--plum); }
+.st-head-live svg { width: 13px; height: 13px; }
+
+/* a grouped "settings" card that wraps a panel's body */
+.st-card { background: var(--surface); border: 1px solid var(--line-soft); border-radius: var(--r-lg); box-shadow: var(--shadow); padding: 24px; margin-bottom: 18px; }
+.st-card-lead { color: var(--muted); font-size: 14.5px; margin: 0 0 18px; max-width: 70ch; }
+
+/* photo + link grids inside a panel */
+.st-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(248px, 1fr)); gap: 18px; }
+
+/* toolbar row for list editors (Save on the right) */
+.st-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 16px; }
+.st-toolbar p { margin: 0; }
+
+.st-footnote { font-size: 12px; color: var(--muted); margin-top: 18px; display: flex; gap: 7px; align-items: flex-start; }
+.st-footnote svg { width: 14px; height: 14px; flex: 0 0 auto; margin-top: 2px; color: var(--mist); }
+
+/* save toast */
+.st-toast { position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%); z-index: 50; padding: 13px 22px; border-radius: 999px; font-size: 14px; font-weight: 600; box-shadow: var(--shadow-lg); animation: st-rise 0.25s ease; }
+.st-toast.ok { background: var(--plum); color: #fff; }
+.st-toast.err { background: #f6e4e4; color: #8a3b3b; }
+@keyframes st-rise { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+.st-empty { color: var(--muted); font-size: 14.5px; padding: 8px 0 4px; }
+
+/* ---- mobile: sidebar becomes a menu you drill into ---- */
+@media (max-width: 860px) {
+  .st { grid-template-columns: 1fr; }
+  .st-side { position: static; height: auto; border-right: 0; border-bottom: 1px solid var(--line); }
+  .st-chevron { display: block; color: var(--mist); flex: 0 0 auto; }
+  .st-item.on .st-chevron { color: rgba(255, 255, 255, 0.7); }
+  .st-main { max-width: none; padding-top: 24px; }
+  .st-back { display: inline-flex; align-items: center; gap: 6px; background: none; border: 0; color: var(--plum); font-family: inherit; font-size: 15px; font-weight: 600; padding: 0; margin-bottom: 18px; cursor: pointer; }
+  .st-back svg { width: 16px; height: 16px; }
+  /* show one or the other */
+  .st.v-panel .st-side { display: none; }
+  .st.v-menu .st-main { display: none; }
+}

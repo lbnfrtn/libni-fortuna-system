@@ -15,13 +15,5 @@ export default async function StudioPage() {
     ? "Vercel Blob — uploads survive every deploy. Photos up to 25MB, videos up to 500MB."
     : "This computer (public/uploads) — fine for trying it out. Add BLOB_READ_WRITE_TOKEN before go-live so photos survive deploys.";
 
-  return (
-    <div className="wrap" style={{ maxWidth: 1100 }}>
-      <h1>Studio</h1>
-      <p className="muted" style={{ marginBottom: 40 }}>
-        Every photo, video and link on the public site. Changes go live the moment you save — no deploy needed.
-      </p>
-      <StudioClient groups={SLOT_GROUPS} initial={content} storage={storage} direct={direct} />
-    </div>
-  );
+  return <StudioClient groups={SLOT_GROUPS} initial={content} storage={storage} direct={direct} />;
 }

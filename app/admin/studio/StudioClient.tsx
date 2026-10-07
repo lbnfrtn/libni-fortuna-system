@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useMemo, useRef, useState, type ReactNode } from "react";
+import "./studio.css";
 import type { SiteContent, MediaLink, Story, CaseStudy, Talk, PressItem, MediaKit, Brand, Keynote, BioLink } from "@/lib/content";
 import { PROGRAM_OPTIONS, TALK_SURFACES } from "@/config/content-options";
 import { LINK_FIELDS, type SlotGroup, type Slot } from "@/config/site-slots";
@@ -8,11 +9,29 @@ import { LINK_FIELDS, type SlotGroup, type Slot } from "@/config/site-slots";
 const IMAGE_ACCEPT = "image/jpeg,image/png,image/webp,image/avif,image/heic";
 const VIDEO_ACCEPT = "video/mp4,video/webm,video/quicktime,video/x-m4v";
 
+type Panel = { id: string; label: string; sub?: string; icon: IconName; count?: number; render: () => ReactNode };
+type Section = { title: string; panels: Panel[] };
+
+const GROUP_ICON: Record<string, IconName> = {
+  home: "home", videos: "video", screenshots: "chat", oneonone: "heart",
+  about: "person", becoming: "sparkle", liberate: "sun",
+  programs: "star", links: "link", speaking: "mic", mediakit: "kit",
+};
+
+/** First "/path" mentioned in a group's location string, else the home page. */
+function liveFor(where: string): string {
+  const m = where.match(/\/[a-z0-9-]+/i);
+  return m ? m[0] : "/";
+}
+
 export default function StudioClient({ groups, initial, storage, direct }: { groups: SlotGroup[]; initial: SiteContent; storage: string; direct: boolean }) {
   const [content, setContent] = useState<SiteContent>(initial);
   const [busy, setBusy] = useState<string>("");
   const [progress, setProgress] = useState<number | null>(null);
   const [note, setNote] = useState<{ kind: "ok" | "err"; text: string } | null>(null);
+  const [active, setActive] = useState<string>(groups.length ? `g-${groups[0].key}` : "stories");
+  const [query, setQuery] = useState("");
+  const [view, setView] = useState<"menu" | "panel">("menu"); // mobile only
 
   function flash(kind: "ok" | "err", text: string, ms = 4000) {
     setNote({ kind, text });
@@ -112,29 +131,19 @@ export default function StudioClient({ groups, initial, storage, direct }: { gro
     }
   }
 
-  return (
-    <div>
-      {note && (
-        <div className="note" style={{ position: "sticky", top: 12, zIndex: 5, marginBottom: 20, background: note.kind === "ok" ? "var(--lilac)" : "#f6e4e4", color: note.kind === "ok" ? "var(--plum-deep)" : "#8a3b3b" }}>
-          {note.text}
-        </div>
-      )}
+  const clearPhoto = (slotId: string) => post({ action: "clearPhoto", slotId }, slotId);
 
-      <p className="note" style={{ marginBottom: 18 }}>
-        <strong>Where photos are stored:</strong> {storage}
-      </p>
-      <nav className="row" style={{ gap: 8, marginBottom: 34, flexWrap: "wrap" }}>
-        {[["/", "↖ Site home"], ["#photos", "Photos & videos"], ["#stories", "Client stories"], ["#becoming", "The Becoming · case studies"], ["#liberatewords", "Liberate · testimonials"], ["#talks", "Events & stages"], ["#press", "Television"], ["#podcasts", "Podcast features"], ["#writeups", "Write-ups"], ["#brands", "Brands & logos"], ["#keynotes", "Signature keynotes"], ["#speakwords", "Organiser words"], ["#mediakit", "Media kit"], ["#biolinks", "Link in bio"], ["#links", "Links"], ["#events", "Events"]].map(([h, l]) => (
-          <a key={h} href={h} className="chip" style={{ textDecoration: "none" }}>{l}</a>
-        ))}
-      </nav>
-      <div id="photos" />
-
-      {groups.map((g) => (
-        <section key={g.key} style={{ marginBottom: 56 }}>
-          <p className="kicker">{g.where}</p>
-          <h2 style={{ fontSize: 26, margin: "6px 0 20px" }}>{g.title}</h2>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 18 }}>
+  // ---- the panels, grouped like Apple's Settings sidebar -------------------
+  const sections: Section[] = useMemo(() => {
+    const photoPanels: Panel[] = groups.map((g) => ({
+      id: `g-${g.key}`,
+      label: g.title,
+      sub: g.where,
+      icon: GROUP_ICON[g.key] ?? "image",
+      render: () => (
+        <>
+          <PanelHead title={g.title} sub={`The photos and videos on ${g.where}. Changes go live the moment you upload.`} live={liveFor(g.where)} />
+          <div className="st-grid">
             {g.slots.map((s) => (
               <SlotCard
                 key={s.id}
@@ -144,229 +153,421 @@ export default function StudioClient({ groups, initial, storage, direct }: { gro
                 busy={busy === s.id}
                 progress={busy === s.id ? progress : null}
                 onUpload={(f) => upload(s.id, f, s.kind === "video" ? "video" : "photo")}
-                onClear={() => post({ action: "clearPhoto", slotId: s.id }, s.id)}
+                onClear={() => clearPhoto(s.id)}
                 onVideo={(url) => post({ action: "setVideo", slotId: s.id, url }, s.id)}
               />
             ))}
           </div>
-        </section>
-      ))}
+          <p className="st-footnote"><Icon name="info" /> <span>Where files are stored: {storage}</span></p>
+        </>
+      ),
+    }));
 
-      <RowsEditor<Story>
-        id="stories"
-        title="Client stories"
-        hint="Real words only, and only with their blessing. The quote is what shows on the home page and Client Love; the before / the work / after rows build the full story on /stories. Tick “feature” for the three you want on the home page."
-        rows={content.stories}
-        photos={content.photos}
-        photoPrefix="story"
-        photoHint="Their photo — shown as a small circle beside their words."
-        blank={() => ({ id: `s-${Date.now().toString(36)}`, name: "", quote: "", featured: false })}
-        fields={[
-          { key: "name", label: "Name" }, { key: "role", label: "Who they are (e.g. Actor · Mother)" }, { key: "program", label: "Program — their words then appear on that page too", type: "select", options: [["", "— none —"], ...PROGRAM_OPTIONS.map((n): [string, string] => [n, n])] },
-          { key: "featured", label: "Feature on the home page", type: "checkbox" },
-          { key: "quote", label: "Their words", type: "textarea", full: true },
-          { key: "before", label: "Where they started", type: "textarea" }, { key: "during", label: "The work", type: "textarea" }, { key: "after", label: "Where they are now", type: "textarea" },
-        ]}
-        busy={busy === "stories"}
-        onSave={(items) => post({ action: "setStories", items }, "stories")}
-        onUpload={upload}
-        onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
-      />
+    const stories: Panel = {
+      id: "stories", label: "Client stories", icon: "quote", count: content.stories.length,
+      render: () => (
+        <>
+          <PanelHead title="Client stories" live="/client-love" />
+          <RowsEditor<Story>
+            embedded
+            id="stories"
+            title="Client stories"
+            hint="Real words only, and only with their blessing. The quote is what shows on the home page and Client Love; the before / the work / after rows build the full story on /stories. Tick “feature” for the three you want on the home page."
+            rows={content.stories}
+            photos={content.photos}
+            photoPrefix="story"
+            photoHint="Their photo — shown as a small circle beside their words."
+            blank={() => ({ id: `s-${Date.now().toString(36)}`, name: "", quote: "", featured: false })}
+            fields={[
+              { key: "name", label: "Name" }, { key: "role", label: "Who they are (e.g. Actor · Mother)" }, { key: "program", label: "Program — their words then appear on that page too", type: "select", options: [["", "— none —"], ...PROGRAM_OPTIONS.map((n): [string, string] => [n, n])] },
+              { key: "featured", label: "Feature on the home page", type: "checkbox" },
+              { key: "quote", label: "Their words", type: "textarea", full: true },
+              { key: "before", label: "Where they started", type: "textarea" }, { key: "during", label: "The work", type: "textarea" }, { key: "after", label: "Where they are now", type: "textarea" },
+            ]}
+            busy={busy === "stories"}
+            onSave={(items) => post({ action: "setStories", items }, "stories")}
+            onUpload={upload}
+            onClear={clearPhoto}
+          />
+        </>
+      ),
+    };
 
-      <RowsEditor<CaseStudy>
-        id="becoming"
-        title="The Becoming · case studies & testimonies"
-        hint="Only on the Becoming page, separate from the client stories above. Fill in “Where she started”, “The work” and “Where she is now” and it becomes a full case-study chapter with the photo, the headline and the quote. Leave those three empty and it joins the testimony wall underneath. Rows show in this order — put your strongest first. Paste a YouTube link and their video plays inside their chapter."
-        rows={content.becomingStories}
-        photos={content.photos}
-        photoPrefix="case"
-        photoHint="Their portrait — 4:5, at least 1200px wide. Shown large in the chapter, small on the wall."
-        blank={() => ({ id: `c-${Date.now().toString(36)}`, name: "", quote: "" })}
-        fields={[
-          { key: "name", label: "Name" }, { key: "role", label: "Who they are (e.g. Founder · Mother of two)" },
-          { key: "headline", label: "The result in one line (e.g. From panic attacks to leading her own team)", full: true },
-          { key: "quote", label: "Their words", type: "textarea", full: true },
-          { key: "before", label: "Where she started", type: "textarea" }, { key: "during", label: "The work we did", type: "textarea" }, { key: "after", label: "Where she is now", type: "textarea" },
-          { key: "video", label: "Video testimony (YouTube or Vimeo link, optional)", placeholder: "https://youtube.com/watch?v=…", full: true },
-        ]}
-        busy={busy === "becoming"}
-        onSave={(items) => post({ action: "setBecomingStories", items }, "becoming")}
-        onUpload={upload}
-        onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
-      />
+    const becoming: Panel = {
+      id: "becoming", label: "The Becoming · case studies", icon: "sparkle", count: content.becomingStories.length,
+      render: () => (
+        <>
+          <PanelHead title="The Becoming · case studies" live="/programs/the-becoming" />
+          <RowsEditor<CaseStudy>
+            embedded
+            id="becoming"
+            title="The Becoming · case studies & testimonies"
+            hint="Only on the Becoming page, separate from the client stories. Fill in “Where she started”, “The work” and “Where she is now” and it becomes a full case-study chapter with the photo, the headline and the quote. Leave those three empty and it joins the testimony wall underneath. Rows show in this order — put your strongest first. Paste a YouTube link and their video plays inside their chapter."
+            rows={content.becomingStories}
+            photos={content.photos}
+            photoPrefix="case"
+            photoHint="Their portrait — 4:5, at least 1200px wide. Shown large in the chapter, small on the wall."
+            blank={() => ({ id: `c-${Date.now().toString(36)}`, name: "", quote: "" })}
+            fields={[
+              { key: "name", label: "Name" }, { key: "role", label: "Who they are (e.g. Founder · Mother of two)" },
+              { key: "headline", label: "The result in one line (e.g. From panic attacks to leading her own team)", full: true },
+              { key: "quote", label: "Their words", type: "textarea", full: true },
+              { key: "before", label: "Where she started", type: "textarea" }, { key: "during", label: "The work we did", type: "textarea" }, { key: "after", label: "Where she is now", type: "textarea" },
+              { key: "video", label: "Video testimony (YouTube or Vimeo link, optional)", placeholder: "https://youtube.com/watch?v=…", full: true },
+            ]}
+            busy={busy === "becoming"}
+            onSave={(items) => post({ action: "setBecomingStories", items }, "becoming")}
+            onUpload={upload}
+            onClear={clearPhoto}
+          />
+        </>
+      ),
+    };
 
-      <RowsEditor<Story>
-        id="liberatewords"
-        title="Liberate · testimonials"
-        hint="Only on the Liberate page, from real Liberate students. The quote shows in the words section; the photo can be their portrait or a screenshot of their message. Whole-screen screenshots of messages go in the Liberate photo group above (“Testimonial screenshots”)."
-        rows={content.liberateWords}
-        photos={content.photos}
-        photoPrefix="libw"
-        photoHint="Their portrait, or a screenshot of their message."
-        blank={() => ({ id: `lw-${Date.now().toString(36)}`, name: "", quote: "" })}
-        fields={[{ key: "name", label: "Name" }, { key: "role", label: "Who they are · which Liberate cohort" }, { key: "quote", label: "Their words", type: "textarea" }]}
-        busy={busy === "liberatewords"}
-        onSave={(items) => post({ action: "setLiberateWords", items }, "liberatewords")}
-        onUpload={upload}
-        onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
-      />
+    const liberatewords: Panel = {
+      id: "liberatewords", label: "Liberate · testimonials", icon: "sun", count: content.liberateWords.length,
+      render: () => (
+        <>
+          <PanelHead title="Liberate · testimonials" live="/liberate" />
+          <RowsEditor<Story>
+            embedded
+            id="liberatewords"
+            title="Liberate · testimonials"
+            hint="Only on the Liberate page, from real Liberate students. The quote shows in the words section; the photo can be their portrait or a screenshot of their message. Whole-screen message screenshots go in the Liberate photo group (“Testimonial screenshots”)."
+            rows={content.liberateWords}
+            photos={content.photos}
+            photoPrefix="libw"
+            photoHint="Their portrait, or a screenshot of their message."
+            blank={() => ({ id: `lw-${Date.now().toString(36)}`, name: "", quote: "" })}
+            fields={[{ key: "name", label: "Name" }, { key: "role", label: "Who they are · which Liberate cohort" }, { key: "quote", label: "Their words", type: "textarea" }]}
+            busy={busy === "liberatewords"}
+            onSave={(items) => post({ action: "setLiberateWords", items }, "liberatewords")}
+            onUpload={upload}
+            onClear={clearPhoto}
+          />
+        </>
+      ),
+    };
 
-      <RowsEditor<Talk>
-        id="talks"
-        title="Events, stages & gatherings"
-        hint="Every room you've held — keynotes, workshops, panels, summits, retreats, company days, founders' tables. Each one can carry what you covered and up to seven photos, and you choose which pages it appears on: the Speaking archive (by year), For Organisations, Workshops & Trainings, or Founders Circle. Leave “Show on” empty and I'll place it sensibly from the type and organisation. Dates can be a year (2024), a month (2026-10), a day (2026-10-07) or a span (2021–2023); anything in the future shows under “Coming up”."
-        rows={content.talks}
-        photos={content.photos}
-        photoPrefix="talk"
-        photoHint="Cover photo — the one that shows in the list."
-        extraPhotos={6}
-        blank={() => ({ id: `t-${Date.now().toString(36)}`, title: "", org: "", kind: "keynote" })}
-        fields={[
-          { key: "title", label: "Talk title" }, { key: "org", label: "Event / organisation" },
-          { key: "date", label: "Date (YYYY, YYYY-MM or YYYY-MM-DD)", placeholder: "2026-10-07" }, { key: "location", label: "City / venue" },
-          { key: "kind", label: "Type", type: "select", options: [["keynote", "Keynote"], ["workshop", "Workshop"], ["panel", "Panel"], ["summit", "Summit"], ["retreat", "Retreat"], ["other", "Other"]] },
-          { key: "url", label: "Link — YouTube, Spotify, TikTok and news links get a preview image automatically; Facebook/Instagram show a badge until you add a photo below", placeholder: "https://…" },
-          { key: "blurb", label: "One line about it", full: true },
-          { key: "details", label: "What you talked about / what happened in the room — shown when someone opens it", type: "textarea", full: true },
-          { key: "showOn", label: "Show on", type: "multi", options: TALK_SURFACES as unknown as [string, string][], full: true },
-        ]}
-        busy={busy === "talks"}
-        onSave={(items) => post({ action: "setTalks", items }, "talks")}
-        onUpload={upload}
-        onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
-      />
+    const speakwords: Panel = {
+      id: "speakwords", label: "Organiser words", icon: "quote", count: content.speakingWords.length,
+      render: () => (
+        <>
+          <PanelHead title="Words from organisers & audiences" live="/speaking" />
+          <RowsEditor<Story>
+            embedded
+            id="speakwords"
+            title="Words from organisers & audiences"
+            hint="What event organisers, HR leads and participants said after a talk or workshop. Shown on /speaking above the messages collage."
+            rows={content.speakingWords}
+            photos={content.photos}
+            photoPrefix="speak"
+            photoHint="Their photo or the company logo."
+            blank={() => ({ id: `w-${Date.now().toString(36)}`, name: "", quote: "" })}
+            fields={[{ key: "name", label: "Name" }, { key: "role", label: "Role · company / event" }, { key: "quote", label: "What they said", type: "textarea" }]}
+            busy={busy === "speakwords"}
+            onSave={(items) => post({ action: "setSpeakingWords", items }, "speakwords")}
+            onUpload={upload}
+            onClear={clearPhoto}
+          />
+        </>
+      ),
+    };
 
-      {([
-        { id: "press", title: "Television & video features", kinds: ["tv", "video"] as PressItem["kind"][], hint: "TV segments and video features about you. Shown as cards on /speaking. Paste a YouTube link for an automatic preview; Facebook needs a photo below." },
-        { id: "podcasts", title: "Podcast features", kinds: ["podcast"] as PressItem["kind"][], hint: "Other people’s podcasts you’ve been a guest on. Shown on /speaking and under “Libni as a guest” on /podcast. YouTube and Spotify links preview automatically." },
-        { id: "writeups", title: "Write-ups & press", kinds: ["article"] as PressItem["kind"][], hint: "Articles and features in print and online. Shown on /speaking and the media kit. Most news links preview automatically." },
-      ]).map((sec) => (
-        <RowsEditor<PressItem>
-          key={sec.id}
-          id={sec.id}
-          title={sec.title}
-          hint={sec.hint}
-          rows={content.press.filter((p) => sec.kinds.includes(p.kind))}
-          photos={content.photos}
-          photoPrefix="press"
-          photoHint="Optional — a still, the show’s artwork or a screenshot of the article."
-          blank={() => ({ id: `p-${Date.now().toString(36)}`, title: "", outlet: "", url: "", kind: sec.kinds[0] })}
-          fields={[
-            { key: "title", label: sec.id === "writeups" ? "Article title" : "Episode / segment title" }, { key: "outlet", label: sec.id === "writeups" ? "Publication" : "Show / channel" },
-            { key: "url", label: "Link", placeholder: "https://…" }, { key: "date", label: "Date (YYYY-MM-DD)", placeholder: "2026-03-14" },
-            ...(sec.kinds.length > 1 ? [{ key: "kind" as const, label: "Type", type: "select" as const, options: [["tv", "TV"], ["video", "Video"]] as [string, string][] }] : []),
-            { key: "blurb", label: "One line about it" },
-            { key: "featured", label: "Home page order (1, 2, 3… · blank = not on the home page)", placeholder: "e.g. 1" },
-          ]}
-          busy={busy === sec.id}
-          onSave={(items) => post({ action: "setPress", items: [...content.press.filter((p) => !sec.kinds.includes(p.kind)), ...items] }, sec.id)}
-          onUpload={upload}
-          onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
-        />
-      ))}
+    const talks: Panel = {
+      id: "talks", label: "Events & stages", icon: "mic", count: content.talks.length,
+      render: () => (
+        <>
+          <PanelHead title="Events, stages & gatherings" live="/speaking" />
+          <RowsEditor<Talk>
+            embedded
+            id="talks"
+            title="Events, stages & gatherings"
+            hint="Every room you've held — keynotes, workshops, panels, summits, retreats, company days, founders' tables. Each one can carry what you covered and up to seven photos, and you choose which pages it appears on. Leave “Show on” empty and I'll place it sensibly from the type and organisation. Dates can be a year (2024), a month (2026-10), a day (2026-10-07) or a span (2021–2023); anything in the future shows under “Coming up”."
+            rows={content.talks}
+            photos={content.photos}
+            photoPrefix="talk"
+            photoHint="Cover photo — the one that shows in the list."
+            extraPhotos={6}
+            blank={() => ({ id: `t-${Date.now().toString(36)}`, title: "", org: "", kind: "keynote" })}
+            fields={[
+              { key: "title", label: "Talk title" }, { key: "org", label: "Event / organisation" },
+              { key: "date", label: "Date (YYYY, YYYY-MM or YYYY-MM-DD)", placeholder: "2026-10-07" }, { key: "location", label: "City / venue" },
+              { key: "kind", label: "Type", type: "select", options: [["keynote", "Keynote"], ["workshop", "Workshop"], ["panel", "Panel"], ["summit", "Summit"], ["retreat", "Retreat"], ["other", "Other"]] },
+              { key: "url", label: "Link — YouTube, Spotify, TikTok and news links get a preview image automatically; Facebook/Instagram show a badge until you add a photo below", placeholder: "https://…" },
+              { key: "blurb", label: "One line about it", full: true },
+              { key: "details", label: "What you talked about / what happened in the room — shown when someone opens it", type: "textarea", full: true },
+              { key: "showOn", label: "Show on", type: "multi", options: TALK_SURFACES as unknown as [string, string][], full: true },
+            ]}
+            busy={busy === "talks"}
+            onSave={(items) => post({ action: "setTalks", items }, "talks")}
+            onUpload={upload}
+            onClear={clearPhoto}
+          />
+        </>
+      ),
+    };
 
-      <RowsEditor<Brand>
-        id="brands"
-        title="Brands, organisations & outlets"
-        hint="Everyone you’ve worked with or been featured by. Upload a logo (PNG with transparent background is best) and it joins the scrolling row on /speaking; names without a logo appear as a line of text underneath."
-        rows={content.brands}
-        photos={content.photos}
-        photoPrefix="brand"
-        photoHint="Logo."
-        blank={() => ({ id: `b-${Date.now().toString(36)}`, name: "" })}
-        fields={[{ key: "name", label: "Name" }, { key: "url", label: "Website (optional)", placeholder: "https://…" }]}
-        busy={busy === "brands"}
-        onSave={(items) => post({ action: "setBrands", items }, "brands")}
-        onUpload={upload}
-        onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
-      />
+    const pressCfg = [
+      { id: "press", title: "Television & video features", live: "/speaking", kinds: ["tv", "video"] as PressItem["kind"][], icon: "tv" as IconName, hint: "TV segments and video features about you. Shown as cards on /speaking. Paste a YouTube link for an automatic preview; Facebook needs a photo below." },
+      { id: "podcasts", title: "Podcast features", live: "/podcast", kinds: ["podcast"] as PressItem["kind"][], icon: "mic" as IconName, hint: "Other people’s podcasts you’ve been a guest on. Shown on /speaking and under “Libni as a guest” on /podcast. YouTube and Spotify links preview automatically." },
+      { id: "writeups", title: "Write-ups & press", live: "/speaking", kinds: ["article"] as PressItem["kind"][], icon: "doc" as IconName, hint: "Articles and features in print and online. Shown on /speaking and the media kit. Most news links preview automatically." },
+    ];
+    const pressPanels: Panel[] = pressCfg.map((sec) => ({
+      id: sec.id, label: sec.title, icon: sec.icon, count: content.press.filter((p) => sec.kinds.includes(p.kind)).length,
+      render: () => (
+        <>
+          <PanelHead title={sec.title} live={sec.live} />
+          <RowsEditor<PressItem>
+            embedded
+            id={sec.id}
+            title={sec.title}
+            hint={sec.hint}
+            rows={content.press.filter((p) => sec.kinds.includes(p.kind))}
+            photos={content.photos}
+            photoPrefix="press"
+            photoHint="Optional — a still, the show’s artwork or a screenshot of the article."
+            blank={() => ({ id: `p-${Date.now().toString(36)}`, title: "", outlet: "", url: "", kind: sec.kinds[0] })}
+            fields={[
+              { key: "title", label: sec.id === "writeups" ? "Article title" : "Episode / segment title" }, { key: "outlet", label: sec.id === "writeups" ? "Publication" : "Show / channel" },
+              { key: "url", label: "Link", placeholder: "https://…" }, { key: "date", label: "Date (YYYY-MM-DD)", placeholder: "2026-03-14" },
+              ...(sec.kinds.length > 1 ? [{ key: "kind" as const, label: "Type", type: "select" as const, options: [["tv", "TV"], ["video", "Video"]] as [string, string][] }] : []),
+              { key: "blurb", label: "One line about it" },
+              { key: "featured", label: "Home page order (1, 2, 3… · blank = not on the home page)", placeholder: "e.g. 1" },
+            ]}
+            busy={busy === sec.id}
+            onSave={(items) => post({ action: "setPress", items: [...content.press.filter((p) => !sec.kinds.includes(p.kind)), ...items] }, sec.id)}
+            onUpload={upload}
+            onClear={clearPhoto}
+          />
+        </>
+      ),
+    }));
 
-      <RowsEditor<Keynote>
-        id="keynotes"
-        title="Signature keynotes"
-        hint="The experiences organisers can book. Shown on /speaking and as topics in the media kit."
-        rows={content.keynotes}
-        photos={content.photos}
-        blank={() => ({ id: `k-${Date.now().toString(36)}`, category: "", title: "", blurb: "" })}
-        fields={[{ key: "title", label: "Title" }, { key: "category", label: "Category (e.g. Leadership)" }, { key: "blurb", label: "What it does for the room", type: "textarea" }]}
-        busy={busy === "keynotes"}
-        onSave={(items) => post({ action: "setKeynotes", items }, "keynotes")}
-        onUpload={upload}
-        onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
-      />
+    const brands: Panel = {
+      id: "brands", label: "Brands & logos", icon: "tag", count: content.brands.length,
+      render: () => (
+        <>
+          <PanelHead title="Brands, organisations & outlets" live="/speaking" />
+          <RowsEditor<Brand>
+            embedded
+            id="brands"
+            title="Brands, organisations & outlets"
+            hint="Everyone you’ve worked with or been featured by. Upload a logo (PNG with a transparent background is best) and it joins the scrolling row on /speaking; names without a logo appear as a line of text underneath."
+            rows={content.brands}
+            photos={content.photos}
+            photoPrefix="brand"
+            photoHint="Logo."
+            blank={() => ({ id: `b-${Date.now().toString(36)}`, name: "" })}
+            fields={[{ key: "name", label: "Name" }, { key: "url", label: "Website (optional)", placeholder: "https://…" }]}
+            busy={busy === "brands"}
+            onSave={(items) => post({ action: "setBrands", items }, "brands")}
+            onUpload={upload}
+            onClear={clearPhoto}
+          />
+        </>
+      ),
+    };
 
-      <RowsEditor<Story>
-        id="speakwords"
-        title="Words from organisers & audiences"
-        hint="What event organisers, HR leads and participants said after a talk or workshop. Shown on /speaking above the messages collage."
-        rows={content.speakingWords}
-        photos={content.photos}
-        photoPrefix="speak"
-        photoHint="Their photo or the company logo."
-        blank={() => ({ id: `w-${Date.now().toString(36)}`, name: "", quote: "" })}
-        fields={[{ key: "name", label: "Name" }, { key: "role", label: "Role · company / event" }, { key: "quote", label: "What they said", type: "textarea" }]}
-        busy={busy === "speakwords"}
-        onSave={(items) => post({ action: "setSpeakingWords", items }, "speakwords")}
-        onUpload={upload}
-        onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
-      />
+    const keynotes: Panel = {
+      id: "keynotes", label: "Signature keynotes", icon: "star", count: content.keynotes.length,
+      render: () => (
+        <>
+          <PanelHead title="Signature keynotes" live="/speaking" />
+          <RowsEditor<Keynote>
+            embedded
+            id="keynotes"
+            title="Signature keynotes"
+            hint="The experiences organisers can book. Shown on /speaking and as topics in the media kit."
+            rows={content.keynotes}
+            photos={content.photos}
+            blank={() => ({ id: `k-${Date.now().toString(36)}`, category: "", title: "", blurb: "" })}
+            fields={[{ key: "title", label: "Title" }, { key: "category", label: "Category (e.g. Leadership)" }, { key: "blurb", label: "What it does for the room", type: "textarea" }]}
+            busy={busy === "keynotes"}
+            onSave={(items) => post({ action: "setKeynotes", items }, "keynotes")}
+            onUpload={upload}
+            onClear={clearPhoto}
+          />
+        </>
+      ),
+    };
 
-      <RowsEditor<BioLink>
-        id="biolinks"
-        title="Link in bio — /links"
-        hint="The page to paste into your Instagram bio: libni.co/links. Rows show in this order. Links can be pages on this site (/speaking) or full URLs."
-        rows={content.bioLinks}
-        photos={content.photos}
-        blank={() => ({ id: `l-${Date.now().toString(36)}`, label: "", href: "" })}
-        fields={[{ key: "label", label: "Button text" }, { key: "note", label: "Small line under it (optional)" }, { key: "href", label: "Goes to", placeholder: "/speaking or https://…" }]}
-        busy={busy === "biolinks"}
-        onSave={(items) => post({ action: "setBioLinks", items }, "biolinks")}
-        onUpload={upload}
-        onClear={(slotId) => post({ action: "clearPhoto", slotId }, slotId)}
-      />
+    const mediakit: Panel = {
+      id: "mediakit", label: "Media kit", icon: "kit",
+      render: () => (
+        <>
+          <PanelHead title="Media kit" sub="What organisers and press copy from /media-kit. Headshots live in the photo sections." live="/media-kit" />
+          <MediaKitEditor embedded initial={content.mediaKit} busy={busy === "mediakit"} onSave={(mediaKit) => post({ action: "setMediaKit", mediaKit }, "mediakit")} />
+        </>
+      ),
+    };
 
-      <MediaKitEditor initial={content.mediaKit} busy={busy === "mediakit"} onSave={(mediaKit) => post({ action: "setMediaKit", mediaKit }, "mediakit")} />
+    const biolinks: Panel = {
+      id: "biolinks", label: "Link in bio", icon: "link", count: content.bioLinks.length,
+      render: () => (
+        <>
+          <PanelHead title="Link in bio" live="/links" />
+          <RowsEditor<BioLink>
+            embedded
+            id="biolinks"
+            title="Link in bio — /links"
+            hint="The page to paste into your Instagram bio: libni.co/links. Rows show in this order. Links can be pages on this site (/speaking) or full URLs."
+            rows={content.bioLinks}
+            photos={content.photos}
+            blank={() => ({ id: `l-${Date.now().toString(36)}`, label: "", href: "" })}
+            fields={[{ key: "label", label: "Button text" }, { key: "note", label: "Small line under it (optional)" }, { key: "href", label: "Goes to", placeholder: "/speaking or https://…" }]}
+            busy={busy === "biolinks"}
+            onSave={(items) => post({ action: "setBioLinks", items }, "biolinks")}
+            onUpload={upload}
+            onClear={clearPhoto}
+          />
+        </>
+      ),
+    };
 
-      <section id="links" style={{ marginBottom: 56, paddingTop: 40, borderTop: "1px solid var(--line)" }}>
-        <h2 style={{ fontSize: 26, marginBottom: 6 }}>Your links</h2>
-        <p className="muted" style={{ marginBottom: 20 }}>Paste once and the right things appear on the site.</p>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(320px, 1fr))", gap: 18 }}>
-          {LINK_FIELDS.map((f) => (
-            <LinkEditor
-              key={f.key}
-              field={f}
-              value={content.links[f.key] ?? ""}
-              busy={busy === `link-${f.key}`}
-              onSave={(url) => post({ action: "setLink", key: f.key, url }, `link-${f.key}`)}
-            />
-          ))}
+    const links: Panel = {
+      id: "links", label: "Links", icon: "link",
+      render: () => (
+        <>
+          <PanelHead title="Your links" sub="Paste once and the right things appear across the site — your podcast player, booking link, Instagram feed and more." />
+          <div className="st-grid">
+            {LINK_FIELDS.map((f) => (
+              <LinkEditor
+                key={f.key}
+                field={f}
+                value={content.links[f.key] ?? ""}
+                busy={busy === `link-${f.key}`}
+                onSave={(url) => post({ action: "setLink", key: f.key, url }, `link-${f.key}`)}
+              />
+            ))}
+          </div>
+        </>
+      ),
+    };
+
+    const podcast: Panel = {
+      id: "podcast", label: "Podcast episodes", icon: "headphones", count: content.podcast.length,
+      render: () => (
+        <>
+          <PanelHead title="Podcast episodes" live="/podcast" />
+          <ListEditor
+            embedded
+            title="Podcast episodes"
+            hint="Optional. If you paste your Spotify show under Links, the player already lists your latest episodes — add rows here only to feature specific ones."
+            items={content.podcast}
+            busy={busy === "podcast"}
+            onSave={(items) => post({ action: "setList", key: "podcast", items }, "podcast")}
+          />
+        </>
+      ),
+    };
+
+    const events: Panel = {
+      id: "events", label: "Upcoming events", icon: "calendar", count: content.events.length,
+      render: () => (
+        <>
+          <PanelHead title="Upcoming events" live="/experiences" />
+          <ListEditor
+            embedded
+            title="Upcoming events"
+            hint="Workshops, circles and retreats with dates. Shown on Experiences and linked from the home page. Hidden until you add the first one."
+            items={content.events}
+            busy={busy === "events"}
+            onSave={(items) => post({ action: "setList", key: "events", items }, "events")}
+          />
+        </>
+      ),
+    };
+
+    const writings: Panel = {
+      id: "writings", label: "Write-ups & letters", icon: "doc", count: content.writings.length,
+      render: () => (
+        <>
+          <PanelHead title="Write-ups & letters" live="/writings" />
+          <ListEditor
+            embedded
+            title="Write-ups & letters"
+            hint="Your Substack posts and essays. The home-page section stays hidden until you add the first one."
+            items={content.writings}
+            busy={busy === "writings"}
+            onSave={(items) => post({ action: "setList", key: "writings", items }, "writings")}
+          />
+        </>
+      ),
+    };
+
+    return [
+      { title: "Your pages", panels: photoPanels },
+      { title: "Stories & words", panels: [stories, becoming, liberatewords, speakwords] },
+      { title: "Stages & press", panels: [talks, ...pressPanels, brands, keynotes] },
+      { title: "Your site", panels: [mediakit, biolinks, links, podcast, events, writings] },
+    ];
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [content, busy, progress, groups, storage, direct]);
+
+  const allPanels = useMemo(() => sections.flatMap((s) => s.panels), [sections]);
+  const current = allPanels.find((p) => p.id === active) ?? allPanels[0];
+
+  const q = query.trim().toLowerCase();
+  const filtered: Section[] = q
+    ? [{ title: "Results", panels: allPanels.filter((p) => p.label.toLowerCase().includes(q) || (p.sub ?? "").toLowerCase().includes(q)) }]
+    : sections;
+
+  function openPanel(id: string) {
+    setActive(id);
+    setView("panel");
+    setQuery("");
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  return (
+    <div className={`st v-${view}`}>
+      <aside className="st-side">
+        <div className="st-brand">
+          <h1>Studio</h1>
+          <a href="/" target="_blank" rel="noreferrer">View site ↗</a>
         </div>
-      </section>
+        <div className="st-search">
+          <Icon name="search" />
+          <input type="search" placeholder="Search settings" value={query} onChange={(e) => setQuery(e.target.value)} />
+        </div>
+        {filtered.map((sec) => (
+          sec.panels.length > 0 && (
+            <nav key={sec.title} className="st-group">
+              <p>{sec.title}</p>
+              {sec.panels.map((p) => (
+                <button key={p.id} type="button" className={`st-item${p.id === current.id && view === "panel" ? " on" : ""}`} onClick={() => openPanel(p.id)}>
+                  <span className="st-tile"><Icon name={p.icon} /></span>
+                  <span className="st-item-label">
+                    <b>{p.label}</b>
+                    {p.sub && <small>{p.sub}</small>}
+                  </span>
+                  {typeof p.count === "number" && <span className="st-count">{p.count}</span>}
+                  <span className="st-chevron"><Icon name="chevron" /></span>
+                </button>
+              ))}
+            </nav>
+          )
+        ))}
+        {q && filtered[0].panels.length === 0 && <p className="st-empty" style={{ padding: "0 12px" }}>Nothing matches “{query}”.</p>}
+      </aside>
 
-      <ListEditor
-        title="Podcast episodes"
-        hint="Optional. If you paste your Spotify show above, the player already lists your latest episodes — add rows here only to feature specific ones."
-        items={content.podcast}
-        busy={busy === "podcast"}
-        onSave={(items) => post({ action: "setList", key: "podcast", items }, "podcast")}
-      />
+      <main className="st-main">
+        <button type="button" className="st-back" onClick={() => setView("menu")}><Icon name="back" /> All settings</button>
+        {current.render()}
+      </main>
 
-      <div id="events" />
-      <ListEditor
-        title="Upcoming events"
-        hint="Workshops, circles and retreats with dates. Shown on Experiences and linked from the home page. Hidden until you add the first one."
-        items={content.events}
-        busy={busy === "events"}
-        onSave={(items) => post({ action: "setList", key: "events", items }, "events")}
-      />
+      {note && <div className={`st-toast ${note.kind}`}>{note.text}</div>}
+    </div>
+  );
+}
 
-      <ListEditor
-        title="Write-ups & letters"
-        hint="Your Substack posts and essays. The home-page section stays hidden until you add the first one."
-        items={content.writings}
-        busy={busy === "writings"}
-        onSave={(items) => post({ action: "setList", key: "writings", items }, "writings")}
-      />
+function PanelHead({ title, sub, live }: { title: string; sub?: string; live?: string }) {
+  return (
+    <div className="st-head">
+      <h2>{title}</h2>
+      {sub && <p>{sub}</p>}
+      {live && <a className="st-head-live" href={live} target="_blank" rel="noreferrer">View live page <Icon name="ext" /></a>}
     </div>
   );
 }
@@ -374,10 +575,11 @@ export default function StudioClient({ groups, initial, storage, direct }: { gro
 type Field<T> = { key: keyof T & string; label: string; type?: "text" | "textarea" | "select" | "checkbox" | "multi"; options?: [string, string][]; placeholder?: string; full?: boolean };
 
 /** One editor for any list of structured rows (stories, talks, press), each row with an optional photo. */
-function RowsEditor<T extends { id: string }>({ id, title, hint, rows: initial, fields, photos, photoPrefix, photoHint = "", extraPhotos = 0, blank, busy, onSave, onUpload, onClear }: {
+function RowsEditor<T extends { id: string }>({ id, title, hint, rows: initial, fields, photos, photoPrefix, photoHint = "", extraPhotos = 0, embedded = false, blank, busy, onSave, onUpload, onClear }: {
   id: string; title: string; hint: string; rows: T[]; fields: Field<T>[]; photos: Record<string, string>; photoPrefix?: string; photoHint?: string;
   /** Numbered photos after the cover (`<prefix>_<id>_1` …). */
   extraPhotos?: number;
+  embedded?: boolean;
   blank: () => T; busy: boolean; onSave: (rows: T[]) => void; onUpload: (slotId: string, f: File) => void; onClear: (slotId: string) => void;
 }) {
   const [rows, setRows] = useState<T[]>(initial);
@@ -385,12 +587,23 @@ function RowsEditor<T extends { id: string }>({ id, title, hint, rows: initial, 
   function set(i: number, key: keyof T, value: unknown) { setRows((r) => r.map((row, n) => (n === i ? { ...row, [key]: value } : row))); }
   const label = (row: T) => String((row as Record<string, unknown>).name ?? (row as Record<string, unknown>).title ?? "") || "Untitled";
 
+  const sectionStyle = embedded ? undefined : { marginBottom: 56, paddingTop: 40, borderTop: "1px solid var(--line)" };
+
   return (
-    <section id={id} style={{ marginBottom: 56, paddingTop: 40, borderTop: "1px solid var(--line)" }}>
-      <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div><h2 style={{ fontSize: 26, marginBottom: 6 }}>{title} <span className="muted" style={{ fontSize: 15 }}>· {rows.length}</span></h2><p className="muted" style={{ marginBottom: 20, maxWidth: "70ch" }}>{hint}</p></div>
-        <button className="btn small" disabled={busy} onClick={() => onSave(rows)}>{busy ? "Saving…" : "Save"}</button>
-      </div>
+    <section id={id} style={sectionStyle}>
+      {embedded ? (
+        <div className="st-toolbar">
+          <p className="muted" style={{ maxWidth: "66ch", fontSize: 14.5 }}>{hint}</p>
+          <button className="btn small" disabled={busy} onClick={() => onSave(rows)}>{busy ? "Saving…" : "Save"}</button>
+        </div>
+      ) : (
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div><h2 style={{ fontSize: 26, marginBottom: 6 }}>{title} <span className="muted" style={{ fontSize: 15 }}>· {rows.length}</span></h2><p className="muted" style={{ marginBottom: 20, maxWidth: "70ch" }}>{hint}</p></div>
+          <button className="btn small" disabled={busy} onClick={() => onSave(rows)}>{busy ? "Saving…" : "Save"}</button>
+        </div>
+      )}
+
+      {rows.length === 0 && <p className="st-empty">Nothing here yet. Press “Add another” to create the first one.</p>}
 
       {rows.map((row, i) => {
         const slotId = `${photoPrefix ?? "x"}_${row.id}`;
@@ -409,7 +622,7 @@ function RowsEditor<T extends { id: string }>({ id, title, hint, rows: initial, 
                   {fields.map((f) => (
                     <div key={f.key} style={f.full || f.type === "textarea" ? { gridColumn: "1 / -1" } : undefined}>
                       {f.type === "checkbox" ? (
-                        <label style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 26 }}>
+                        <label style={{ display: "flex", gap: 10, alignItems: "center", marginTop: 26, textTransform: "none", letterSpacing: 0 }}>
                           <input type="checkbox" checked={Boolean(row[f.key])} onChange={(e) => set(i, f.key, e.target.checked)} style={{ width: "auto", accentColor: "var(--plum)" }} /> {f.label}
                         </label>
                       ) : f.type === "multi" ? (
@@ -474,14 +687,16 @@ function RowPhoto({ slotId, photo, hint, onUpload, onClear }: { slotId: string; 
   );
 }
 
-function MediaKitEditor({ initial, busy, onSave }: { initial: MediaKit; busy: boolean; onSave: (m: MediaKit) => void }) {
+function MediaKitEditor({ initial, busy, embedded = false, onSave }: { initial: MediaKit; busy: boolean; embedded?: boolean; onSave: (m: MediaKit) => void }) {
   const [m, setM] = useState<MediaKit>(initial);
   return (
-    <section id="mediakit" style={{ marginBottom: 56, paddingTop: 40, borderTop: "1px solid var(--line)" }}>
-      <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
-        <div><h2 style={{ fontSize: 26, marginBottom: 6 }}>Media kit</h2><p className="muted" style={{ marginBottom: 20, maxWidth: "70ch" }}>What organisers and press copy from /media-kit. Headshots are in the photo section above.</p></div>
-        <button className="btn small" disabled={busy} onClick={() => onSave(m)}>{busy ? "Saving…" : "Save"}</button>
-      </div>
+    <section id="mediakit" style={embedded ? undefined : { marginBottom: 56, paddingTop: 40, borderTop: "1px solid var(--line)" }}>
+      {!embedded && (
+        <div className="row" style={{ justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div><h2 style={{ fontSize: 26, marginBottom: 6 }}>Media kit</h2><p className="muted" style={{ marginBottom: 20, maxWidth: "70ch" }}>What organisers and press copy from /media-kit. Headshots are in the photo section above.</p></div>
+          <button className="btn small" disabled={busy} onClick={() => onSave(m)}>{busy ? "Saving…" : "Save"}</button>
+        </div>
+      )}
       <div className="card">
         <label>One line</label><input value={m.oneLiner} onChange={(e) => setM({ ...m, oneLiner: e.target.value })} />
         <label>Short bio (introductions)</label><textarea rows={4} value={m.shortBio} onChange={(e) => setM({ ...m, shortBio: e.target.value })} />
@@ -507,7 +722,7 @@ function SlotCard({ slot, photo, video, busy, progress, onUpload, onClear, onVid
 
   return (
     <div className="card" style={{ padding: 16 }}>
-      <div style={{ aspectRatio: slot.aspect, background: "var(--linen)", marginBottom: 12, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ aspectRatio: slot.aspect, background: "var(--linen)", borderRadius: "var(--r-sm)", marginBottom: 12, overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center" }}>
         {isVideo ? (
           videoFile ? (
             <video src={videoFile} controls playsInline preload="metadata" style={{ width: "100%", height: "100%", background: "#000" }} />
@@ -585,8 +800,8 @@ function LinkEditor({ field, value, busy, onSave }: {
   );
 }
 
-function ListEditor({ title, hint, items, busy, onSave }: {
-  title: string; hint: string; items: MediaLink[]; busy: boolean; onSave: (items: MediaLink[]) => void;
+function ListEditor({ title, hint, items, busy, embedded = false, onSave }: {
+  title: string; hint: string; items: MediaLink[]; busy: boolean; embedded?: boolean; onSave: (items: MediaLink[]) => void;
 }) {
   const [rows, setRows] = useState<MediaLink[]>(items.length ? items : []);
 
@@ -595,9 +810,20 @@ function ListEditor({ title, hint, items, busy, onSave }: {
   }
 
   return (
-    <section style={{ marginBottom: 56, paddingTop: 40, borderTop: "1px solid var(--line)" }}>
-      <h2 style={{ fontSize: 26, marginBottom: 6 }}>{title}</h2>
-      <p className="muted" style={{ marginBottom: 20 }}>{hint}</p>
+    <section style={embedded ? undefined : { marginBottom: 56, paddingTop: 40, borderTop: "1px solid var(--line)" }}>
+      {embedded ? (
+        <div className="st-toolbar">
+          <p className="muted" style={{ maxWidth: "66ch", fontSize: 14.5 }}>{hint}</p>
+          <button className="btn small" disabled={busy} onClick={() => onSave(rows)}>{busy ? "Saving…" : "Save"}</button>
+        </div>
+      ) : (
+        <>
+          <h2 style={{ fontSize: 26, marginBottom: 6 }}>{title}</h2>
+          <p className="muted" style={{ marginBottom: 20 }}>{hint}</p>
+        </>
+      )}
+
+      {rows.length === 0 && <p className="st-empty">Nothing here yet. Press “Add another” to create the first one.</p>}
 
       {rows.map((row, i) => (
         <div key={row.id} className="card" style={{ marginBottom: 12, padding: 16 }}>
@@ -618,5 +844,41 @@ function ListEditor({ title, hint, items, busy, onSave }: {
         <button className="btn small" disabled={busy} onClick={() => onSave(rows)}>{busy ? "Saving…" : "Save"}</button>
       </div>
     </section>
+  );
+}
+
+// ---- icons: small stroke glyphs in the sidebar tiles -----------------------
+type IconName = "home" | "video" | "chat" | "heart" | "person" | "sparkle" | "sun" | "image" | "quote" | "mic" | "tv" | "doc" | "tag" | "star" | "kit" | "link" | "headphones" | "calendar" | "search" | "chevron" | "ext" | "info" | "back";
+
+function Icon({ name }: { name: IconName }) {
+  const p: Record<IconName, ReactNode> = {
+    home: <path d="M3 10.5 12 3l9 7.5M5 9.5V21h14V9.5" />,
+    video: <><rect x="3" y="5" width="18" height="14" rx="2" /><path d="m10 9 5 3-5 3V9Z" /></>,
+    chat: <path d="M4 5h16v11H9l-4 3v-3H4V5Z" />,
+    heart: <path d="M12 20s-7-4.5-7-9.5A3.5 3.5 0 0 1 12 8a3.5 3.5 0 0 1 7 2.5C19 15.5 12 20 12 20Z" />,
+    person: <><circle cx="12" cy="8" r="3.5" /><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6" /></>,
+    sparkle: <path d="M12 3c.6 4 2 5.4 6 6-4 .6-5.4 2-6 6-.6-4-2-5.4-6-6 4-.6 5.4-2 6-6Z" />,
+    sun: <><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M19 5l-1.5 1.5M6.5 17.5 5 19" /></>,
+    image: <><rect x="3" y="4" width="18" height="16" rx="2" /><circle cx="8.5" cy="9.5" r="1.5" /><path d="m4 18 5-5 4 3 3-2 4 4" /></>,
+    quote: <path d="M9 7H5v5h4l-1 5M19 7h-4v5h4l-1 5" />,
+    mic: <><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5 11a7 7 0 0 0 14 0M12 18v3" /></>,
+    tv: <><rect x="3" y="6" width="18" height="12" rx="2" /><path d="m8 3 4 3 4-3" /></>,
+    doc: <><path d="M6 3h8l4 4v14H6V3Z" /><path d="M14 3v4h4M9 12h6M9 16h6" /></>,
+    tag: <><path d="M4 4h7l9 9-7 7-9-9V4Z" /><circle cx="8" cy="8" r="1.3" /></>,
+    star: <path d="m12 3 2.6 5.6 6.1.7-4.5 4.1 1.2 6-5.4-3-5.4 3 1.2-6L3.3 9.3l6.1-.7L12 3Z" />,
+    kit: <><rect x="3" y="7" width="18" height="13" rx="2" /><path d="M9 7V5h6v2" /></>,
+    link: <path d="M10 14a4 4 0 0 0 6 .5l2-2a4 4 0 0 0-6-6l-1 1M14 10a4 4 0 0 0-6-.5l-2 2a4 4 0 0 0 6 6l1-1" />,
+    headphones: <path d="M4 13v4a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2 0V12a8 8 0 0 1 16 0v1a2 2 0 0 0-2 0h-1v6h1a2 2 0 0 0 2-2v-4" />,
+    calendar: <><rect x="3" y="5" width="18" height="16" rx="2" /><path d="M3 9h18M8 3v4M16 3v4" /></>,
+    search: <><circle cx="11" cy="11" r="7" /><path d="m20 20-3.5-3.5" /></>,
+    chevron: <path d="m9 6 6 6-6 6" />,
+    ext: <><path d="M14 4h6v6M20 4l-8 8" /><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5" /></>,
+    info: <><circle cx="12" cy="12" r="9" /><path d="M12 11v5M12 8h.01" /></>,
+    back: <path d="m14 6-6 6 6 6" />,
+  };
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {p[name]}
+    </svg>
   );
 }
