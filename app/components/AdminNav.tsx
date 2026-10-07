@@ -6,11 +6,12 @@ import type { ReactNode } from "react";
 // first element; globals.css offsets the page content (.wrap / .wrap-wide) to sit
 // beside it, and collapses it to a top strip on phones.
 type NavIcon = "home" | "chart" | "columns" | "inbox" | "person" | "check" | "people" | "card" | "mail" | "sun" | "image";
-const GROUPS: { title: string; items: [string, string, NavIcon][] }[] = [
-  { title: "Overview", items: [["Today", "/admin", "home"], ["Money", "/dashboard", "chart"]] },
-  { title: "People", items: [["Pipeline", "/admin/pipeline", "columns"], ["Leads", "/admin/leads", "inbox"], ["Clients", "/admin/clients", "person"], ["Onboarding", "/admin/onboarding", "check"], ["Audience", "/admin/audience", "people"]] },
-  { title: "Operations", items: [["Payment Desk", "/desk", "card"], ["Email & funnel", "/admin/email", "mail"], ["Liberate HQ", "/admin/liberate", "sun"]] },
-  { title: "Website", items: [["Studio", "/admin/studio", "image"]] },
+// [label, href, icon, tile colour] — each area gets its own colour, like System Settings.
+const GROUPS: { title: string; items: [string, string, NavIcon, string][] }[] = [
+  { title: "Overview", items: [["Today", "/admin", "home", "#5e5ce6"], ["Money", "/dashboard", "chart", "#34c759"]] },
+  { title: "People", items: [["Pipeline", "/admin/pipeline", "columns", "#0a84ff"], ["Leads", "/admin/leads", "inbox", "#ff9f0a"], ["Clients", "/admin/clients", "person", "#bf5af2"], ["Onboarding", "/admin/onboarding", "check", "#30b0c7"], ["Audience", "/admin/audience", "people", "#ff375f"]] },
+  { title: "Operations", items: [["Payment Desk", "/desk", "card", "#32ade6"], ["Email & funnel", "/admin/email", "mail", "#007aff"], ["Liberate HQ", "/admin/liberate", "sun", "#ff9500"]] },
+  { title: "Website", items: [["Studio", "/admin/studio", "image", "#ff453a"]] },
 ];
 
 export default function AdminNav({ current, user }: { current: string; user?: { email: string; role: string } }) {
@@ -23,9 +24,9 @@ export default function AdminNav({ current, user }: { current: string; user?: { 
       {GROUPS.map((g) => (
         <nav key={g.title} className="an-group">
           <p>{g.title}</p>
-          {g.items.map(([label, href, icon]) => (
+          {g.items.map(([label, href, icon, colour]) => (
             <Link key={href} href={href} className={`an-item${href === current ? " on" : ""}`}>
-              <span className="an-tile"><NavGlyph name={icon} /></span>
+              <span className="an-tile" style={{ background: colour, color: "#fff" }}><NavGlyph name={icon} /></span>
               <span className="an-label">{label}</span>
             </Link>
           ))}

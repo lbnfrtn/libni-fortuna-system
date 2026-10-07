@@ -24,7 +24,7 @@ export default function DeskLogin() {
   }
 
   return (
-    <div className="wrap">
+    <div className="wrap desk-login">
       <p className="kicker">Studio &amp; Payment Desk</p>
       <h1>Sign in</h1>
       <p className="muted">For Libni and the team only. You stay signed in for 30 days on this device.</p>

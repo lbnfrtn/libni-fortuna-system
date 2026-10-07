@@ -12,6 +12,13 @@ const VIDEO_ACCEPT = "video/mp4,video/webm,video/quicktime,video/x-m4v";
 type Panel = { id: string; label: string; sub?: string; icon: IconName; count?: number; render: () => ReactNode };
 type Section = { title: string; panels: Panel[] };
 
+// Tile colours per sidebar item, like System Settings.
+const TILE: Record<string, string> = {
+  home: "#5e5ce6", video: "#ff453a", chat: "#34c759", heart: "#ff375f", person: "#0a84ff", sparkle: "#bf5af2",
+  sun: "#ff9500", star: "#ffb340", link: "#30b0c7", mic: "#ff9f0a", kit: "#8e8e93", image: "#32ade6",
+  quote: "#5856d6", tv: "#ff2d55", doc: "#64d2ff", tag: "#a2845e", headphones: "#af52de", calendar: "#ff3b30",
+};
+
 const GROUP_ICON: Record<string, IconName> = {
   home: "home", videos: "video", screenshots: "chat", oneonone: "heart",
   about: "person", becoming: "sparkle", liberate: "sun",
@@ -538,7 +545,7 @@ export default function StudioClient({ groups, initial, storage, direct }: { gro
               <p>{sec.title}</p>
               {sec.panels.map((p) => (
                 <button key={p.id} type="button" className={`st-item${p.id === current.id && view === "panel" ? " on" : ""}`} onClick={() => openPanel(p.id)}>
-                  <span className="st-tile"><Icon name={p.icon} /></span>
+                  <span className="st-tile" style={{ background: TILE[p.icon] ?? "#8e8e93", color: "#fff" }}><Icon name={p.icon} /></span>
                   <span className="st-item-label">
                     <b>{p.label}</b>
                     {p.sub && <small>{p.sub}</small>}

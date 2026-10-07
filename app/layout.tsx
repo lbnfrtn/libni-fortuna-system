@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Cormorant_Garamond, Karla, La_Belle_Aurore } from "next/font/google";
 import "./globals.css";
 import "./editorial.css";
+import "./admin-theme.css";
 
 // Project Me brand: Cormorant Garamond (serif display + italic) + Karla (sans UI).
 const serif = Cormorant_Garamond({
