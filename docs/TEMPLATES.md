@@ -1,6 +1,6 @@
 # Proposal & Agreement Templates
 
-For corporate, speaking, brand and custom/retreat work (track D and Essence). These are **starting points** — put them into GHL Documents & Contracts and fill the brackets. All money in PHP.
+For corporate, speaking, brand and custom/retreat work (track D and Essence). These are **starting points** — fill the brackets and send as a PDF for now — online proposals and contracts with e-signature are being built into the admin. All money in PHP.
 
 > ⚠️ **Refund/cancellation and BIR lines are placeholders.** Libni must supply refund terms per offer; corporate invoicing/withholding-tax is an accountant question (BIR registration in progress — until done, issue **acknowledgement receipts only** and flag that corporate clients may require official invoices). Do not improvise these.
 

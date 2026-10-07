@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from "vitest";
 import { createOrder } from "@/lib/orders";
 import { useMemStore } from "./helpers";
 
-// No XENDIT_SECRET_KEY / GHL_API_TOKEN in the test env -> mock + safe mode.
+// No XENDIT_SECRET_KEY in the test env -> mock mode.
 
 describe("createOrder", () => {
   beforeEach(() => useMemStore());

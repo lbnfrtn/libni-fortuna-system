@@ -2,7 +2,7 @@
   "name": "libni-fortuna-system",
   "version": "0.1.0",
   "private": true,
-  "description": "Lead -> Payment -> Onboarding glue layer for Libni Fortuna. GHL is the CRM; this is the thin custom layer that takes Philippine payments and tells GHL who paid.",
+  "description": "Libni Fortuna's site and back office: leads, CRM, Philippine payments (Xendit), onboarding, email sequences and the content Studio.",
   "scripts": {
     "dev": "next dev -p 4310",
     "build": "next build",
@@ -10,7 +10,6 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "ghl:bootstrap": "node scripts/ghl-bootstrap.mjs",
     "db:check": "node scripts/db-check.mjs"
   },
   "dependencies": {

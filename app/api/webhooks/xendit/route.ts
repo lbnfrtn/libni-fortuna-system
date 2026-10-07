@@ -3,7 +3,7 @@ import { verifyCallbackToken, parseInvoiceEvent, invoiceEventIsPaid } from "@/li
 import { isOurExternalId } from "@/lib/util";
 import { markPaid } from "@/lib/markPaid";
 import { store } from "@/lib/store";
-import { notifyTeam } from "@/lib/ghl";
+import { notifyTeam } from "@/lib/notify";
 
 export const runtime = "nodejs";
 

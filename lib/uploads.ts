@@ -9,7 +9,7 @@ import path from "node:path";
 // limit on serverless functions and lets phone photos and video testimonies
 // through. This server path is the local fallback: a plain /public/uploads
 // folder, so the Studio works offline with no keys — same pattern as mock
-// Xendit / safe-mode GHL. It also still works on Vercel for small files.
+// Xendit. It also still works on Vercel for small files.
 // ============================================================================
 
 export const IMAGE_TYPES: Record<string, string> = {

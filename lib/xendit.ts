@@ -2,7 +2,7 @@ import type { PaymentMethod } from "@/lib/types";
 
 // ============================================================================
 // XENDIT — the ONLY file that talks to Xendit. Isolated on purpose (spec §3):
-// if we ever switch to a GHL Marketplace payment app, we replace this file and
+// if we ever switch payment providers, we replace this file and
 // nothing else.
 //
 // We use the Invoice API (POST /v2/invoices). Invoices are a DIFFERENT webhook

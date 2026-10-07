@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-// Newsletter / "letters" signup -> /api/lead (tagged nurture in GHL).
+// Newsletter / "letters" signup -> /api/lead (starts the letters sequence).
 export default function NewsletterForm({ dark }: { dark?: boolean }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

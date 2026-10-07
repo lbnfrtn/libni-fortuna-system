@@ -34,8 +34,8 @@ export default async function Onboarding() {
         <p className="kicker">Onboarding</p>
         <h1 style={{ margin: "4px 0 6px" }}>{pending} in progress</h1>
         <p className="muted">
-          GHL sends the welcome, agreement and intake automatically. Tick each step here as it happens so nothing slips.
-          Anyone paid more than 48 hours ago and not finished gets a &ldquo;nudge?&rdquo; flag. When all four are ticked, they&rsquo;re tagged <code>onboarded</code> in GHL.
+          The welcome letters go out automatically the moment someone pays. Tick each step here as it happens so nothing slips.
+          Anyone paid more than 48 hours ago and not finished gets a &ldquo;nudge?&rdquo; flag. When all four are ticked, they move to Onboarded in the Pipeline.
         </p>
         <div style={{ marginTop: 16 }}>
           <OnboardingClient initial={rows} />

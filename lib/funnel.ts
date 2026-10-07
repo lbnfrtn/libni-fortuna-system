@@ -65,7 +65,7 @@ const DAY = 86_400_000;
 // ---------------------------------------------------------------- defaults
 // Written in Libni's voice; she edits them in /admin/email. {{first_name}},
 // {{offer}}, {{payment_link}}, {{booking_link}}, {{welcome_link}}, {{portal_link}},
-// {{access_code}}, {{amount}}, {{due}}, {{site}} are filled in at send time.
+// {{access_code}}, {{start_link}}, {{amount}}, {{due}}, {{site}} are filled in at send time.
 const S = (id: string, name: string, description: string, triggers: string[], steps: [number, string, string, string?][], extra: Partial<Sequence> = {}): Sequence => ({
   id, name, description, triggers, active: true, ...extra,
   steps: steps.map(([delayDays, subject, body, sendOn], i) => ({ id: `${id}-${i + 1}`, delayDays, subject, body, ...(sendOn ? { sendOn } : {}) })),
@@ -351,6 +351,16 @@ If something's changed, just tell me. We'll work it out.
 
 — Libni`],
   ]),
+
+  // Words from docs/MESSAGES.md ("Backlog re-engagement"), still awaiting Libni's approval —
+  // so it ships switched OFF. She turns it on in Email & funnel before importing old leads.
+  S("backlog-reengage", "Old leads · one honest re-engagement", "Sent once to warm leads you import on the Desk (CSV). Off until you approve the words and switch it on — turn it on before importing.", ["nurture"], [
+    [0, "{{first_name}}, a gentle hello", `Hi {{first_name}} — a while ago you reached out about working together and life (mine and maybe yours) got busy. No pressure at all, but if the timing's better now, here's the simplest way in: {{start_link}}
+
+And if not, it's genuinely lovely to still have you here.
+
+— Libni`],
+  ], { active: false }),
 ];
 
 export const EMPTY: FunnelData = { sequences: DEFAULT_SEQUENCES, enrolments: [], suppressed: [], log: [] };
@@ -438,7 +448,7 @@ async function baseVars(name: string, extra: Record<string, string>): Promise<Re
   const site = SITE();
   return {
     site, first_name: firstName(name), name: name || "there",
-    guide_link: `${site}/resources`, portal_link: `${site}/portal`, access_code: content.liberate.accessCode || "(ask me for it)",
+    guide_link: `${site}/resources`, start_link: `${site}/start`, portal_link: `${site}/portal`, access_code: content.liberate.accessCode || "(ask me for it)",
     booking_link: content.links.calendlyPowerHour || `${site}/contact — or just reply to this and I'll send you times`,
     ...extra,
   };

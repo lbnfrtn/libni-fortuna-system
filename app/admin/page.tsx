@@ -112,7 +112,7 @@ export default async function AdminHub() {
           ))}
         </div>
         <p className="muted" style={{ fontSize: 13, marginTop: 24 }}>
-          Welcome letters, nudges, reminders and your Letters are sent by the site itself (see Email &amp; funnel); GoHighLevel keeps the contact list and tags. Payments are Xendit + manual transfer through the Desk. This admin is where you see it all and steer.
+          Everything lives here: contacts, applications, payments and every automatic letter. Payments are Xendit + manual transfer through the Desk.
         </p>
       </div>
     </>

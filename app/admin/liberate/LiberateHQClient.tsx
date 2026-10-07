@@ -45,12 +45,12 @@ export default function LiberateHQClient({ initial }: { initial: LiberateHQ }) {
           <div><label>Start date</label><input type="date" value={hq.startDate ?? ""} onChange={(e) => setHq({ ...hq, startDate: e.target.value })} /></div>
           <div><label>Access code (members sign in with email + this)</label><input value={hq.accessCode} onChange={(e) => setHq({ ...hq, accessCode: e.target.value })} placeholder="e.g. HOME2026" /></div>
           <div><label>Default session link (Zoom)</label><input value={hq.sessionUrl ?? ""} onChange={(e) => setHq({ ...hq, sessionUrl: e.target.value })} placeholder="https://zoom.us/j/…" /></div>
-          <div><label>Community link</label><input value={hq.communityUrl ?? ""} onChange={(e) => setHq({ ...hq, communityUrl: e.target.value })} placeholder="WhatsApp / Telegram / GHL community" /></div>
+          <div><label>Community link</label><input value={hq.communityUrl ?? ""} onChange={(e) => setHq({ ...hq, communityUrl: e.target.value })} placeholder="WhatsApp / Telegram community link" /></div>
           <div><label>Community button label</label><input value={hq.communityLabel ?? ""} onChange={(e) => setHq({ ...hq, communityLabel: e.target.value })} placeholder="Open the circle" /></div>
         </div>
         <label>Welcome note (top of the portal)</label>
         <textarea rows={3} value={hq.welcome} onChange={(e) => setHq({ ...hq, welcome: e.target.value })} />
-        <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>Put the access code in the Liberate welcome email in GoHighLevel. Anyone with a paid Liberate order can then sign in.</p>
+        <p className="muted" style={{ fontSize: 12, marginTop: 8 }}>The Liberate welcome letter includes this code automatically. Anyone with a paid Liberate order can then sign in.</p>
       </div>
 
       <h3 style={{ marginTop: 32 }}>The twelve weeks</h3>

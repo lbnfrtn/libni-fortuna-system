@@ -2,8 +2,8 @@ import type { Order } from "@/lib/types";
 import { peso } from "@/lib/util";
 
 // Weekly digest to Libni (spec §5 Phase 5). Computed from orders (the money
-// side). Lead-volume-by-source metrics live in GHL's own reporting; this
-// covers what this system is the source of truth for: cash and pipeline value.
+// side): cash and pipeline value. Lead volume by source is on the admin's
+// Leads and Audience pages.
 
 export interface Digest {
   from: string;
@@ -102,6 +102,6 @@ export function renderDigest(d: Digest): string {
   } else {
     lines.push(``, `Nothing stuck. Clean week.`);
   }
-  lines.push(``, `(Lead volume by source is in GHL's dashboard.)`);
+  lines.push(``, `(Lead volume by source: see Leads and Audience in the admin.)`);
   return lines.join("\n");
 }

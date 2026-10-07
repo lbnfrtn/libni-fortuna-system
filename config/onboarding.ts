@@ -1,17 +1,17 @@
 // ============================================================================
 // Onboarding packs — what a client sees on the welcome page after paying, and
-// what the matching GHL workflow (triggered by paid:<offer>) should send.
+// the matching paid:<offer> email sequence (lib/funnel.ts) sends alongside it.
 //
 // The welcome-page copy here is DRAFTED IN LIBNI'S VOICE and is marked PENDING
 // approval in docs/MESSAGES.md. Nothing here is final until Libni signs off.
-// GHL workflow steps (emails/agreement/reminders) are specified in
-// docs/GHL-BUILD-SHEET.md — this file is only what renders on the web page.
+// The letters themselves are edited in /admin/email — this file is only what
+// renders on the web page.
 // ============================================================================
 
 export interface WelcomeStep {
   title: string;
   body: string;
-  /** Optional link. GHL booking/agreement/intake links get pasted in later. */
+  /** Optional link. Booking/agreement/intake links get pasted in later. */
   ctaLabel?: string;
   ctaHref?: string;
 }
@@ -35,7 +35,7 @@ export const ONBOARDING: Record<string, OnboardingPack> = {
         title: "Book your session",
         body: "Pick the time that feels right. Ninety minutes, just the two of us — online or in person, however you chose.",
         ctaLabel: "Choose your time",
-        ctaHref: "#booking", // GHL calendar embed / link pasted here at go-live
+        ctaHref: "#booking", // booking calendar link pasted here at go-live
       },
       {
         title: "A short intake, so I can meet you where you are",

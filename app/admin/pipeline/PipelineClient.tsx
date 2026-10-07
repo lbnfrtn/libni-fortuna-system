@@ -3,17 +3,18 @@
 import { useMemo, useState } from "react";
 
 export interface Card {
-  email: string; name: string; phone?: string; ghlContactId?: string;
+  email: string; name: string; phone?: string;
   stage: string; derived: boolean; offers: string[]; interestedIn: string[]; sources: string[];
   lastActivity: string; paidPHP: number; balancePHP: number; openOrderId?: string;
   note?: string; nextAction?: string;
+  answers: { form: string; at: string; items: [string, string][] }[];
 }
 
 const MANUAL = ["call", "proposal", "lost"];
 const peso = (n: number) => "₱" + Math.round(n).toLocaleString("en-PH");
 const age = (iso: string) => { const d = Math.floor((Date.now() - new Date(iso).getTime()) / 86_400_000); return d <= 0 ? "today" : d === 1 ? "1 day" : `${d} days`; };
 
-export default function PipelineClient({ cards: initial, stages, labels, ghlLocation }: { cards: Card[]; stages: string[]; labels: Record<string, string>; ghlLocation: string }) {
+export default function PipelineClient({ cards: initial, stages, labels }: { cards: Card[]; stages: string[]; labels: Record<string, string> }) {
   const [cards, setCards] = useState(initial);
   const [open, setOpen] = useState<string | null>(null);
   const [q, setQ] = useState("");
@@ -118,9 +119,21 @@ export default function PipelineClient({ cards: initial, stages, labels, ghlLoca
           <div className="row" style={{ marginTop: 16 }}>
             {sel.openOrderId && <a className="btn small" href="/desk">Open in Payment Desk</a>}
             {!sel.openOrderId && sel.stage !== "paid" && sel.stage !== "onboarded" && <a className="btn small" href="/desk">Create a payment link</a>}
-            {sel.ghlContactId && ghlLocation && <a className="btn small ghost" href={`https://app.gohighlevel.com/v2/location/${ghlLocation}/contacts/detail/${sel.ghlContactId}`} target="_blank" rel="noreferrer">Open in GoHighLevel</a>}
             <a className="btn small ghost" href={`mailto:${sel.email}`}>Email</a>
           </div>
+          {sel.answers.map((a, i) => (
+            <div key={i} style={{ marginTop: 18 }}>
+              <label>Form · {a.form} · {a.at.slice(0, 10)}</label>
+              <div className="card" style={{ padding: 16, boxShadow: "none" }}>
+                {a.items.map(([q, v], j) => (
+                  <div key={j} style={{ marginBottom: j === a.items.length - 1 ? 0 : 12 }}>
+                    <p className="muted" style={{ fontSize: 12, margin: "0 0 2px" }}>{q}</p>
+                    <p style={{ fontSize: 14.5, margin: 0, whiteSpace: "pre-wrap" }}>{v}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
           <p className="muted" style={{ fontSize: 12, marginTop: 10 }}>Sources: {sel.sources.join(", ") || "—"}</p>
         </div>
       )}

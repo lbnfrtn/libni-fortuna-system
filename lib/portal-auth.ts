@@ -7,7 +7,7 @@ import { isLoggedIn } from "@/lib/auth";
 // ============================================================================
 // Member portal sign-in. Two programs live here:
 //   liberate    — email + the cohort access code (sent in the welcome email
-//                 by GHL); a member is anyone with a paid Liberate order.
+//                 in the welcome letter); a member is anyone with a paid Liberate order.
 //   one-on-one  — email only; a client is anyone with a paid The Becoming or
 //                 Power Hour order. (Project Me has its own login at
 //                 projectme.libni.co and is only linked from the picker.)

@@ -19,7 +19,7 @@ import type { Offer } from "@/lib/types";
 
 export const OFFERS: Record<string, Offer> = {
   ignite: {
-    // Slug stays `ignite` so existing GHL tags, orders and links keep working.
+    // Slug stays `ignite` so existing tags, orders and links keep working.
     slug: "ignite",
     name: "Power Hour",
     blurb: "A 90-minute session to get unstuck — online or in person.",
@@ -33,7 +33,6 @@ export const OFFERS: Record<string, Offer> = {
     onboardingPack: "ignite",
     refundNote:
       "Life happens — you can reschedule once with at least 48 hours' notice. Sessions cancelled with less notice, or missed, aren't refundable, but let's talk if something serious came up.",
-    pipeline: "consumer",
   },
 
   // The same session, held in a room instead of on a call. Its own slug so the amount lives here, not in a component.
@@ -51,7 +50,6 @@ export const OFFERS: Record<string, Offer> = {
     onboardingPack: "ignite",
     refundNote:
       "Life happens — you can reschedule once with at least 48 hours' notice. Sessions cancelled with less notice, or missed, aren't refundable, but let's talk if something serious came up.",
-    pipeline: "consumer",
     hideFromStart: true,
   },
 
@@ -70,7 +68,6 @@ export const OFFERS: Record<string, Offer> = {
     onboardingPack: "private-studio",
     refundNote:
       "Because your space and time are reserved just for your group, payment is non-refundable within 7 days of the session. Before that, you can reschedule or transfer your spot to someone else.",
-    pipeline: "consumer",
   },
 
   workshops: {
@@ -88,7 +85,6 @@ export const OFFERS: Record<string, Offer> = {
     refundNote:
       "Your spot is transferable to someone else any time. Refunds are available up to 14 days before the event; after that it's non-refundable but still transferable.",
     waitlistOnly: true, // until a dated event with a price exists
-    pipeline: "consumer",
   },
 
   "the-becoming": {
@@ -108,7 +104,6 @@ export const OFFERS: Record<string, Offer> = {
     onboardingPack: "the-becoming",
     refundNote:
       "This is a mutual 12-week commitment. There's a 3-day window after signing to change your mind for a full refund. Once we've begun, the fee is non-refundable — but if life makes continuing impossible, we can pause for up to 8 weeks and resume. On a payment plan, completed payments aren't refunded and the remaining balance is still due unless we agree together to close early.",
-    pipeline: "consumer",
   },
 
   liberate: {
@@ -127,7 +122,6 @@ export const OFFERS: Record<string, Offer> = {
     onboardingPack: "liberate",
     refundNote:
       "Liberate does not offer refunds. This space is built on alignment, not urgency — if you're unsure, take your time, ask your questions, and say yes only when it's a full yes.",
-    pipeline: "consumer",
   },
 
   "essence-retreat": {
@@ -147,7 +141,6 @@ export const OFFERS: Record<string, Offer> = {
       "A 30% deposit holds your seat and is non-refundable. The balance is due 30 days before the retreat. Cancel more than 30 days out and your balance is refunded; within 30 days it's non-refundable, but your full payment can transfer to the next retreat once. Waivers and health forms must be completed to attend.",
     waitlistOnly: true,
     capacity: 20, // max 20 people; flips to waitlist when full
-    pipeline: "consumer",
   },
 
   "founders-circle": {
@@ -165,7 +158,6 @@ export const OFFERS: Record<string, Offer> = {
     refundNote:
       "Seats are limited, so payment is non-refundable — but fully transferable to a guest if you can't make it.",
     waitlistOnly: true,
-    pipeline: "consumer",
   },
 
   "project-me": {
@@ -182,7 +174,6 @@ export const OFFERS: Record<string, Offer> = {
     methods: [],
     onboardingPack: "project-me",
     externalUrl: "https://projectme.libni.co", // existing system; link out only
-    pipeline: "consumer",
   },
 
   "private-experiences": {
@@ -200,7 +191,6 @@ export const OFFERS: Record<string, Offer> = {
     onboardingPack: "custom",
     refundNote:
       "Terms are set in your agreement. A 50% deposit confirms and is non-refundable; the balance follows the schedule in your agreement.",
-    pipeline: "consumer",
   },
 
   organizations: {
@@ -218,7 +208,6 @@ export const OFFERS: Record<string, Offer> = {
     onboardingPack: "corporate",
     refundNote:
       "Governed by the signed agreement. A 50% deposit confirms the date and is non-refundable. Cancellation within 30 days of the date forfeits the deposit; the balance is due per the agreement.",
-    pipeline: "corporate",
   },
 
   speaking: {
@@ -236,7 +225,6 @@ export const OFFERS: Record<string, Offer> = {
     onboardingPack: "corporate",
     refundNote:
       "Governed by the signed agreement. A 50% deposit confirms the date and is non-refundable. Cancellation within 30 days of the date forfeits the deposit; the balance is due per the agreement.",
-    pipeline: "corporate",
   },
 
   brands: {
@@ -254,7 +242,6 @@ export const OFFERS: Record<string, Offer> = {
     onboardingPack: "brand",
     refundNote:
       "Governed by the signed agreement. A 50% deposit confirms the date and is non-refundable. Cancellation within 30 days of the date forfeits the deposit; the balance is due per the agreement.",
-    pipeline: "brand",
   },
 };
 

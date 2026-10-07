@@ -1,8 +1,6 @@
 import type { Order } from "@/lib/types";
-import { getOffer } from "@/config/offers";
 import { store } from "@/lib/store";
-import { addTags, setCustomFields, upsertOpportunity, notifyTeam } from "@/lib/ghl";
-import { PIPELINES, knownFields } from "@/config/ghl-map";
+import { notifyTeam } from "@/lib/notify";
 import { tag } from "@/lib/tags";
 import { enrol, stopOnPaid } from "@/lib/funnel";
 import { peso } from "@/lib/util";
@@ -27,8 +25,8 @@ export interface MarkPaidResult {
 
 /**
  * markPaid — the single place a payment becomes real (spec §7.6). Everything
- * downstream (welcome email, agreement, booking, reminders) is a GHL workflow
- * listening for the tags this function adds.
+ * downstream (welcome letters, onboarding) starts here: pre-sale nudges stop
+ * and the paid:<offer> sequence begins on the first payment.
  *
  * Idempotent: the same eventId twice is a no-op. Safe for Xendit's retries and
  * for the EA clicking "Verify" twice.
@@ -68,7 +66,6 @@ export async function markPaid(orderId: string, payment: PaymentInfo): Promise<M
   await store().put(order);
 
   // --- Email: pre-sale nudges stop; the welcome sequence for this offer begins on the first payment. ---
-  const offer = getOffer(order.offerSlug);
   try {
     await stopOnPaid(order.contact.email);
     if (order.instalments.filter((i) => i.status === "paid").length === 1) {
@@ -83,65 +80,15 @@ export async function markPaid(orderId: string, payment: PaymentInfo): Promise<M
     await store().put(order);
   }
 
-  // --- GHL: record the money, move the deal, fire the onboarding tag. ---
-  const contactId = order.contact.ghlContactId;
-  try {
-    if (offer && contactId) {
-      const next = order.instalments.find((i) => i.status !== "paid");
-
-      await setCustomFields(
-        contactId,
-        knownFields({
-          amountPaid: order.amountPaidPHP,
-          balance: order.balancePHP,
-          paymentMethod: payment.method,
-          paymentDate: payment.paidAt.slice(0, 10),
-          nextInstalmentDue: next ? next.dueDate : "",
-        })
-      );
-
-      // The onboarding trigger fires on the FIRST payment (spec §7.8),
-      // i.e. the first time we add paid:<offer>.
-      const firstPayment = order.instalments.filter((i) => i.status === "paid").length === 1;
-      const tags: string[] = [];
-      if (firstPayment) tags.push(tag.paid(offer.slug), tag.customer(offer.slug));
-      if (next) tags.push(tag.instalmentDue());
-      if (tags.length) await addTags(contactId, tags);
-
-      // Move opportunity to Paid/Won once fully paid.
-      if (fullyPaid) {
-        const pipe = PIPELINES[offer.pipeline];
-        const wonStage =
-          offer.pipeline === "consumer"
-            ? pipe.stages["paid-won"]
-            : offer.pipeline === "corporate"
-              ? pipe.stages["paid-deposit"]
-              : pipe.stages["delivered-paid"];
-        if (pipe.pipelineId && wonStage) {
-          await upsertOpportunity({
-            contactId,
-            pipelineId: pipe.pipelineId,
-            stageId: wonStage,
-            name: `${offer.name} — ${order.contact.name}`,
-            monetaryValuePHP: order.totalPHP,
-            status: "won",
-          });
-        }
-      }
-    }
-
-    await notifyTeam(fullyPaid ? "Payment complete" : "Payment received (instalment)", {
-      order: order.id,
-      offer: order.offerName,
-      client: order.contact.name,
-      amount: peso(payment.amountPHP),
-      balance: peso(order.balancePHP),
-      via: `${payment.channel}:${payment.method}`,
-    });
-  } catch (e) {
-    order.events.push({ at: new Date().toISOString(), type: "ghl-error", note: `markPaid GHL: ${e}` });
-    await store().put(order);
-  }
+  // --- Internal alert for Libni / the EA. ---
+  await notifyTeam(fullyPaid ? "Payment complete" : "Payment received (instalment)", {
+    order: order.id,
+    offer: order.offerName,
+    client: order.contact.name,
+    amount: peso(payment.amountPHP),
+    balance: peso(order.balancePHP),
+    via: `${payment.channel}:${payment.method}`,
+  }).catch(() => {});
 
   return { order, changed: true, fullyPaid };
 }

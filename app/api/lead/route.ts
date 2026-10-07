@@ -21,8 +21,14 @@ export async function POST(req: Request) {
     // Honeypot or validation: respond 200-ish to bots but don't process.
     return NextResponse.json({ error: parsed.error.issues[0]?.message || "Please check the form." }, { status: 400 });
   }
-  const result = await intakeLead(parsed.data);
-  const pay = result.waitlisted ? null : await selfPayAfterApply(parsed.data, result.contactId);
+  let result;
+  try {
+    result = await intakeLead(parsed.data);
+  } catch (e) {
+    console.error("[lead] could not record lead", e);
+    return NextResponse.json({ error: "Sorry — that didn't go through. Please try again in a moment." }, { status: 500 });
+  }
+  const pay = result.waitlisted ? null : await selfPayAfterApply(parsed.data);
   // Liberate's call application: hand them the booking link if Libni has set one.
   const book = !result.waitlisted && !pay && parsed.data.offerSlug === "liberate" ? ((await getContent()).links.calendlyLiberate || null) : null;
   return NextResponse.json({

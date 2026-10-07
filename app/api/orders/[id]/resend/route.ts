@@ -6,7 +6,7 @@ import { isLoggedIn } from "@/lib/auth";
 export const runtime = "nodejs";
 
 // Regenerate a link for an instalment (Desk "resend"). Returns the link so the
-// Desk can copy it or trigger the GHL "send by email" workflow.
+// Desk can copy it and send it to the client.
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const session = await isLoggedIn();
   if (!session) return NextResponse.json({ error: "Sign in first." }, { status: 401 });

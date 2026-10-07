@@ -3,9 +3,10 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 
 // ============================================================================
-// Lead log — a non-sensitive record of every inquiry so the admin can see
-// who reached out, for what, from where. Application ANSWERS are never stored
-// here (they go to GHL only). File adapter for dev, Firestore for production.
+// Lead log — the site's own record of every inquiry: who reached out, for
+// what, from where, with their tags and (for applications) their answers.
+// File adapter for dev, Firestore for production, memory under tests so a
+// test run never writes to the real data folder.
 // ============================================================================
 
 const FILE = path.join(process.cwd(), "data", "leads.json");
@@ -41,8 +42,14 @@ async function firestoreCol(): Promise<any> {
 /* eslint-enable @typescript-eslint/no-explicit-any */
 
 const useFirestore = () => process.env.ORDER_STORE === "firestore";
+const memory: LeadEntry[] = [];
+const inTests = () => Boolean(process.env.VITEST);
 
 export async function logLead(entry: LeadEntry): Promise<void> {
+  if (inTests()) {
+    memory.unshift(entry);
+    return;
+  }
   if (useFirestore()) {
     await (await firestoreCol()).add(entry);
     return;
@@ -53,6 +60,7 @@ export async function logLead(entry: LeadEntry): Promise<void> {
 }
 
 export async function listLeads(limit = 500): Promise<LeadEntry[]> {
+  if (inTests()) return memory.slice(0, limit);
   if (useFirestore()) {
     const snap = await (await firestoreCol()).orderBy("at", "desc").limit(limit).get();
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

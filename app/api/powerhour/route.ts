@@ -39,13 +39,18 @@ export async function POST(req: Request) {
   const offer = getOffer(slug);
   if (!offer || offer.pricePHP == null) return NextResponse.json({ error: "This session isn't open right now." }, { status: 400 });
 
-  const lead = await intakeLead({
-    name: d.name, email: d.email, phone: d.phone, offerSlug: slug, track: "consumer",
-    answers: { format: d.format, intention: d.intention ?? "" }, consent: true, source: d.source || "website",
-  });
+  try {
+    await intakeLead({
+      name: d.name, email: d.email, phone: d.phone, offerSlug: slug, track: "consumer",
+      answers: { format: d.format, intention: d.intention ?? "" }, consent: true, source: d.source || "website",
+    });
+  } catch (e) {
+    console.error("[powerhour] could not record lead", e);
+    return NextResponse.json({ error: "Sorry — that didn't go through. Please try again in a moment." }, { status: 500 });
+  }
   const order = await createOrder({
     offerSlug: slug, planType: "full",
-    contact: { name: d.name, email: d.email, phone: d.phone, ghlContactId: lead.contactId },
+    contact: { name: d.name, email: d.email, phone: d.phone },
     createdBy: "website",
   });
   const first = order.instalments[0];

@@ -1,10 +1,10 @@
 # Messages
 
-Every client-facing message, drafted in Libni's voice. **Nothing here is live until Libni approves it.** Status is marked per message. Edit freely — then change the status to ✅ Approved and I'll (or the EA will) put it into the matching GHL workflow.
+Every client-facing message, drafted in Libni's voice. **Nothing here is live until Libni approves it.** Status is marked per message. Edit freely — then change the status to ✅ Approved and I'll put it into the matching sequence in Email & funnel (`/admin/email`), where you can also edit the words directly.
 
 Voice reminder: personal, warm, grounded, honest, speaks to "you". Never generic coaching-marketing. Core line: *Come home to yourself.*
 
-Merge fields use GHL's `{{contact.first_name}}` style.
+Merge fields: `{{first_name}}`, `{{offer}}`, `{{booking_link}}`, `{{payment_link}}`, `{{start_link}}`, `{{site}}` — filled in at send time.
 
 ---
 
@@ -108,7 +108,7 @@ Merge fields use GHL's `{{contact.first_name}}` style.
 
 ## Instagram DM saved replies (Phase 2)  ⏳ PENDING
 
-Set these up in GHL Conversations → Snippets. All of them point to `/start`. No auto-reply bot — the EA sends these by hand.
+Save these as Instagram quick replies. All of them point to `/start`. No auto-reply bot — the EA sends these by hand.
 
 - **"How do we work together?"**
   > So glad you reached out 🤍 The easiest way is here — it'll point you to the right thing in a couple of questions: {{start_link}}

@@ -4,7 +4,7 @@ import { listLeads } from "@/lib/leadlog";
 
 export const dynamic = "force-dynamic";
 
-// CSV of everyone who opted in, for importing into a GHL list / campaign.
+// CSV of everyone who opted in (name, email, source, interest, date — never answers).
 export async function GET() {
   if (!(await isLoggedIn())) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const leads = await listLeads(5000);

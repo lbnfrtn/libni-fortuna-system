@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 
 // The 1:1 client's space: what they've booked, the next steps from their
 // onboarding pack, and a direct line to Libni. Kept deliberately light —
-// sessions, agreements and intakes are all run from GHL.
+// sessions, agreements and intakes are run by Libni directly.
 export default async function OneOnOnePortal() {
   const me = await currentMember();
   if (!me) redirect("/portal?program=one-on-one");

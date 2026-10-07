@@ -8,9 +8,9 @@ import { getFunnel } from "@/lib/funnel";
 
 export const dynamic = "force-dynamic";
 
-// The email-marketing side. Sending lives in GoHighLevel (deliverability,
-// unsubscribe law, sequences); this page shows who is on the list, where they
-// came from, and which automated sequences exist — with one-click export.
+// The email-marketing side: who is on the list, where they came from, and
+// one-click export. Letters and sequences are sent by the site itself
+// (see Email & funnel), with unsubscribe handled there.
 
 export default async function Audience() {
   const session = await isLoggedIn();
@@ -25,7 +25,6 @@ export default async function Audience() {
   for (const l of list) bySource.set(l.source || "unknown", (bySource.get(l.source || "unknown") || 0) + 1);
   const byOffer = new Map<string, number>();
   for (const l of list) { const n = getOffer(l.offerSlug)?.name ?? l.offerSlug; byOffer.set(n, (byOffer.get(n) || 0) + 1); }
-  const ghl = process.env.GHL_LOCATION_ID ? `https://app.gohighlevel.com/v2/location/${process.env.GHL_LOCATION_ID}/marketing/emails` : "https://app.gohighlevel.com";
 
   return (
     <>
@@ -35,12 +34,11 @@ export default async function Audience() {
           <div>
             <p className="kicker">Audience &amp; email</p>
             <h1 style={{ margin: "4px 0 6px" }}>{list.length} people on your list</h1>
-            <p className="muted" style={{ maxWidth: "64ch" }}>Everyone who has opted in through the site. Letters and the automatic sequences are sent from here — see <Link href="/admin/email">Email &amp; funnel</Link>. GoHighLevel keeps a copy of every contact.</p>
+            <p className="muted" style={{ maxWidth: "64ch" }}>Everyone who has opted in through the site. Letters and the automatic sequences are sent from here — see <Link href="/admin/email">Email &amp; funnel</Link>.</p>
           </div>
           <div className="row">
             <Link className="btn" href="/admin/email#letter">Write a letter</Link>
             <a className="btn ghost" href="/api/audience">Export CSV</a>
-            <a className="btn ghost" href={ghl} target="_blank" rel="noreferrer">Open GHL ↗</a>
           </div>
         </div>
 

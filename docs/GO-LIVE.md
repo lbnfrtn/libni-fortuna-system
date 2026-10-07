@@ -11,16 +11,13 @@ Libni + Claude (or a developer) do steps 3–7 together.
 - [ ] **Prices/dates** for any offer you're opening (Liberate, Essence, Founders Circle, Workshops). Until set, they stay waitlist-only — that's fine.
 - [ ] **Approve every message** in `docs/MESSAGES.md` (change ⏳ to ✅).
 
-## 2. GoHighLevel build (EA, using `docs/GHL-BUILD-SHEET.md`)
-- [ ] Custom fields created; IDs pasted into env.
-- [ ] Consumer pipeline (at least) built; IDs pasted.
-- [ ] Workflows built and turned on: Ignite paid→welcome, The Becoming paid→welcome, instalment-due reminder, nurture re-engagement. (Others as you activate offers.)
-- [ ] The Becoming agreement in Documents (with refund terms).
-- [ ] Ignite + The Becoming calendars created; links pasted into `config/onboarding.ts` (replace the `#booking` etc. placeholders) or into the GHL emails.
-- [ ] Instagram connected to GHL Conversations; saved replies added.
+## 2. Letters & booking
+- [ ] Every sequence in **Email & funnel** (`/admin/email`) reads right and is switched on (or deliberately off).
+- [ ] Booking calendar links pasted in the Studio (Links) and into `config/onboarding.ts` (replace the `#booking` etc. placeholders).
+- [ ] Instagram quick replies saved (see `docs/MESSAGES.md`).
 
 ## 3. Xendit
-- [ ] Paste **TEST** keys into `.env.local`; run one full test payment end-to-end (GCash test) and confirm the welcome email fires from GHL.
+- [ ] Paste **TEST** keys into `.env.local`; run one full test payment end-to-end (GCash test) and confirm the welcome letter arrives (check Email & funnel → send log).
 - [ ] Confirm the **Invoice** webhook is a **separate** row from Project Me's recurring/payment-session webhook. Point the **Invoice** webhook at `https://<your-domain>/api/webhooks/xendit`.
 - [ ] Ask Xendit / check the dashboard for the **fee per method on a ₱250,000 payment**; decide which methods to show for The Becoming (card vs bank vs instalments).
 - [ ] Only when all the above passes: switch to **LIVE** keys and set `APP_MODE=live`. (Live keys also automatically disable the test `/mock-pay` page.)
@@ -39,7 +36,7 @@ Libni + Claude (or a developer) do steps 3–7 together.
 
 ## 6. Smoke test on the live domain
 - [ ] `/start` loads and recommends offers.
-- [ ] Create a real **small** order on the Desk; pay it with a real GCash of a tiny amount; confirm: order → paid, GHL contact tagged `paid:…`, welcome email received, welcome page correct.
+- [ ] Create a real **small** order on the Desk; pay it with a real GCash of a tiny amount; confirm: order → paid, the person shows as Paid in the Pipeline, welcome letter received, welcome page correct.
 - [ ] Do a manual-transfer test: submit proof → EA verifies → paid.
 - [ ] Trigger the digest preview and confirm the numbers look right.
 - [ ] Refund the tiny test payment in Xendit and note it (SOP 4).

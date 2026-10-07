@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { store } from "@/lib/store";
 import { isLoggedIn } from "@/lib/auth";
-import { notifyTeam } from "@/lib/ghl";
+import { notifyTeam } from "@/lib/notify";
 
 export const runtime = "nodejs";
 

@@ -2,9 +2,6 @@ import type { Instalment, Order, PaymentMethod, PaymentPlanType } from "@/lib/ty
 import { getOffer } from "@/config/offers";
 import { store } from "@/lib/store";
 import { createInvoice } from "@/lib/xendit";
-import { upsertContact, addTags, setCustomFields, upsertOpportunity } from "@/lib/ghl";
-import { PIPELINES, knownFields } from "@/config/ghl-map";
-import { tag } from "@/lib/tags";
 import {
   addMonths,
   instalmentExternalId,
@@ -18,7 +15,7 @@ import {
 export interface CreateOrderInput {
   offerSlug: string;
   planType: PaymentPlanType;
-  contact: { name: string; email: string; phone?: string; ghlContactId?: string };
+  contact: { name: string; email: string; phone?: string };
   createdBy: string; // desk user email
   /** Track D custom amount + description. If omitted, uses offer price. */
   customAmountPHP?: number;
@@ -67,8 +64,7 @@ export function buildSchedule(
 
 /**
  * Create an order: compute the plan, generate the Xendit link for the FIRST
- * (due-now) instalment, save the order, and update GHL (stage -> payment
- * pending, tag, fields). Later instalments get their link generated when due
+ * (due-now) instalment, and save the order. Later instalments get their link generated when due
  * (see generateInstalmentLink) so links never expire before they're needed.
  */
 export async function createOrder(input: CreateOrderInput): Promise<Order> {
@@ -141,51 +137,6 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
   };
 
   await store().put(order);
-
-  // --- GHL: this person owes money now. Move them, tag them, set fields. ---
-  try {
-    const contactId =
-      input.contact.ghlContactId ||
-      (await upsertContact({
-        name: input.contact.name,
-        email: input.contact.email,
-        phone: input.contact.phone,
-        source: "payment-desk",
-      })).contactId;
-    order.contact.ghlContactId = contactId;
-
-    const pipe = PIPELINES[offer.pipeline];
-    const stageId =
-      offer.pipeline === "consumer"
-        ? pipe.stages["payment-pending"]
-        : pipe.stages["invoice-sent"];
-    if (pipe.pipelineId && stageId) {
-      await upsertOpportunity({
-        contactId,
-        pipelineId: pipe.pipelineId,
-        stageId,
-        name: `${offer.name} — ${input.contact.name}`,
-        monetaryValuePHP: total,
-        status: "open",
-      });
-    }
-    await addTags(contactId, [tag.paymentPending(offer.slug)]);
-    await setCustomFields(
-      contactId,
-      knownFields({
-        orderId: id,
-        amountDue: first.amountPHP,
-        balance: order.balancePHP,
-        paymentPlan: input.planType === "full" ? "no" : `yes (${input.planType})`,
-        offerOfInterest: offer.name,
-      })
-    );
-    await store().put(order); // persist contactId
-  } catch (e) {
-    // GHL problems must not lose the order or block the link. Log on the order.
-    order.events.push({ at: new Date().toISOString(), type: "ghl-error", note: String(e) });
-    await store().put(order);
-  }
 
   return order;
 }

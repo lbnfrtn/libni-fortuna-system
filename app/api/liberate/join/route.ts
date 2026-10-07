@@ -35,9 +35,15 @@ export async function POST(req: Request) {
     answers: { join: d.plan === "full" ? LIBERATE_JOIN.full : LIBERATE_JOIN.plan },
     consent: true as const, source: d.source || "website",
   };
-  const result = await intakeLead(lead);
+  let result;
+  try {
+    result = await intakeLead(lead);
+  } catch (e) {
+    console.error("[liberate/join] could not record lead", e);
+    return NextResponse.json({ error: "Sorry — that didn't go through. Please try again in a moment." }, { status: 500 });
+  }
   if (result.waitlisted) return NextResponse.json({ error: "Liberate isn't open for payment right now." }, { status: 400 });
-  const pay = await selfPayAfterApply(lead, result.contactId);
+  const pay = await selfPayAfterApply(lead);
   if (!pay) return NextResponse.json({ error: "I couldn't create your payment link just now — I'll send it to your email personally." }, { status: 500 });
   return NextResponse.json({ ok: true, pay });
 }

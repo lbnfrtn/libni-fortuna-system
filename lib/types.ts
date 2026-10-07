@@ -65,8 +65,6 @@ export interface Offer {
   waitlistOnly?: boolean;
   /** External link for offers we don't process here (Project Me). */
   externalUrl?: string;
-  /** GHL pipeline this offer's opportunities belong in. */
-  pipeline: "consumer" | "corporate" | "brand";
   /**
    * Hard capacity (e.g. Essence retreat = 20). When paid seats reach this, the
    * offer flips to waitlist automatically. Undefined = no cap.
@@ -119,7 +117,6 @@ export interface Order {
 
   // --- who ---
   contact: {
-    ghlContactId?: string;
     name: string;
     email: string;
     phone?: string;
@@ -149,8 +146,9 @@ export interface Order {
   events: Array<{ at: string; type: string; note: string }>;
 
   /**
-   * Onboarding checklist the EA ticks off in /admin/onboarding. GHL sends the
-   * emails; this is the human-visible status so nothing slips.
+   * Onboarding checklist the EA ticks off in /admin/onboarding. The site's own
+   * email sequences send the letters; this is the human-visible status so
+   * nothing slips.
    */
   onboarding?: {
     welcomeSent?: boolean;
@@ -163,16 +161,23 @@ export interface Order {
   };
 }
 
-/** A lightweight record of a lead/inquiry (no sensitive answers). */
+/**
+ * A lead/inquiry record — the site's own CRM entry. `answers` holds the
+ * application/inquiry replies (can be sensitive): shown only in the signed-in
+ * admin, never logged or exported.
+ */
 export interface LeadEntry {
   at: string;
   name: string;
   email: string;
+  phone?: string;
   offerSlug: string;
   track: string;
   source: string;
   sourceDetail?: string;
   waitlisted: boolean;
-  ghlContactId?: string;
-  parked?: boolean;
+  /** e.g. applied:liberate, waitlist:essence-retreat, nurture */
+  tags?: string[];
+  /** Form answers keyed by question id (see config/forms.ts). */
+  answers?: Record<string, string>;
 }

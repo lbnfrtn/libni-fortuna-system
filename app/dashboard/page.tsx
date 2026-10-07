@@ -102,7 +102,7 @@ export default async function Dashboard() {
       </div>
 
       <p className="muted" style={{ fontSize: 13, marginTop: 16 }}>
-        Lead volume by source is under <Link href="/admin/leads">Leads</Link>; pipeline stages live in GoHighLevel. This shows the money side, where this system is the source of truth.
+        Lead volume by source is under <Link href="/admin/leads">Leads</Link>; every person's stage is in the <Link href="/admin/pipeline">Pipeline</Link>. This page is the money side.
       </p>
     </div>
     </>

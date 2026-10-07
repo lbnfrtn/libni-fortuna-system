@@ -44,7 +44,7 @@ You'll get a notification: "Manual payment proof submitted — please verify."
 
 1. **Do not process anything in Xendit yourself.** Refunds are Libni's decision and follow the offer's written policy.
 2. Create a task for Libni (or message her) with: client name, offer, amount paid, reason given, and the date.
-3. Once Libni decides, if a refund is approved she (or the person with Xendit access) issues it in the Xendit dashboard. Then note it on the client's GHL contact.
+3. Once Libni decides, if a refund is approved she (or the person with Xendit access) issues it in the Xendit dashboard. Then note it on the client's card in the Pipeline.
 4. Move the opportunity to **Lost** (or a "Refunded" note) so reporting stays honest.
 
 *(Refund terms per offer will be added here once Libni provides them.)*
@@ -54,7 +54,7 @@ You'll get a notification: "Manual payment proof submitted — please verify."
 ## SOP 5 — Add a new offer or change a price
 
 - **Change a price:** open `config/offers.ts`, find the offer, change `pricePHP`. Save. (If you're not comfortable editing the file, send Libni/Claude the new number.)
-- **New offer:** copy an existing block in `config/offers.ts`, give it a new short `slug`, set price + options; add a welcome message in `config/onboarding.ts`; then ask Claude to add its GHL workflow to the Build Sheet.
+- **New offer:** copy an existing block in `config/offers.ts`, give it a new short `slug`, set price + options; add a welcome message in `config/onboarding.ts`; then ask Claude to add its welcome letters in Email & funnel.
 - **Open a waitlisted offer** (Essence, Liberate, etc.): set its real `pricePHP` and remove the `waitlistOnly: true` line.
 
 ---
@@ -63,7 +63,7 @@ You'll get a notification: "Manual payment proof submitted — please verify."
 
 1. **Client says they paid but got nothing:**
    - Open the Desk, find the order.
-   - If it says **paid** → the payment worked; the issue is the GHL email/workflow. Open that workflow in GHL and check it's turned on.
+   - If it says **paid** → the payment worked; the issue is the email. Open Email & funnel, check that offer's sequence is switched on, and look at the send log.
    - If it still says **pending** → the payment didn't reach us. Check Xendit for the payment, and check the Invoice webhook address in Xendit → Developers → Webhooks.
 2. **The Desk won't open:** locally, restart with `npm run dev`. Once we're live on Vercel, check the Vercel dashboard.
 3. **Anything code-related:** open this folder in Claude Code and describe what happened. Don't guess in Xendit or the database.
@@ -84,8 +84,8 @@ Still glance at the Desk's **Open orders** weekly:
 ## SOP 8 — Corporate / brand: inquiry → proposal → invoice
 
 1. Inquiry arrives (form `/apply/organizations`, `/apply/speaking`, or `/apply/brands`) → it's in the Corporate/Brand pipeline at "New inquiry".
-2. Book the discovery call. After it, draft a proposal from `docs/TEMPLATES.md` (GHL Documents). Move the deal to "Proposal sent".
-3. On agreement, send the agreement (GHL Documents) — move to "Contract/Agreement signed".
+2. Book the discovery call. After it, draft a proposal from `docs/TEMPLATES.md` (online proposals and contracts with e-signature are being built into the admin; until then, send it as a PDF by email). Move the deal to "Proposal sent".
+3. On agreement, send the agreement (online proposals and contracts with e-signature are being built into the admin; until then, send it as a PDF by email) — move to "Contract/Agreement signed".
 4. Invoice from the **Payment Desk**: choose the offer, type the **custom amount** (and a description), pick **Deposit + balance** if it's 50/50. Send the link. Move to "Invoice sent".
 5. When paid, onboarding/planning tasks fire automatically.
 6. **Receipts:** until BIR registration is done, issue **acknowledgement receipts only**. If a corporate client needs an official invoice or will withhold tax, flag it to Libni/the accountant — don't improvise.
@@ -97,4 +97,4 @@ Still glance at the Desk's **Open orders** weekly:
 1. Put the leads in a spreadsheet with columns: `name, email, phone, offerSlug, source, sourceDetail` (see `docs/backlog-template.csv`). Only name + email are required.
 2. Export as CSV.
 3. Payment Desk → **/desk/import** → paste the CSV → **Import**.
-4. They're added to GHL tagged `nurture` (+ their offer). Libni's approved re-engagement message goes out once via the `nurture` workflow. Don't hard-sell.
+4. They're added to Leads tagged `nurture` (+ their offer). If the "Old leads · one honest re-engagement" sequence is switched on in Email & funnel, they each get that one letter (switch it on **before** importing). Don't hard-sell.

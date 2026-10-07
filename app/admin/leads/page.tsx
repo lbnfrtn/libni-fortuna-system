@@ -24,7 +24,7 @@ export default async function Leads() {
         <p className="kicker">Leads</p>
         <h1 style={{ margin: "4px 0 6px" }}>{week.length} this week · {leads.length} total</h1>
         <p className="muted">
-          Every form, application, waitlist and newsletter signup — with where they came from. Application answers live in GoHighLevel only (they can be sensitive).
+          Every form, application, waitlist and newsletter signup — with where they came from. Application answers are on each person's card in the Pipeline (kept private to the admin).
         </p>
 
         {bySource.size > 0 && (
@@ -47,9 +47,11 @@ export default async function Leads() {
                   <td>{getOffer(l.offerSlug)?.name ?? l.offerSlug}<br /><span className="muted" style={{ fontSize: 12 }}>{l.track}</span></td>
                   <td>{l.source}{l.sourceDetail ? <><br /><span className="muted" style={{ fontSize: 12 }}>{l.sourceDetail}</span></> : null}</td>
                   <td>
-                    {l.waitlisted && <span className="pill pending">waitlist</span>}
-                    {l.parked && <span className="pill submitted" style={{ marginLeft: 4 }}>parked (GHL down)</span>}
-                    {!l.waitlisted && !l.parked && <span className="pill paid">in GHL</span>}
+                    {l.waitlisted ? <span className="pill pending">waitlist</span>
+                      : l.tags?.some((t) => t.startsWith("applied:")) ? <span className="pill paid">applied</span>
+                      : l.tags?.includes("nurture") ? <span className="pill">imported</span>
+                      : <span className="pill">inquiry</span>}
+                    {l.answers && <span className="muted" style={{ fontSize: 11, marginLeft: 6 }}>· answers</span>}
                   </td>
                 </tr>
               ))}

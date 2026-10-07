@@ -2,16 +2,15 @@ import { NextResponse } from "next/server";
 import { store } from "@/lib/store";
 import { dueReminders } from "@/lib/reminders";
 import { generateInstalmentLink } from "@/lib/orders";
-import { addTags, setCustomFields, notifyTeam } from "@/lib/ghl";
-import { knownFields } from "@/config/ghl-map";
-import { tag } from "@/lib/tags";
+import { notifyTeam } from "@/lib/notify";
 import { todayISO, peso } from "@/lib/util";
 import { enrol, runDue } from "@/lib/funnel";
 
 export const runtime = "nodejs";
 
 // Daily job (Vercel Cron -> see vercel.json). Finds instalments coming due /
-// overdue and nudges via GHL tags + fields; overdue creates an EA task ONCE.
+// overdue, sends the reminder letter, and alerts Libni / the EA ONCE per
+// overdue instalment.
 // Protected by CRON_SECRET so only the scheduler can trigger it.
 export async function GET(req: Request) {
   const secret = process.env.CRON_SECRET;
@@ -30,7 +29,6 @@ export async function GET(req: Request) {
     if (!order) continue;
     const inst = order.instalments.find((i) => i.n === a.instalmentN);
     if (!inst) continue;
-    const contactId = order.contact.ghlContactId;
 
     // Make sure a fresh link exists for the instalment coming due.
     if (!inst.invoiceUrl && a.kind !== "overdue") {
@@ -41,21 +39,15 @@ export async function GET(req: Request) {
       }
     }
 
-    if (contactId) {
-      await setCustomFields(contactId, knownFields({ nextInstalmentDue: inst.dueDate }));
-      if (a.kind === "overdue") {
-        // Tag + EA task, but only once per instalment.
-        const already = order.events.some((e) => e.type === "overdue-tasked" && e.note.includes(`i${inst.n}`));
-        await addTags(contactId, [tag.instalmentOverdue()]);
-        if (!already) {
-          await notifyTeam("Instalment overdue — please follow up (human, not a threat)", {
-            order: order.id, client: a.name, offer: a.offerSlug, amount: a.amountPHP, due: a.dueDate,
-          });
-          order.events.push({ at: new Date().toISOString(), type: "overdue-tasked", note: `i${inst.n}` });
-          await store().put(order);
-        }
-      } else {
-        await addTags(contactId, [tag.instalmentDue()]);
+    if (a.kind === "overdue") {
+      // Alert the team, but only once per instalment.
+      const already = order.events.some((e) => e.type === "overdue-tasked" && e.note.includes(`i${inst.n}`));
+      if (!already) {
+        await notifyTeam("Instalment overdue — please follow up (human, not a threat)", {
+          order: order.id, client: a.name, offer: a.offerSlug, amount: a.amountPHP, due: a.dueDate,
+        });
+        order.events.push({ at: new Date().toISOString(), type: "overdue-tasked", note: `i${inst.n}` });
+        await store().put(order);
       }
     }
     // The reminder letter itself — one per instalment per kind, never twice.

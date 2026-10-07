@@ -4,7 +4,7 @@ Plain-language, then the technical bits.
 
 ## In plain language
 
-**The "backend" is already here.** It's the set of behind-the-scenes routines that create payment links, listen for "they paid," update GoHighLevel, take in leads, send reminders, and build your weekly numbers. You never see it directly — you see the Payment Desk, the Dashboard and the website, and the backend does the work underneath.
+**The "backend" is already here.** It's the set of behind-the-scenes routines that create payment links, listen for "they paid," take in leads, send reminders, and build your weekly numbers. You never see it directly — you see the Payment Desk, the Dashboard and the website, and the backend does the work underneath.
 
 **The "database" is where orders and payments are remembered.** There are two modes, and the code is identical in both — only where it saves changes:
 
@@ -13,7 +13,7 @@ Plain-language, then the technical bits.
 
 Nothing about your day-to-day changes between the two. You flip one setting and paste one key.
 
-**What's stored:** each order — who it's for, the offer, the amounts, what's paid, the payment method and date, and a history of events. Leads and all the client messaging live in **GoHighLevel**, not here. This database is only the money/orders side.
+**What's stored:** each order — who it's for, the offer, the amounts, what's paid, the payment method and date, and a history of events. It also holds every lead (with tags and application answers), your pipeline notes, and every automatic letter and who's in it. It is the only CRM — nothing lives in an outside system.
 
 ## How to check it's working
 ```bash

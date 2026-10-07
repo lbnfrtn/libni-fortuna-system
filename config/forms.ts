@@ -3,7 +3,7 @@ import { getOffer } from "@/config/offers";
 
 // ============================================================================
 // Form question sets. Each offer's form is built from its journey + track.
-// Answers are stored in GHL only (they can be emotional/health-sensitive).
+// Answers are kept in the lead log and shown only in the admin (they can be emotional/health-sensitive).
 // ============================================================================
 
 export interface Question {

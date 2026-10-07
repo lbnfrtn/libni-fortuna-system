@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-// Free lead-magnet capture -> /api/lead (tagged as a nurture/guide lead in GHL).
+// Free lead-magnet capture -> /api/lead (starts the free-guide letters).
 export default function GuideForm() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");

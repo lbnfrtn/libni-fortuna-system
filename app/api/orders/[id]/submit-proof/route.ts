@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { store } from "@/lib/store";
 import { submitProofSchema } from "@/lib/validate";
-import { notifyTeam } from "@/lib/ghl";
+import { notifyTeam } from "@/lib/notify";
 import { rateLimit, clientIp } from "@/lib/ratelimit";
 
 export const runtime = "nodejs";

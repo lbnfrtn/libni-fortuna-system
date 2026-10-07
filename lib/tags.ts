@@ -1,5 +1,5 @@
-// Tag conventions (spec §6). Code adds these; GHL workflows listen for them
-// and do the communicating. Keep them consistent — the EA never invents tags.
+// Tag conventions. They label each lead in the CRM and double as the triggers
+// that start email sequences (e.g. paid:liberate). Keep them consistent.
 
 export const tag = {
   lead: (offer: string) => `lead:${offer}`,

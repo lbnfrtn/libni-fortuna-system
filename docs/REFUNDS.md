@@ -1,6 +1,6 @@
 # Refund & Cancellation Terms — ✅ APPROVED
 
-**Status: ✅ Approved by Libni, 2026-09-17.** The client-facing lines below are now live in `config/offers.ts` (`refundNote`) and show at checkout; use the same wording in the GHL/Documents agreements. To change any of them later, edit the offer's `refundNote` and update the matching agreement.
+**Status: ✅ Approved by Libni, 2026-09-17.** The client-facing lines below are now live in `config/offers.ts` (`refundNote`) and show at checkout; use the same wording in the client agreements. To change any of them later, edit the offer's `refundNote` and update the matching agreement.
 
 Two versions per offer: a short **client-facing line** (goes on the checkout page + agreement) and a **note** explaining the thinking so you can decide.
 

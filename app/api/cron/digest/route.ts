@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { store } from "@/lib/store";
 import { buildDigest, renderDigest } from "@/lib/digest";
-import { notifyTeam } from "@/lib/ghl";
+import { notifyTeam } from "@/lib/notify";
 import { isLoggedIn } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
-// Weekly digest to Libni (Vercel Cron, Sundays). In safe mode it logs the text;
-// at go-live, point notifyTeam at a GHL internal email/workflow. The scheduled
+// Weekly digest to Libni (Vercel Cron, Sundays). It's written to the server log
+// via notifyTeam, and readable any time with ?preview=1. The scheduled
 // run is protected by CRON_SECRET; ?preview=1 requires a signed-in Desk session
 // (it exposes revenue numbers, so it must never be open on the internet).
 export async function GET(req: Request) {

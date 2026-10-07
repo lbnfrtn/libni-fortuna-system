@@ -10,7 +10,7 @@ import type { Order, LeadEntry } from "@/lib/types";
 // with one pipeline stage. Stages are DERIVED from what actually happened
 // (form, link, payment, onboarding) so they can never drift; Libni can only
 // override the human steps in between (call booked, proposal sent, lost).
-// GoHighLevel stays the system of record for contacts + every message sent.
+// This is the only CRM: leads, orders and notes all live in the site's own store.
 // ============================================================================
 
 export const STAGES = [
@@ -44,7 +44,6 @@ export interface Person {
   email: string;
   name: string;
   phone?: string;
-  ghlContactId?: string;
   stage: Stage;
   /** True when the stage came from the system, not a manual override. */
   derived: boolean;
@@ -113,7 +112,8 @@ function systemStage(orders: Order[], leads: LeadEntry[]): Stage {
   if (live.some((o) => o.amountPaidPHP > 0)) return "paid";
   if (live.some((o) => o.status === "submitted" || o.status === "verified")) return "awaiting";
   if (live.some((o) => o.status === "pending")) return "link";
-  if (leads.some((l) => l.source.startsWith("apply") || l.source === "application")) return "applied";
+  // An application is tagged applied:<offer>; older entries (before tags) are recognised by source.
+  if (leads.some((l) => l.tags?.some((t) => t.startsWith("applied:")) || l.source.startsWith("apply") || l.source === "application")) return "applied";
   return "inquiry";
 }
 
@@ -125,22 +125,21 @@ export async function people(): Promise<Person[]> {
 
   for (const l of leads) {
     const k = key(l.email);
-    const p = map.get(k) ?? { email: l.email, name: l.name, ghlContactId: l.ghlContactId, stage: "inquiry", derived: true, offers: [], interestedIn: [], sources: [], firstSeen: l.at, lastActivity: l.at, paidPHP: 0, balancePHP: 0, orders: [], leads: [] };
+    const p = map.get(k) ?? { email: l.email, name: l.name, phone: l.phone, stage: "inquiry", derived: true, offers: [], interestedIn: [], sources: [], firstSeen: l.at, lastActivity: l.at, paidPHP: 0, balancePHP: 0, orders: [], leads: [] };
     p.leads.push(l);
     const offer = getOffer(l.offerSlug)?.name ?? l.offerSlug;
     if (offer && !p.interestedIn.includes(offer)) p.interestedIn.push(offer);
     if (!p.sources.includes(l.source)) p.sources.push(l.source);
     if (l.at < p.firstSeen) p.firstSeen = l.at;
     if (l.at > p.lastActivity) p.lastActivity = l.at;
-    p.ghlContactId ??= l.ghlContactId;
+    p.phone ??= l.phone;
     map.set(k, p);
   }
   for (const o of orders) {
     const k = key(o.contact.email);
-    const p = map.get(k) ?? { email: o.contact.email, name: o.contact.name, phone: o.contact.phone, ghlContactId: o.contact.ghlContactId, stage: "inquiry", derived: true, offers: [], interestedIn: [], sources: [], firstSeen: o.createdAt, lastActivity: o.createdAt, paidPHP: 0, balancePHP: 0, orders: [], leads: [] };
+    const p = map.get(k) ?? { email: o.contact.email, name: o.contact.name, phone: o.contact.phone, stage: "inquiry", derived: true, offers: [], interestedIn: [], sources: [], firstSeen: o.createdAt, lastActivity: o.createdAt, paidPHP: 0, balancePHP: 0, orders: [], leads: [] };
     p.orders.push(o);
     p.phone ??= o.contact.phone;
-    p.ghlContactId ??= o.contact.ghlContactId;
     if (o.status !== "cancelled") {
       if (!p.offers.includes(o.offerName)) p.offers.push(o.offerName);
       p.paidPHP += o.amountPaidPHP;
