@@ -2,13 +2,13 @@ import { describe, it, expect, beforeEach, vi, afterEach } from "vitest";
 import { createOrder } from "@/lib/orders";
 import { markPaid } from "@/lib/markPaid";
 import { orderToken, orderTokenValid, welcomeLink, DOWNLOADS } from "@/lib/downloads";
-import { upsertContact } from "@/lib/emailoctopus";
+import { upsertContact, resetListCache } from "@/lib/emailoctopus";
 import { getOffer } from "@/config/offers";
 import { useMemStore } from "./helpers";
 
 describe("Come Home to Yourself", () => {
   beforeEach(() => useMemStore());
-  afterEach(() => { vi.unstubAllEnvs(); vi.restoreAllMocks(); });
+  afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); vi.restoreAllMocks(); resetListCache(); });
 
   it("is priced in offers.ts and hidden from /start", () => {
     const o = getOffer("come-home")!;
@@ -62,5 +62,20 @@ describe("Come Home to Yourself", () => {
     expect(r.ok).toBe(false);
     expect(r.error).toContain("401");
     vi.unstubAllGlobals();
+  });
+
+  it("finds her list by itself when no list id is set (the biggest one)", async () => {
+    vi.stubEnv("EMAILOCTOPUS_API_KEY", "k");
+    vi.stubEnv("EMAILOCTOPUS_LIST_ID", "");
+    const urls: string[] = [];
+    vi.stubGlobal("fetch", vi.fn(async (url: string) => {
+      urls.push(url);
+      if (url.endsWith("/lists?limit=100")) return new Response(JSON.stringify({ data: [{ id: "small", counts: { subscribed: 3 } }, { id: "main", name: "Libni", counts: { subscribed: 7183 } }] }), { status: 200 });
+      return new Response("{}", { status: 200 });
+    }));
+    expect((await upsertContact({ email: "a@b.co", tags: { x: true } })).ok).toBe(true);
+    expect((await upsertContact({ email: "c@d.co" })).ok).toBe(true);
+    expect(urls.filter((u) => u.endsWith("/lists?limit=100"))).toHaveLength(1); // looked up once
+    expect(urls.filter((u) => u.endsWith("/lists/main/contacts"))).toHaveLength(2);
   });
 });

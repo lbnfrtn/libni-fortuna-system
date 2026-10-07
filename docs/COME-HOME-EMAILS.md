@@ -16,9 +16,9 @@ Don't build an "abandoned checkout" automation in EmailOctopus: the site already
 
 ## One-time setup in EmailOctopus
 
-1. **List** — use the list you already send from (or create one). Open it → **Settings** → copy the **List ID**.
-2. **API key** — your name (top right) → **Integrations & API** → **API keys** → **Create key**. Name it `libni.co`.
-3. Put both into Vercel as `EMAILOCTOPUS_API_KEY` and `EMAILOCTOPUS_LIST_ID` (Production), then redeploy. Until then the site only *logs* what it would send to EmailOctopus — sales and downloads still work.
+1. **API key** — your name (top right) → **Integrations & API** → **API keys** → **Create key**. Name it `libni.co`. ✅ Done 2026-10-08 (saved in Vercel as `EMAILOCTOPUS_API_KEY`).
+2. **List** — nothing to do. EmailOctopus's new app hides list ids, so the site finds your list (your Contacts) by itself. (`EMAILOCTOPUS_LIST_ID` in Vercel would override it, only needed if you ever have several lists.)
+3. Without the key the site only *logs* what it would send to EmailOctopus — sales and downloads work either way.
 4. **Field** — the site creates the `ComeHomeLink` field itself on the first sale. (Or make it now: list → **Fields** → add a text field, tag `ComeHomeLink`.)
 5. **Automation** — **Automations** → **Create automation** → trigger **"Contact tag added"** → tag `come-home-buyer` → add the emails below with a **Delay** before each. Turn it **on** before the first sale (automations only catch tags added while they're active).
 
