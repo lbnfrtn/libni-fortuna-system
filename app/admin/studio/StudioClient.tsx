@@ -525,7 +525,8 @@ export default function StudioClient({ groups, initial, storage, direct }: { gro
       <aside className="st-side">
         <div className="st-brand">
           <h1>Studio</h1>
-          <a href="/" target="_blank" rel="noreferrer">View site ↗</a>
+          <a href="/admin">‹ Admin</a>
+          <a href="/" target="_blank" rel="noreferrer" style={{ marginLeft: 14 }}>View site ↗</a>
         </div>
         <div className="st-search">
           <Icon name="search" />
