@@ -2,6 +2,7 @@ import type { Instalment, Order, PaymentMethod, PaymentPlanType } from "@/lib/ty
 import { getOffer } from "@/config/offers";
 import { store } from "@/lib/store";
 import { createInvoice } from "@/lib/xendit";
+import { welcomeLink } from "@/lib/downloads";
 import {
   addMonths,
   instalmentExternalId,
@@ -27,10 +28,6 @@ export interface CreateOrderInput {
   /** Override methods (rare). */
   methods?: PaymentMethod[];
   now?: number;
-}
-
-function baseUrl(): string {
-  return (process.env.APP_BASE_URL || "http://localhost:4310").replace(/\/$/, "");
 }
 
 /** Build the instalment schedule (amounts + due dates) for a plan. No I/O. */
@@ -113,7 +110,7 @@ export async function createOrder(input: CreateOrderInput): Promise<Order> {
     description:
       instalments.length > 1 ? `${description} — payment 1 of ${instalments.length}` : description,
     methods,
-    successRedirectUrl: `${baseUrl()}/welcome/${offer.slug}?o=${encodeURIComponent(id)}`,
+    successRedirectUrl: welcomeLink({ id, offerSlug: offer.slug }),
   });
   first.invoiceUrl = inv.invoiceUrl;
   first.xenditInvoiceId = inv.xenditInvoiceId;
@@ -155,7 +152,7 @@ export async function generateInstalmentLink(orderId: string, n: number): Promis
     payerEmail: order.contact.email,
     description: `${order.description} — payment ${n} of ${order.instalments.length}`,
     methods: offer.methods,
-    successRedirectUrl: `${baseUrl()}/welcome/${offer.slug}?o=${encodeURIComponent(order.id)}`,
+    successRedirectUrl: welcomeLink(order),
   });
   inst.invoiceUrl = inv.invoiceUrl;
   inst.xenditInvoiceId = inv.xenditInvoiceId;

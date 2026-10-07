@@ -53,6 +53,27 @@ export const OFFERS: Record<string, Offer> = {
     hideFromStart: true,
   },
 
+  // The workbook + guided meditation, sold at /come-home. Paying unlocks the
+  // download page; buyers are tagged in EmailOctopus, which runs the follow-up
+  // letters toward Project Me and 1:1 (docs/COME-HOME-EMAILS.md).
+  "come-home": {
+    slug: "come-home",
+    name: "Come Home to Yourself",
+    blurb: "The workbook and guided meditation — five practices to come back to yourself.",
+    track: "consumer",
+    journey: "A",
+    pricePHP: 299,
+    allowPayInFull: true,
+    allowInstalments: false,
+    allowDeposit: false,
+    methods: ["GCASH", "PAYMAYA", "QRPH", "CREDIT_CARD"],
+    onboardingPack: "custom",
+    // TODO(Libni): refund line for a digital download — not set yet, so none is shown at checkout.
+    hideFromStart: true,
+    welcomePath: "/come-home/welcome",
+    emailOctopus: { started: "come-home-checkout", paid: "come-home-buyer", linkField: "ComeHomeLink" },
+  },
+
   "private-studio": {
     slug: "private-studio",
     name: "Private Studio Sessions",

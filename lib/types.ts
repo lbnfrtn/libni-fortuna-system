@@ -76,6 +76,10 @@ export interface Offer {
    * the approved one-liner here and it appears automatically.
    */
   refundNote?: string;
+  /** Where the buyer lands after paying, instead of /welcome/<slug> (digital products have their own page). */
+  welcomePath?: string;
+  /** EmailOctopus tags for this offer: `started` when checkout begins, `paid` when payment clears (the paid tag starts her automation). */
+  emailOctopus?: { started: string; paid: string; linkField?: string };
 }
 
 export type OrderStatus =

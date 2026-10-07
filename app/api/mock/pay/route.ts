@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { store } from "@/lib/store";
 import { markPaid } from "@/lib/markPaid";
+import { welcomeLink } from "@/lib/downloads";
 
 export const runtime = "nodejs";
 
@@ -36,6 +37,6 @@ export async function POST(req: Request) {
   return NextResponse.json({
     ok: true,
     fullyPaid: result.fullyPaid,
-    redirect: `/welcome/${order.offerSlug}?o=${encodeURIComponent(order.id)}`,
+    redirect: welcomeLink(order).replace(/^https?:\/\/[^/]+/, ""),
   });
 }

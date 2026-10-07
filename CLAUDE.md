@@ -8,6 +8,7 @@ Libni's website **and** her whole back office: leads, a Dubsado-style CRM (pipel
 ## Non-negotiables
 - **Never switch to live payment keys without Libni.** Live Xendit keys need her logins. Test mode (mock Xendit, mock-logging mail, file store) must always keep working with no keys.
 - **The site sends its own letters (Libni's decision, 2026-09-29).** `lib/mail.ts` (Resend, mock-logs without `RESEND_API_KEY`) is the only place email leaves the app; `lib/funnel.ts` holds the sequences, enrolments and unsubscribes, edited by Libni at `/admin/email`. Enrolment happens from what people do (`lib/lead.ts`, `lib/markPaid.ts`, `/api/powerhour`, the reminders cron); paying stops pre-sale nudges, a hand-set pipeline stage stops application nudges. Never send from anywhere else, and never send to a suppressed address.
+- **EmailOctopus is Libni's mailing list (her decision, 2026-10-08).** `lib/emailoctopus.ts` only adds/tags contacts (mock-logs without `EMAILOCTOPUS_API_KEY` + `EMAILOCTOPUS_LIST_ID`) and never blocks a sale; her automations there run off the tags (`come-home-checkout`, `come-home-buyer`, field `ComeHomeLink`). The site still sends its own receipts/delivery letters. Copy for her automation: `docs/COME-HOME-EMAILS.md`.
 - **`markPaid` is the one place a payment becomes real.** It must stay idempotent. Both the Xendit webhook and the EA's manual Verify go through it.
 - **`LF-` prefix + Xendit Invoices only.** This keeps the shared Xendit account from colliding with Project Me (`pm-`, subscriptions). Don't use the subscription/`/sessions` API here.
 - **Prices live only in `config/offers.ts`.** `null` price or `waitlistOnly` = waitlist. Don't hardcode amounts elsewhere.
@@ -33,7 +34,8 @@ npm run dev        # http://localhost:4310
 - `lib/content.ts` + `config/site-slots.ts` + `config/content-options.ts` — everything Libni edits in `/admin/studio` (photos, engagements with details/photos/“show on”, stories, press, links incl. Calendly + Instagram feed)
 - `lib/instagram.ts` — latest posts via the Behold feed link; `app/components/Engagements.tsx` — expandable engagement rows, year accordion, last gathering, photo marquee
 - `app/` — `/start`, `/apply/[offer]`, `/desk`(+`/import`), `/pay/[id]`, `/welcome/[offer]`, `/mock-pay`, `app/api/*`
-- `docs/` — MESSAGES, SOPs, TEMPLATES, GO-LIVE
+- `/come-home` — the ₱299 workbook + meditation (offer `come-home`); paying unlocks `/come-home/welcome?o=&t=` (token = `lib/downloads.ts` `orderToken`, also used by `welcomeLink()` for every offer's post-payment link). Files live in `public/dl/<random folder>/` — never link that folder anywhere public.
+- `docs/` — MESSAGES, SOPs, TEMPLATES, GO-LIVE, COME-HOME-EMAILS
 
 ## Brand voice (anything client-facing)
 Personal, warm, grounded, honest, speaks to "you". Never generic coaching-marketing. Core line: *Come home to yourself.*

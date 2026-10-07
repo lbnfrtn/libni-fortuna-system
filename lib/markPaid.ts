@@ -4,6 +4,9 @@ import { notifyTeam } from "@/lib/notify";
 import { tag } from "@/lib/tags";
 import { enrol, stopOnPaid } from "@/lib/funnel";
 import { peso } from "@/lib/util";
+import { welcomeLink } from "@/lib/downloads";
+import { upsertContact } from "@/lib/emailoctopus";
+import { getOffer } from "@/config/offers";
 
 export interface PaymentInfo {
   /** Which instalment this payment settles (external_id "#iN" -> n). Defaults 1. */
@@ -69,15 +72,28 @@ export async function markPaid(orderId: string, payment: PaymentInfo): Promise<M
   try {
     await stopOnPaid(order.contact.email);
     if (order.instalments.filter((i) => i.status === "paid").length === 1) {
-      const base = (process.env.APP_BASE_URL || "").replace(/\/$/, "");
       await enrol({
         email: order.contact.email, name: order.contact.name, trigger: tag.paid(order.offerSlug),
-        vars: { offer: order.offerName, welcome_link: `${base}/welcome/${order.offerSlug}?o=${encodeURIComponent(order.id)}`, amount: peso(payment.amountPHP) },
+        vars: { offer: order.offerName, welcome_link: welcomeLink(order), amount: peso(payment.amountPHP) },
       });
     }
   } catch (e) {
     order.events.push({ at: new Date().toISOString(), type: "mail-error", note: `markPaid email: ${e}` });
     await store().put(order);
+  }
+
+  // --- Mailing list: tag the buyer in EmailOctopus (starts her automation there) with their own link. ---
+  const eo = getOffer(order.offerSlug)?.emailOctopus;
+  if (eo && fullyPaid) {
+    const r = await upsertContact({
+      email: order.contact.email, name: order.contact.name,
+      tags: { [eo.paid]: true, [eo.started]: false },
+      fields: eo.linkField ? { [eo.linkField]: welcomeLink(order) } : undefined,
+    });
+    if (!r.ok) {
+      order.events.push({ at: new Date().toISOString(), type: "list-error", note: `EmailOctopus: ${r.error}` });
+      await store().put(order);
+    }
   }
 
   // --- Internal alert for Libni / the EA. ---

@@ -220,6 +220,43 @@ Bring that. We'll start there.
 — Libni`],
   ]),
 
+  // Started checkout but didn't pay. First nudge waits a day, so someone paying
+  // right now never gets a "your link" letter on top of their download.
+  S("checkout-come-home", "Come Home to Yourself · not yet paid", "Someone started checkout for the workbook + meditation and didn't finish. Stops the moment they pay.", ["checkout:come-home"], [
+    [1, "Your workbook is still waiting", `{{first_name}},
+
+You started to get Come Home to Yourself, and I wanted to make sure the link didn't get lost: {{payment_link}}
+
+The moment it clears, your workbook and guided meditation open — and the link comes straight to this inbox.
+
+— Libni`],
+    [3, "The door stays open", `{{first_name}},
+
+I'll leave this here and stop nudging: {{payment_link}}
+
+Whenever the timing is right, it will still be here. Coming home isn't one big moment. It's a choice you make again and again.
+
+— Libni`],
+  ], { stopOnPaid: true }),
+
+  // Only the delivery letter lives here; the follow-up toward Project Me and 1:1
+  // runs in EmailOctopus off the come-home-buyer tag (docs/COME-HOME-EMAILS.md).
+  S("paid-come-home", "Come Home to Yourself · your download", "The workbook + meditation is bought. Sends their personal download link straight away.", ["paid:come-home"], [
+    [0, "Your workbook and meditation are here", `{{first_name}},
+
+Welcome home.
+
+Your workbook and guided meditation are waiting for you here: {{welcome_link}}
+
+Keep this email. The link is yours, and it works whenever you need to come back — on the good days, and on the hard days, too.
+
+Before you begin: find 15 to 20 quiet minutes. Phone on silent. Something warm to drink. Listen to the meditation first, then let the pen move. One practice at a time.
+
+Go slow. Be gentle. Be honest.
+
+— Libni`],
+  ]),
+
   S("paid-becoming", "The Becoming · you're in", "The Becoming is paid (or the first instalment is).", ["paid:the-becoming"], [
     [0, "Welcome to The Becoming, {{first_name}}", `{{first_name}},
 
