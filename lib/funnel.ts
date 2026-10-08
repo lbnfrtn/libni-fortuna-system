@@ -261,17 +261,15 @@ Go slow. Be gentle. Be honest.
 
 Yesterday you did something small that isn't small. You chose to come home to yourself.
 
-If you haven't opened your workbook yet, here it is again: {{welcome_link}}
+If you do one thing this week, let it be this: find 15 quiet minutes, put your headphones in, and press play on the guided meditation. It walks you gently through all five practices — you don't have to figure anything out, you just let my voice carry you home.
 
-Tonight, start with Practice 1 — Arrive in Your Body. Not all five. One.
+Your meditation and workbook are right here whenever you're ready: {{welcome_link}}
 
-Feet flat on the floor. One hand on your heart, one on your belly. Breathe in slowly through your nose, and let the out-breath be a little longer than the in-breath. Five times. Let your shoulders drop. Then softly tell yourself: "I'm here. I've arrived."
+Afterwards, if the pen wants to move, open the workbook and let it. Not all five practices. Just one.
 
-That's the whole practice. Coming home doesn't start with figuring it all out. It starts with arriving.
+Coming home doesn't start with figuring it all out. It starts with arriving.
 
-— Libni
-
-P.S. If you'd rather be guided, press play on the meditation first and let the pen move after.`],
+— Libni`],
     [2, "The little you is still in there", `{{first_name}},
 
 So many of the ways we abandon ourselves were learned when we were small.
@@ -284,7 +282,7 @@ Practice 2 is where you go back for them. Kneel down to their level and tell the
 
 If heavy memories come up, you don't have to go there alone. Just reply to this — I read every one.
 
-Your pages are here: {{welcome_link}}
+If you'd like to be guided through it, the meditation holds this practice too. It's here whenever you need it: {{welcome_link}}
 
 — Libni`],
     [3, "What happens after day seven", `{{first_name}},
