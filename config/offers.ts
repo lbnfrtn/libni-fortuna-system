@@ -62,7 +62,7 @@ export const OFFERS: Record<string, Offer> = {
     blurb: "The workbook and guided meditation — five practices to come back to yourself.",
     track: "consumer",
     journey: "A",
-    pricePHP: 299,
+    pricePHP: 499,
     allowPayInFull: true,
     allowInstalments: false,
     allowDeposit: false,

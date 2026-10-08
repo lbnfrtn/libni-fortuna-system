@@ -12,7 +12,7 @@ describe("Come Home to Yourself", () => {
 
   it("is priced in offers.ts and hidden from /start", () => {
     const o = getOffer("come-home")!;
-    expect(o.pricePHP).toBe(299);
+    expect(o.pricePHP).toBe(499);
     expect(o.hideFromStart).toBe(true);
     expect(DOWNLOADS["come-home"]).toHaveLength(2);
   });
@@ -27,7 +27,7 @@ describe("Come Home to Yourself", () => {
 
   it("sends buyers to its own welcome page; other offers keep /welcome/<slug>", async () => {
     const o = await createOrder({ offerSlug: "come-home", planType: "full", contact: { name: "Maria", email: "m@example.com" }, createdBy: "website" });
-    expect(o.totalPHP).toBe(299);
+    expect(o.totalPHP).toBe(499);
     expect(welcomeLink(o)).toContain(`/come-home/welcome?o=${encodeURIComponent(o.id)}&t=${orderToken(o.id)}`);
     expect(welcomeLink({ id: "LF-ignite-x-1", offerSlug: "ignite" })).toContain("/welcome/ignite?o=LF-ignite-x-1&t=");
   });
@@ -41,7 +41,7 @@ describe("Come Home to Yourself", () => {
       return new Response("{}", { status: 200 });
     }));
     const o = await createOrder({ offerSlug: "come-home", planType: "full", contact: { name: "Maria Santos", email: "Maria@Example.com" }, createdBy: "website" });
-    await markPaid(o.id, { amountPHP: 299, method: "gcash", paidAt: new Date().toISOString(), eventId: "evt-ch", channel: "xendit" });
+    await markPaid(o.id, { amountPHP: 499, method: "gcash", paidAt: new Date().toISOString(), eventId: "evt-ch", channel: "xendit" });
     const put = calls.find((c) => c.method === "PUT");
     expect(put?.url).toBe("https://api.emailoctopus.com/lists/list-1/contacts");
     expect(put?.body).toMatchObject({

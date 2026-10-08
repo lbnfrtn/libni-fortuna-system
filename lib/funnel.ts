@@ -728,7 +728,7 @@ export async function saveSequence(seq: Sequence): Promise<FunnelData> {
 /** Preview one letter with sample values — for “send me a test”. */
 export async function sendTest(to: string, subject: string, body: string, name = "Libni"): Promise<{ ok: boolean; mock?: boolean; error?: string }> {
   // Sample values for the "send me a test" preview only. Real letters use each buyer's own links.
-  const vars = await baseVars(name, { offer: "Come Home to Yourself", payment_link: `${SITE()}/pay/LF-example`, welcome_link: `${SITE()}/come-home/welcome?o=LF-example&t=sample`, amount: "₱299", due: "Friday" });
+  const vars = await baseVars(name, { offer: "Come Home to Yourself", payment_link: `${SITE()}/pay/LF-example`, welcome_link: `${SITE()}/come-home/welcome?o=LF-example&t=sample`, amount: "₱499", due: "Friday" });
   const r = await sendMail({ to, subject: render(subject, vars), text: render(body, vars), unsubscribeUrl: unsubscribeUrl(to) });
   const d = await getFunnel();
   d.log.push({ at: new Date().toISOString(), to, subject: render(subject, vars), kind: "test", ok: r.ok, mock: r.mock, error: r.error });
