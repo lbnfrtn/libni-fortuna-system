@@ -10,9 +10,11 @@
 | They don't pay | the site (Resend) | "Your workbook is still waiting" (1 day later), "The door stays open" (3 days later). Stops the moment they pay. Edit at `/admin/email`. |
 | They pay | the site (Resend) | **"Your workbook and meditation are here"** with their personal download link, straight away. Edit at `/admin/email`. |
 | They pay | the site → EmailOctopus | Tag `come-home-buyer` added (`come-home-checkout` removed), and their personal link saved in the field `ComeHomeLink` |
-| Days 1–30 after buying | **EmailOctopus automation** | The 7 letters below: practice → Project Me → Power Hour → The Becoming |
+| Days 1–30 after buying | **the site (Resend)** | The 7 letters below: practice → Project Me → Power Hour → The Becoming. All in the `paid-come-home` sequence in `lib/funnel.ts`. Edit at `/admin/email`. |
 
-Don't build an "abandoned checkout" automation in EmailOctopus: the site already sends those two nudges, so they'd get doubles.
+**Decision 2026-10-08 (Libni): the site sends the whole journey, not EmailOctopus.** The free EmailOctopus plan kept blocking us (5 steps per automation, 3 automations total), and the site's own sender has no limits and already emails buyers. So all 7 follow-up letters now live in the site's `paid-come-home` sequence, days 1/3/6/9/14/21/30 after purchase. EmailOctopus still collects every buyer (tag `come-home-buyer`) for broadcasts. The two draft automations built in EmailOctopus earlier are kept **OFF** so nothing double-sends — leave them off, or delete them.
+
+The EmailOctopus automation copy is kept below only as a reference/backup in case Libni ever upgrades and wants it there instead.
 
 ## One-time setup in EmailOctopus
 

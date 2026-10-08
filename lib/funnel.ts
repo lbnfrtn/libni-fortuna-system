@@ -239,9 +239,11 @@ Whenever the timing is right, it will still be here. Coming home isn't one big m
 — Libni`],
   ], { stopOnPaid: true }),
 
-  // Only the delivery letter lives here; the follow-up toward Project Me and 1:1
-  // runs in EmailOctopus off the come-home-buyer tag (docs/COME-HOME-EMAILS.md).
-  S("paid-come-home", "Come Home to Yourself · your download", "The workbook + meditation is bought. Sends their personal download link straight away.", ["paid:come-home"], [
+  // The full Come Home journey (Libni's decision, 2026-10-08): the site sends all of it —
+  // delivery, two practice nudges, Project Me, Power Hour, then The Becoming, then a day-30
+  // note. (EmailOctopus still collects every buyer via the come-home-buyer tag for broadcasts;
+  // its draft automations are kept OFF so nothing double-sends.) Days after purchase shown in [].
+  S("paid-come-home", "Come Home to Yourself · the journey", "The workbook + meditation is bought: delivery, then practice nudges, then Project Me and 1:1 over ~30 days.", ["paid:come-home"], [
     [0, "Your workbook and meditation are here", `{{first_name}},
 
 Welcome home.
@@ -255,6 +257,110 @@ Before you begin: find 15 to 20 quiet minutes. Phone on silent. Something warm t
 Go slow. Be gentle. Be honest.
 
 — Libni`],
+    [1, "Did you arrive?", `{{first_name}},
+
+Yesterday you did something small that isn't small. You chose to come home to yourself.
+
+If you haven't opened your workbook yet, here it is again: {{welcome_link}}
+
+Tonight, start with Practice 1 — Arrive in Your Body. Not all five. One.
+
+Feet flat on the floor. One hand on your heart, one on your belly. Breathe in slowly through your nose, and let the out-breath be a little longer than the in-breath. Five times. Let your shoulders drop. Then softly tell yourself: "I'm here. I've arrived."
+
+That's the whole practice. Coming home doesn't start with figuring it all out. It starts with arriving.
+
+— Libni
+
+P.S. If you'd rather be guided, press play on the meditation first and let the pen move after.`],
+    [2, "The little you is still in there", `{{first_name}},
+
+So many of the ways we abandon ourselves were learned when we were small.
+
+The little one who learned to be good so they'd be loved. Who learned to be quiet so there'd be peace. Who learned they had to be okay so everyone else could be okay.
+
+That little one isn't gone. They're in the way you over-explain, over-give, and wait to be chosen. And the person they've been waiting for is you.
+
+Practice 2 is where you go back for them. Kneel down to their level and tell them: "I see you. You didn't do anything wrong. You don't have to earn my love. I'm here now." Then make them one small promise you can actually keep this week.
+
+If heavy memories come up, you don't have to go there alone. Just reply to this — I read every one.
+
+Your pages are here: {{welcome_link}}
+
+— Libni`],
+    [3, "What happens after day seven", `{{first_name}},
+
+By now you might be near the end of your 7-day tracker. Or you might still be on Practice 1. Both are perfect.
+
+Before the week ends, I want you to hear this: coming home isn't one big moment where everything suddenly feels better. Some days you'll feel so close to yourself. Other days the old stories will come back loud.
+
+That doesn't mean you're back at the start. It means you're human. And now you know the way back.
+
+What makes the difference isn't one perfect week. It's having somewhere to come back to, every day.
+
+That's why I made Project Me. It's a pocket sanctuary. Tell it how you feel and it walks you through it: something to listen to, a way to breathe, something to understand, a place to write it out.
+
+Inside: daily practices matched to how you feel, breathwork and guided audio, journaling prompts, and The Circle — a monthly live call. It's ₱1,499 for three months.
+
+See Project Me: https://projectme.libni.co
+
+— Libni`],
+    [3, "You don't need a two-hour ritual", `{{first_name}},
+
+You don't need a two-hour ritual to come home to yourself.
+
+You need something you'll actually open at 11 p.m. when it's heavy.
+
+Project Me is that: a daily practice built around how you feel right now, with breathwork, guided audio, reflection prompts and a monthly circle. Small, soft, consistent. The kind of support that stays.
+
+If these five practices helped you feel even a little closer to yourself, this is how you keep that going on the ordinary days, not just the brave ones.
+
+Start Project Me: https://projectme.libni.co
+
+— Libni`],
+    [5, "If something opened", `{{first_name}},
+
+These practices are a doorway. If something opened in you and you'd like someone to walk through it with you, this is the work I love doing.
+
+Not because there's something wrong with you. Because there is so much more of you waiting to be lived.
+
+If you keep circling the same pattern, start with a Power Hour. Ninety minutes, just the two of us. Not a discovery call — this is the work. We go straight to what's really underneath, and you leave with clarity and a next step.
+
+Online or in person. You pay, then choose a time that's yours.
+
+Book your Power Hour: {{site}}/programs/ignite
+
+— Libni`],
+    [7, "The deepest work I offer", `{{first_name}},
+
+You have language for your patterns now. You've named the part that's been running the show. You've rewritten the story.
+
+But language isn't the same as freedom. You can name the thing and still be run by it.
+
+The Becoming is my deepest private container. Twelve weeks of sustained 1:1 work with the subconscious, the nervous system and the body. Every week we sit down, you and me, and go to the root. We stop circling the pattern and meet what's underneath, together.
+
+I only take a handful of people into it at a time, so it begins with an application, and then we talk, honestly, about whether it's right.
+
+Read about The Becoming: {{site}}/programs/the-becoming
+
+Not sure which one is right for you? Reply and tell me a little about where you are right now, and we'll figure it out together.
+
+— Libni`],
+    [9, "Come back to these pages", `{{first_name}},
+
+It's been about a month since you started coming home to yourself.
+
+Come back to these pages anytime you need them. On the good days. On the hard days, too: {{welcome_link}}
+
+You can honor who you were and still choose to become someone new.
+
+And whenever you want company on the way:
+
+Every day — Project Me: https://projectme.libni.co
+One focused conversation — Power Hour: {{site}}/programs/ignite
+Twelve weeks, 1:1 — The Becoming: {{site}}/programs/the-becoming
+
+See you on the other side,
+Libni`],
   ]),
 
   S("paid-becoming", "The Becoming · you're in", "The Becoming is paid (or the first instalment is).", ["paid:the-becoming"], [
