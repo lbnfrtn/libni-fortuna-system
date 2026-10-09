@@ -48,9 +48,17 @@ export default function LeadForm({
       return { ...a, [id]: next.join(", ") };
     });
   }
-  // A select answer can redirect the whole application (e.g. “start with a Power Hour first”).
-  const detourIdx = questions.findIndex((q) => q.detour && q.detourOn && answers[q.id] === q.detourOn);
-  const detour = detourIdx >= 0 ? questions[detourIdx].detour : undefined;
+  // A select answer can redirect the application — either a single `detour`/`detourOn`
+  // (Liberate) or one of several `routes` (The Becoming's investment filter).
+  let detourIdx = -1;
+  let detour: { text: string; cta: string; href: string; hard?: boolean } | undefined;
+  for (let i = 0; i < questions.length; i++) {
+    const q = questions[i];
+    const ans = answers[q.id];
+    if (!ans) continue;
+    const r = q.routes?.find((rt) => rt.on === ans) ?? (q.detour && q.detourOn === ans ? q.detour : undefined);
+    if (r) { detourIdx = i; detour = r; break; }
+  }
   // A hard detour ends the form: the questions after it and the Send button disappear.
   const hardStop = !!detour?.hard;
   const shown = hardStop ? questions.slice(0, detourIdx + 1) : questions;
