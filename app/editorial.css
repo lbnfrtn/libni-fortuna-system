@@ -1017,3 +1017,47 @@ a.ed-talk:hover h4 { color: var(--ed-plum); }
   .oo-spot-media { max-width: 100%; }
   .oo-shot { flex-basis: 240px; }
 }
+
+/* ── The Becoming: interactive 12-week journey ───────────────────────── */
+.bj { margin-top: clamp(28px, 4vw, 48px); }
+.bj-rail { position: relative; }
+.bj-rail-track { position: absolute; left: 0; right: 0; top: 10px; height: 1px; background: var(--ed-line); }
+.bj-rail-fill { display: block; height: 100%; background: var(--ed-gold); transition: width .55s cubic-bezier(.2,.7,.2,1); }
+.bj-nodes { position: relative; display: grid; grid-template-columns: repeat(var(--bj-n, 6), minmax(0, 1fr)); gap: 10px; }
+.bj-node { all: unset; cursor: pointer; display: grid; justify-items: start; gap: 9px; }
+.bj-mark { width: 21px; height: 21px; border-radius: 50%; border: 1px solid var(--ed-line); background: var(--ed-ivory); position: relative; z-index: 1; transition: border-color .3s, background .3s, transform .3s, box-shadow .3s; }
+.bj-node.done .bj-mark { border-color: var(--ed-gold); }
+.bj-node.on .bj-mark { border-color: var(--ed-gold); background: var(--ed-gold); transform: scale(1.18); box-shadow: 0 0 0 5px rgba(216,195,154,.2); }
+.bj-node-n { font-family: var(--ed-serif); font-size: 15px; color: var(--ed-muted); transition: color .3s; line-height: 1; }
+.bj-node.on .bj-node-n, .bj-node.done .bj-node-n { color: var(--ed-gold); }
+.bj-node-t { font-family: var(--ed-sans); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: var(--ed-muted); transition: color .3s; }
+.bj-node.on .bj-node-t { color: var(--ed-ink); }
+.bj-node.arr .bj-mark { border-style: dashed; }
+.bj-node.arr.on .bj-mark { border-style: solid; }
+.bj-stage { margin-top: clamp(28px, 3.5vw, 44px); min-height: 180px; }
+.bj-card { max-width: 60ch; animation: bjIn .5s cubic-bezier(.2,.7,.2,1); }
+.bj-card small { font-family: var(--ed-sans); font-size: 10px; letter-spacing: .24em; text-transform: uppercase; color: var(--ed-gold); font-weight: 600; }
+.bj-card h3 { font-size: clamp(30px, 4.2vw, 56px); line-height: 1.03; margin-top: 14px; }
+.bj-card p { margin-top: 16px; font-size: clamp(16px, 1.8vw, 19px); line-height: 1.7; color: var(--ed-muted); }
+@keyframes bjIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .bj-card { animation: none; } .bj-rail-fill { transition: none; } }
+@media (max-width: 860px) {
+  .bj-nodes { grid-auto-flow: column; grid-template-columns: none; grid-auto-columns: minmax(118px, 1fr); overflow-x: auto; padding-bottom: 12px; scrollbar-width: thin; }
+  .bj-node-t { white-space: nowrap; }
+}
+
+/* ── The Becoming: "not for everybody" ───────────────────────────────── */
+.bk-filter { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); gap: clamp(32px, 5vw, 80px); align-items: start; }
+.bk-filter-lede { font-family: var(--ed-serif); font-style: italic; font-size: clamp(20px, 2vw, 27px); line-height: 1.4; color: var(--ed-gold-soft); }
+.bk-cost { list-style: none; margin: clamp(20px, 3vw, 32px) 0 0; padding: 0; display: grid; }
+.bk-cost li { font-family: var(--ed-serif); font-size: clamp(24px, 3vw, 40px); line-height: 1.12; color: var(--ed-ivory); padding: 18px 0; border-top: 1px solid rgba(251,249,246,.16); }
+.bk-cost li:last-child { color: var(--ed-gold); border-bottom: 1px solid var(--ed-gold); }
+.bk-cost li em { font-style: italic; color: var(--ed-gold-soft); }
+.bk-ready { font-family: var(--ed-sans); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: var(--ed-gold); font-weight: 600; }
+@media (max-width: 860px) { .bk-filter { grid-template-columns: 1fr; } }
+
+/* ── The Becoming: why-work-with-me trust strip ──────────────────────── */
+.bk-trust { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(16px, 2.4vw, 36px); margin-top: clamp(24px, 3vw, 40px); border-top: 1px solid var(--ed-line); padding-top: clamp(24px, 3vw, 36px); }
+.bk-trust div b { display: block; font-family: var(--ed-serif); font-size: clamp(28px, 3vw, 44px); line-height: 1; color: var(--ed-plum); }
+.bk-trust div span { display: block; margin-top: 8px; font-family: var(--ed-sans); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--ed-muted); }
+@media (max-width: 720px) { .bk-trust { grid-template-columns: repeat(2, 1fr); gap: 24px 16px; } }

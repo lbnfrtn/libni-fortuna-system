@@ -7,6 +7,7 @@ import { BOOKING } from "@/config/channels";
 import { getContent, storyPhoto } from "@/lib/content";
 import { photoFor, resolveVideo } from "@/config/site-slots";
 import OneOnOneProof from "@/app/components/OneOnOneProof";
+import BecomingJourney, { type JourneyStop } from "@/app/components/BecomingJourney";
 import { ONE_ON_ONE_STORIES, shotsFor } from "@/config/one-on-one-proof";
 
 export const dynamic = "force-dynamic";
@@ -33,6 +34,15 @@ const ROADMAP: { phase: string; weeks: string; title: string; body: string }[] =
   { phase: "05", weeks: "Weeks 11–12", title: "Embodiment", body: "The shift stops being something you remember to do. It’s who you are — and we build the life that can hold her." },
 ];
 
+// The roadmap, as an interactive journey — the five phases plus the arrival as a final stop you can tap through.
+const JOURNEY: JourneyStop[] = [
+  ...ROADMAP,
+  { phase: "12", weeks: "Week 12", title: "The one who was here all along.", body: "Not a new you. By week twelve the shift isn’t something you have to remember to do — it’s who you are. You make decisions from a different place, and the life you’ve built can finally hold her.", arrival: true },
+];
+
+// Real photos from the work, shown now and replaced the moment Libni uploads her own in the Studio.
+const GALLERY_FALLBACK = ["/photos/liberate/session-1.jpg", "/photos/liberate/session-2.jpg", "/photos/liberate/session-3.jpg", "/photos/liberate/inside-8.jpg"];
+
 export default async function TheBecoming() {
   const offer = getOffer("the-becoming")!;
   const p = getProgram("the-becoming")!;
@@ -47,7 +57,8 @@ export default async function TheBecoming() {
 
   // The Becoming's own series — case studies (with an arc) and shorter testimonies (quote only). Separate from the shared stories.
   const hasSeries = content.becomingStories.length > 0;
-  const gallery = ["becoming_gallery_1", "becoming_gallery_2", "becoming_gallery_3", "becoming_gallery_4"].map((id) => content.photos[id]).filter(Boolean);
+  const uploadedGallery = ["becoming_gallery_1", "becoming_gallery_2", "becoming_gallery_3", "becoming_gallery_4"].map((id) => content.photos[id]).filter(Boolean);
+  const gallery = uploadedGallery.length ? uploadedGallery : GALLERY_FALLBACK;
   const portal = content.photos.becoming_portal;
 
   // Applications go to Libni's Tally form for now (her call, 2026-10-09); opens in a new tab.
@@ -77,6 +88,30 @@ export default async function TheBecoming() {
           </div>
           <div className="ed-off1 ed-copy ed-reveal" style={{ transitionDelay: ".15s" }}>
             {(p.longCopy ?? []).map((para, i) => <p key={i} style={{ fontSize: "clamp(17px, 1.9vw, 20px)" }}>{tx(para)}</p>)}
+          </div>
+        </div>
+      </section>
+
+      {/* WHY I CREATED THIS — meet Libni, why work with me */}
+      <section className="ed-sec ed-linen">
+        <div className="ed-wrap ed-split ed-split-top">
+          <div className="ed-c5 ed-reveal">
+            <div className="ed-figure ed-figure-sticky ed-figure-34"><img src={photo("becoming_about", "/photos/liberate-libni-table.jpg")} alt="Libni Fortuna" /></div>
+          </div>
+          <div className="ed-off1 ed-stack ed-reveal" style={{ transitionDelay: ".15s" }}>
+            <p className="ed-eyebrow">Why I created The Becoming</p>
+            <h2 className="ed-display-md">I built this for the work I love most — guiding people, all the way through.</h2>
+            <div className="ed-copy">
+              <p>I&rsquo;ve been a lot of people. A daughter, a mother, a single mom, a corporate leader, an entrepreneur — a woman who has built things, lost things, questioned things, and had to start again. I don&rsquo;t do this work because I have life figured out. I do it because I&rsquo;ve lived enough versions of myself to know what happens when we keep forcing ourselves into a life we&rsquo;ve already outgrown.</p>
+              <p>I created The Becoming because what I really wanted was to <em>guide</em> people — not from a stage, not for a single hour, but all the way through. Twelve weeks, just us, going to the root together. It&rsquo;s the deepest, most personal work I offer, and the work I was made for.</p>
+            </div>
+            <p className="ed-pull">I don&rsquo;t want to sit above the people I work with. I want to sit across from them.</p>
+            <div className="bk-trust">
+              <div><b>1,000+</b><span>Lives impacted</span></div>
+              <div><b>TEDx</b><span>Speaker · 2024</span></div>
+              <div><b>2023</b><span>The work began</span></div>
+              <div><b>A few</b><span>1:1 clients at a time</span></div>
+            </div>
           </div>
         </div>
       </section>
@@ -140,21 +175,9 @@ export default async function TheBecoming() {
         <div className="ed-wrap">
           <div className="ed-head ed-reveal">
             <div><p className="ed-eyebrow">The roadmap</p><h2 className="ed-display">Twelve weeks, five spaces.</h2></div>
-            <p className="ed-lede ed-muted">The order matters; the pace is yours. Every week goes a little deeper than the last.</p>
+            <p className="ed-lede ed-muted">The order matters; the pace is yours. Move through it — hover or tap each stop to feel where the work goes.</p>
           </div>
-          <div className="bk-road ed-reveal">
-            {ROADMAP.map((r) => (
-              <div className="bk-phase" key={r.phase}>
-                <small>{r.phase} · {r.weeks}</small>
-                <h3>{r.title}</h3>
-                <p>{r.body}</p>
-              </div>
-            ))}
-          </div>
-          <div className="bk-arrival ed-reveal">
-            <div><small>Week 12 · The arrival</small><h3>Not a new you. The one who was here all along.</h3></div>
-            <p>By week twelve the shift isn’t something you have to remember to do. It’s who you are.</p>
-          </div>
+          <BecomingJourney stops={JOURNEY} />
         </div>
       </section>
 
@@ -168,6 +191,48 @@ export default async function TheBecoming() {
           </div>
         </section>
       )}
+
+      {/* PROOF — moved up, right under the roadmap */}
+      <section className="ed-sec ed-linen" id="in-their-words">
+        <div className="ed-wrap">
+          <OneOnOneProof
+            stories={ONE_ON_ONE_STORIES}
+            shots={shotsFor("becoming")}
+            eyebrow="From 1:1 clients"
+            title={<>Twelve weeks, just us. <span className="ed-plum-text">Here&rsquo;s what it did for them.</span></>}
+          />
+        </div>
+      </section>
+
+      {/* NOT FOR EVERYBODY — the honest filter */}
+      <section className="ed-sec ed-plum">
+        <div className="ed-wrap">
+          <div className="bk-filter">
+            <div className="ed-reveal">
+              <p className="ed-eyebrow">An honest word before you apply</p>
+              <h2 className="ed-display" style={{ marginTop: 14 }}>This work isn&rsquo;t for everybody.</h2>
+              <div className="ed-copy" style={{ color: "rgba(251,249,246,.82)", marginTop: 24 }}>
+                <p>And I say that with love. This is my deepest container, and holding it takes a lot of me — so I choose carefully who I take in. It has to be a yes on both sides.</p>
+                <p>Because this work will push you to choose <em>you</em>. And choosing yourself has a cost.</p>
+              </div>
+            </div>
+            <div>
+              <ul className="bk-cost">
+                <li className="ed-reveal">You may lose some people.</li>
+                <li className="ed-reveal" style={{ transitionDelay: ".1s" }}>You may outgrow rooms you used to belong to.</li>
+                <li className="ed-reveal" style={{ transitionDelay: ".2s" }}>You may disappoint the version of you that kept everyone comfortable.</li>
+                <li className="ed-reveal" style={{ transitionDelay: ".3s" }}>And you will finally <em>choose you.</em></li>
+              </ul>
+            </div>
+          </div>
+          <p className="bk-filter-lede ed-reveal" style={{ marginTop: "clamp(32px, 4vw, 56px)", maxWidth: "72ch" }}>
+            That&rsquo;s not the work going wrong. That&rsquo;s the work. The Becoming is for those who are ready — ready to tell the truth, ready to stop performing okay, ready for the next step of who they&rsquo;re becoming.
+          </p>
+          <div className="ed-reveal" style={{ marginTop: 32 }}>
+            <EdCtas ctas={[{ ...apply, variant: "gold" }]} />
+          </div>
+        </div>
+      </section>
 
       {/* FOR YOU IF */}
       <section className="ed-sec ed-linen">
@@ -263,17 +328,6 @@ export default async function TheBecoming() {
               <p className="ed-off1 ed-note">{offer.refundNote}</p>
             </div>
           )}
-        </div>
-      </section>
-
-      <section className="ed-sec ed-linen" id="in-their-words">
-        <div className="ed-wrap">
-          <OneOnOneProof
-            stories={ONE_ON_ONE_STORIES}
-            shots={shotsFor("becoming")}
-            eyebrow="From 1:1 clients"
-            title={<>Twelve weeks, just us. <span className="ed-plum-text">Here&rsquo;s what it did for them.</span></>}
-          />
         </div>
       </section>
 
