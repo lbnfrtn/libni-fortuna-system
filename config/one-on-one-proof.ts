@@ -60,6 +60,12 @@ export const ONE_ON_ONE_STORIES: ProofStory[] = [
     quote: "God gave me you coz He knew I needed and deserved the best support from an angel like you! Thank you Lib! It's all worth it. Finding light in the dark is a gift. I'm at peace with my new found freedom! What would I have done without? You're a blessing!",
     poster: "/photos/one-on-one/posters/nadia.jpg",
   },
+  // Transcribed from her video (Downloads › "Dane Mentorship Landscape.mp4", 2026-10-09); `vimeo` once uploaded.
+  {
+    id: "dane", name: "Dane", role: "1:1 mentorship",
+    quote: "Before I met her, I was in this state where I really didn't know what to do. I was at a point where I didn't have any hope. And then I met her — her energy, how she talks to me as if she knew me already. Our first conversation together, it was like she knew me already. Really, just thank you. Thank you for changing lives. Just continue to do the work, continue the mission — because a lot of people need it.",
+    poster: "/photos/one-on-one/posters/dane.jpg", driveFile: "Dane Mentorship Landscape.mp4",
+  },
 ];
 
 /** DM screenshots — “as they wrote it”. Paths under public/photos/one-on-one/dms. */

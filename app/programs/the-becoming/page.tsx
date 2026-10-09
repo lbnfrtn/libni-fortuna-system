@@ -65,6 +65,7 @@ const WHEEL_OUTCOMES = [
 const FACES = [
   ["/photos/one-on-one/posters/jana.jpg", "Jana"], ["/photos/one-on-one/posters/zyra.jpg", "Zyra"], ["/photos/one-on-one/posters/hannah.jpg", "Hannah"],
   ["/photos/one-on-one/posters/yokie.jpg", "Yokie"], ["/photos/one-on-one/posters/mika.jpg", "Mika"], ["/photos/one-on-one/posters/nadia.jpg", "Nadia"],
+  ["/photos/one-on-one/posters/dane.jpg", "Dane"],
 ];
 
 export default async function TheBecoming() {
@@ -107,7 +108,7 @@ export default async function TheBecoming() {
         <div className="ed-wrap">
           <div className="bk-faces ed-reveal">
             <div className="bk-faces-row">{FACES.map(([src, name]) => <img key={name} src={src} alt={name} loading="lazy" />)}</div>
-            <p>Jana, Zyra, Hannah, Yokie, Mika, Nadia.<span>Real 1:1 clients · in their own words below</span></p>
+            <p>Jana, Zyra, Hannah, Yokie, Mika, Nadia, Dane.<span>Real 1:1 clients · in their own words below</span></p>
             <Link href="#in-their-words" className="ed-link">Hear from them</Link>
           </div>
         </div>
