@@ -1,6 +1,8 @@
 import { SitePage } from "@/app/components/Chrome";
 import { EdHero, EdWords, tx } from "@/app/components/Editorial";
 import IgniteClient from "./IgniteClient";
+import OneOnOneProof from "@/app/components/OneOnOneProof";
+import { ONE_ON_ONE_STORIES, shotsFor } from "@/config/one-on-one-proof";
 import { getProgram } from "@/config/programs";
 import { getOffer } from "@/config/offers";
 import { peso } from "@/lib/util";
@@ -57,6 +59,16 @@ export default async function IgnitePage() {
           <div className="ed-wrap"><EdWords eyebrow="In their words" items={[p.testimonial]} /></div>
         </section>
       )}
+
+      <section className="ed-sec ed-linen" id="stories">
+        <div className="ed-wrap">
+          <OneOnOneProof
+            stories={ONE_ON_ONE_STORIES}
+            shots={shotsFor("power-hour")}
+            title={<>One honest conversation <span className="ed-plum-text">can move what&rsquo;s been stuck.</span></>}
+          />
+        </div>
+      </section>
 
       {p.faq && p.faq.length > 0 && (
         <section className="ed-sec ed-ivory">

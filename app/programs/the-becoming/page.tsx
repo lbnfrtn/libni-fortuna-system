@@ -7,6 +7,8 @@ import { BOOKING } from "@/config/channels";
 import { getContent, storyPhoto } from "@/lib/content";
 import { photoFor, resolveVideo } from "@/config/site-slots";
 import BecomingWords from "./BecomingWords";
+import OneOnOneProof from "@/app/components/OneOnOneProof";
+import { ONE_ON_ONE_STORIES, shotsFor } from "@/config/one-on-one-proof";
 
 export const dynamic = "force-dynamic";
 
@@ -282,6 +284,17 @@ export default async function TheBecoming() {
               <p className="ed-off1 ed-note">{offer.refundNote}</p>
             </div>
           )}
+        </div>
+      </section>
+
+      <section className="ed-sec ed-linen" id="in-their-words">
+        <div className="ed-wrap">
+          <OneOnOneProof
+            stories={ONE_ON_ONE_STORIES}
+            shots={shotsFor("becoming")}
+            eyebrow="From 1:1 clients"
+            title={<>Twelve weeks, just us. <span className="ed-plum-text">Here&rsquo;s what it did for them.</span></>}
+          />
         </div>
       </section>
 
