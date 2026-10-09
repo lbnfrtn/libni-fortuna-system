@@ -13,7 +13,14 @@ export default async function ClientLove() {
   const stories = [...content.stories].sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
   const [first, ...rest] = stories;
   const videos = ["video_1", "video_2", "video_3", "video_4", "video_5", "video_6"].map((id) => content.videos[id] ?? "").filter((u) => resolveVideo(u));
-  const shots = ["screenshot_1", "screenshot_2", "screenshot_3", "screenshot_4", "screenshot_5", "screenshot_6"].map((id) => content.photos[id]).filter(Boolean);
+  // Real client-win screenshots (from Libni's Drive). Her Studio uploads (screenshot_1..6) win if she adds them.
+  const studioShots = ["screenshot_1", "screenshot_2", "screenshot_3", "screenshot_4", "screenshot_5", "screenshot_6"].map((id) => content.photos[id]).filter(Boolean);
+  const CLIENT_WINS = [
+    "one-call", "seeing-me", "session-today", "plot-twist", "changed-life", "first-person",
+    "boundaries", "freedom", "liberating", "danessa", "kaye-chia", "college",
+    "hypnosis", "back-pain", "peace", "enza",
+  ].map((n) => `/photos/one-on-one/dms/${n}.jpg`);
+  const shots = studioShots.length ? studioShots : CLIENT_WINS;
 
   return (
     <SitePage>
@@ -79,11 +86,11 @@ export default async function ClientLove() {
         <section className="ed-sec ed-ivory">
           <div className="ed-wrap">
             <div className="ed-head ed-reveal">
-              <div><p className="ed-eyebrow">Messages</p><h2 className="ed-display">What arrives in the inbox afterwards.</h2></div>
-              <p className="ed-lede ed-muted">Shared with permission. Names blurred where asked.</p>
+              <div><p className="ed-eyebrow">Client wins</p><h2 className="ed-display">The messages that come after.</h2></div>
+              <p className="ed-lede ed-muted">Real words from real clients, shared with permission.</p>
             </div>
             <div className="ed-shots ed-reveal">
-              {shots.map((u, i) => <img key={u} src={u} alt={`Client message ${i + 1}`} loading="lazy" />)}
+              {shots.map((u, i) => <img key={u} src={u} alt={`Client win ${i + 1}`} loading="lazy" />)}
             </div>
           </div>
         </section>
