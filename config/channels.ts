@@ -17,5 +17,7 @@ export const CHANNELS = {
 // Booking + application links (Libni, 2026-10-09). Studio "Your links" overrides these too.
 export const BOOKING = {
   calendlyPowerHour: "https://calendly.com/hello-libni/powerhour",
+  // The Becoming "alignment call" — only offered to applicants who can invest (the ₱250k filter).
+  calendlyBecoming: "https://calendly.com/hello-libni/alignment",
   tallyBecoming: "https://tally.so/r/mO2VVR",
 };

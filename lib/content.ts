@@ -363,7 +363,7 @@ function normalise(raw: Partial<SiteContent> | null | undefined): SiteContent {
     photos: raw?.photos ?? {},
     videos: raw?.videos ?? {},
     // Code defaults (config/channels.ts BOOKING) sit under whatever she sets in the Studio.
-    links: { calendlyPowerHour: BOOKING.calendlyPowerHour, ...(raw?.links ?? {}) },
+    links: { calendlyPowerHour: BOOKING.calendlyPowerHour, calendlyBecoming: BOOKING.calendlyBecoming, ...(raw?.links ?? {}) },
     podcast: raw?.podcast ?? [],
     writings: raw?.writings ?? [],
     events: raw?.events ?? [],
