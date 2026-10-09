@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { SitePage } from "@/app/components/Chrome";
-import { getOffer } from "@/config/offers";
 import { store } from "@/lib/store";
 import { DOWNLOADS, orderTokenValid } from "@/lib/downloads";
 import { peso } from "@/lib/util";
@@ -20,11 +19,10 @@ export default async function ComeHomeWelcome({ searchParams }: { searchParams: 
   const paid = ours && order!.status === "paid";
   const first = ours ? order!.contact.name.trim().split(/\s+/)[0] : "";
   const files = DOWNLOADS["come-home"];
-  const pm = getOffer("project-me");
 
   if (!ours) {
     return (
-      <SitePage>
+      <SitePage bare>
         <div className="ch">
           <section className="ch-hero ch-hero-sm">
             <div className="ed-wrap ch-welcome-head">
@@ -41,7 +39,7 @@ export default async function ComeHomeWelcome({ searchParams }: { searchParams: 
 
   if (!paid) {
     return (
-      <SitePage>
+      <SitePage bare>
         <div className="ch">
           <section className="ch-hero ch-hero-sm">
             <div className="ed-wrap ch-welcome-head">
@@ -59,7 +57,7 @@ export default async function ComeHomeWelcome({ searchParams }: { searchParams: 
   }
 
   return (
-    <SitePage>
+    <SitePage bare>
       <div className="ch">
         <section className="ch-hero ch-hero-sm">
           <div className="ed-wrap ch-welcome-head">
@@ -112,12 +110,6 @@ export default async function ComeHomeWelcome({ searchParams }: { searchParams: 
               <p className="ch-italic" style={{ marginTop: 14 }}>Because there is so much more of you waiting to be lived.</p>
             </div>
             <div className="ed-off1 ch-next">
-              <a className="ch-next-row" href={pm?.externalUrl ?? "https://projectme.libni.co"} target="_blank" rel="noreferrer">
-                <small>Every day · {pm?.pricePHP ? `${peso(pm.pricePHP)} ${pm.priceUnit ?? ""}` : "membership"}</small>
-                <h3>Project Me</h3>
-                <p>A pocket sanctuary. Daily practice, in your hands — breathwork, guided audio, journaling prompts and The Circle, a monthly live call.</p>
-                <span className="ed-link">See Project Me ↗</span>
-              </a>
               <a className="ch-next-row" href="/programs/ignite">
                 <small>1:1 · 90 minutes</small>
                 <h3>Power Hour</h3>
