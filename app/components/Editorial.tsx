@@ -162,7 +162,7 @@ export function EdFinal({ title, gold, copy, meta, ctas }: { title: ReactNode; g
 export function offerMeta(slug: string): { price: string; unit?: string; href: string; cta: string; external: boolean } {
   const o = OFFERS[slug];
   const external = o.journey === "E";
-  const href = slug === "liberate" ? "/liberate" : slug === "the-becoming" ? "/thebecoming" : external ? (o.externalUrl ?? "#") : `/programs/${slug}`;
+  const href = slug === "liberate" ? "/liberate" : slug === "the-becoming" ? "/thementorship" : external ? (o.externalUrl ?? "#") : `/programs/${slug}`;
   const price = o.hidePrice ? "By application" : o.journey === "E" && o.pricePHP ? peso(o.pricePHP) : isSellable(o) ? peso(o.pricePHP!) : o.journey === "D" ? "By proposal" : "By application";
   const cta = external ? "Open the app" : o.journey === "D" ? "Enquire" : slug === "liberate" ? "Explore Liberate" : isSellable(o) ? "Explore" : "Apply / waitlist";
   return { price, unit: o.priceUnit, href, cta, external };
