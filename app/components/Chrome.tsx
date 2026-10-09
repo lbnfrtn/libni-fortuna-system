@@ -156,7 +156,37 @@ export function SiteFooter() {
   );
 }
 
-export function SitePage({ children, navOverlay }: { children: React.ReactNode; navOverlay?: boolean }) {
+// A stripped footer for standalone landing pages (`bare`): no site navigation,
+// just a personal line on where to get help if something goes wrong.
+function BareFooter() {
+  return (
+    <footer style={{ padding: "clamp(40px, 6vw, 64px) 24px clamp(48px, 7vw, 72px)", textAlign: "center", borderTop: "1px solid var(--ed-line)", background: "var(--ed-ivory)" }}>
+      <p style={{ fontFamily: "var(--ed-sans)", fontSize: 14.5, color: "var(--ed-ink)", maxWidth: "54ch", margin: "0 auto", lineHeight: 1.75 }}>
+        Trouble with your order or download? Email{" "}
+        <a href="mailto:hello@libni.co" style={{ color: "var(--ed-plum)", fontWeight: 600 }}>hello@libni.co</a>{" "}
+        or message{" "}
+        <a href={CHANNELS.instagram} target="_blank" rel="noreferrer" style={{ color: "var(--ed-plum)", fontWeight: 600 }}>@libnifortuna</a>{" "}
+        on Instagram and I&rsquo;ll help you personally. 🤍
+      </p>
+      <p style={{ fontFamily: "var(--ed-sans)", fontSize: 12, letterSpacing: ".08em", color: "var(--ed-muted)", marginTop: 22 }}>
+        © {new Date().getFullYear()} Libni Fortuna · Come home to yourself.
+      </p>
+    </footer>
+  );
+}
+
+// `bare` = a standalone landing with no site header/footer, so visitors see only
+// this page (used for /come-home). Otherwise the full marketing chrome.
+export function SitePage({ children, navOverlay, bare }: { children: React.ReactNode; navOverlay?: boolean; bare?: boolean }) {
+  if (bare) {
+    return (
+      <>
+        <main className="ed">{children}</main>
+        <BareFooter />
+        <EditorialFx />
+      </>
+    );
+  }
   return (
     <>
       <AnnouncementBar />

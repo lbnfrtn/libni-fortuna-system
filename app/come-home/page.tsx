@@ -49,7 +49,7 @@ export default function ComeHomePage() {
   const price = peso(offer.pricePHP!);
 
   return (
-    <SitePage>
+    <SitePage bare>
       <div className="ch">
         {/* 01 — HERO */}
         <section className="ch-hero">
