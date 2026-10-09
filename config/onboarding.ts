@@ -33,7 +33,7 @@ export const ONBOARDING: Record<string, OnboardingPack> = {
     steps: [
       {
         title: "Book your session",
-        body: "Pick the time that feels right. Ninety minutes, just the two of us — online or in person, however you chose.",
+        body: "Pick the time that feels right. Ninety minutes, just the two of us, online.",
         ctaLabel: "Choose your time",
         ctaHref: "#booking", // booking calendar link pasted here at go-live
       },

@@ -13,3 +13,9 @@ export const CHANNELS = {
   tiktok: "https://www.tiktok.com/@libnifortuna",
   tedx: "https://www.youtube.com/watch?v=IOoemi9qO9g",
 };
+
+// Booking + application links (Libni, 2026-10-09). Studio "Your links" overrides these too.
+export const BOOKING = {
+  calendlyPowerHour: "https://calendly.com/hello-libni/powerhour",
+  tallyBecoming: "https://tally.so/r/mO2VVR",
+};

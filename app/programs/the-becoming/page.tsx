@@ -3,6 +3,7 @@ import { SitePage } from "@/app/components/Chrome";
 import { EdHero, EdCtas, EdCircle, EdFinal, EdVideo, tx } from "@/app/components/Editorial";
 import { getOffer } from "@/config/offers";
 import { getProgram } from "@/config/programs";
+import { BOOKING } from "@/config/channels";
 import { getContent, storyPhoto } from "@/lib/content";
 import { photoFor, resolveVideo } from "@/config/site-slots";
 import BecomingWords from "./BecomingWords";
@@ -51,7 +52,8 @@ export default async function TheBecoming() {
   const gallery = ["becoming_gallery_1", "becoming_gallery_2", "becoming_gallery_3", "becoming_gallery_4"].map((id) => content.photos[id]).filter(Boolean);
   const portal = content.photos.becoming_portal;
 
-  const apply = { label: "Apply for The Becoming", href: "/apply/the-becoming", variant: "gold" as const };
+  // Applications go to Libni's Tally form for now (her call, 2026-10-09); opens in a new tab.
+  const apply = { label: "Apply for The Becoming", href: BOOKING.tallyBecoming, variant: "gold" as const, external: true };
 
   return (
     <SitePage navOverlay>

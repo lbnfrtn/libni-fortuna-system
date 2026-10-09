@@ -39,7 +39,7 @@ export const PROGRAMS: Record<string, Program> = {
       "You want to feel what&rsquo;s underneath, gently and safely.",
     ],
     includes: [
-      "A 90-minute private session, online or in person",
+      "A 90-minute private session, online (in person by request)",
       "A short intake so I can meet you where you are",
       "Practices to take with you afterward",
     ],
@@ -49,12 +49,12 @@ export const PROGRAMS: Record<string, Program> = {
       { t: "We meet", d: "Ninety minutes of real, held work." },
     ],
     details: [
-      { label: "Format", value: "1:1 · online or in person" },
+      { label: "Format", value: "1:1 · online" },
       { label: "Length", value: "60–90 minutes" },
     ],
     faq: [
       { q: "Is this a discovery call?", a: "No. It&rsquo;s the actual work — a full session. If deeper work feels right afterward, we can talk about it." },
-      { q: "Online or in person?", a: "Either. You choose what feels safe and easy for you." },
+      { q: "Is it online?", a: "Yes &mdash; a private video call, wherever you are. If you&rsquo;d rather meet in person, that&rsquo;s by request: message me and we&rsquo;ll arrange it." },
     ],
   },
 

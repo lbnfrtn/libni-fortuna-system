@@ -17,7 +17,7 @@ export default async function IgnitePage() {
     <SitePage navOverlay>
       <EdHero
         eyebrowStrong="Libni Fortuna"
-        eyebrow="Work with me · 90 minutes · online or in person"
+        eyebrow="Work with me · 90 minutes · online"
         title={offer.name}
         xl
         lede={tx(p.tagline)}

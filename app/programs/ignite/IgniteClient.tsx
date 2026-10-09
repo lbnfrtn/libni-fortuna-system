@@ -1,18 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 
-type Step = "format" | "details" | "pay";
-type Format = "online" | "in-person";
+type Step = "details" | "pay";
 
-// Prices come from the server with the payment link; these labels only describe the two rooms.
-const FORMATS: { key: Format; name: string; line: string; price: string }[] = [
-  { key: "online", name: "Online", line: "A private video call — wherever you are, headphones on.", price: "₱7,777" },
-  { key: "in-person", name: "In person", line: "In a room together — Manila, or your city when I'm there.", price: "₱8,888" },
-];
-
+// Power Hour books online only (Libni, 2026-10-09). In person is by request —
+// a line below points people to /contact instead of a second buy button. The
+// price comes back from the server with the payment link.
 export default function IgniteClient() {
-  const [step, setStep] = useState<Step>("format");
-  const [format, setFormat] = useState<Format | null>(null);
+  const [step, setStep] = useState<Step>("details");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -29,18 +24,15 @@ export default function IgniteClient() {
     setSrc(p.get("src") || p.get("utm_source") || "");
   }, []);
 
-  const chosen = FORMATS.find((f) => f.key === format);
-
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    if (!format) return;
     setBusy(true);
     setErr("");
     try {
       const res = await fetch("/api/powerhour", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ format, name, email, phone: phone || undefined, intention: intention || undefined, consent, source: src || undefined, company_website: hp || undefined }),
+        body: JSON.stringify({ format: "online", name, email, phone: phone || undefined, intention: intention || undefined, consent, source: src || undefined, company_website: hp || undefined }),
       });
       const j = await res.json();
       if (!res.ok || !j.ok) throw new Error(j.error || "Something went wrong. Please try again.");
@@ -56,30 +48,16 @@ export default function IgniteClient() {
   return (
     <div className="ph">
       <ol className="ph-steps" aria-label="Booking steps">
-        {(["format", "details", "pay"] as Step[]).map((s, i) => (
-          <li key={s} className={step === s ? "on" : (["format", "details", "pay"].indexOf(step) > i ? "done" : "")}>
-            <i>{i + 1}</i>{["Choose", "Your details", "Pay & book"][i]}
+        {(["details", "pay"] as Step[]).map((s, i) => (
+          <li key={s} className={step === s ? "on" : (["details", "pay"].indexOf(step) > i ? "done" : "")}>
+            <i>{i + 1}</i>{["Your details", "Pay & book"][i]}
           </li>
         ))}
       </ol>
 
-      {step === "format" && (
-        <div className="ph-formats">
-          {FORMATS.map((f) => (
-            <button key={f.key} type="button" className="ph-format" onClick={() => { setFormat(f.key); setStep("details"); }}>
-              <span className="ph-format-name">{f.name}</span>
-              <span className="ph-format-price">{f.price}</span>
-              <span className="ph-format-line">{f.line}</span>
-              <span className="ed-link">Choose {f.name.toLowerCase()} →</span>
-            </button>
-          ))}
-          <p className="ph-note">Ninety minutes, just us. After you pay you'll pick a time that's yours.</p>
-        </div>
-      )}
-
-      {step === "details" && chosen && (
+      {step === "details" && (
         <form onSubmit={submit} className="ph-form">
-          <p className="ph-chosen">{chosen.name} · {chosen.price} <button type="button" className="ph-change" onClick={() => setStep("format")}>change</button></p>
+          <p className="ph-chosen">Online · 90 minutes · a private video call, wherever you are</p>
           <div className="grid2">
             <div><label>Your name</label><input value={name} onChange={(e) => setName(e.target.value)} required autoComplete="name" /></div>
             <div><label>Email</label><input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" /></div>
@@ -98,16 +76,16 @@ export default function IgniteClient() {
           {err && <p className="ph-err">{err}</p>}
           <div className="row" style={{ marginTop: 22, gap: 14 }}>
             <button className="ed-btn ed-btn-ink" disabled={busy}>{busy ? "One moment…" : "Continue to payment"}</button>
-            <button type="button" className="ed-link" style={{ background: "none", border: 0, cursor: "pointer" }} onClick={() => setStep("format")}>Back</button>
           </div>
+          <p className="ph-note" style={{ marginTop: 18 }}>Prefer to meet in person? That&rsquo;s by request — <a className="ed-link" href="/contact">message me</a> and we&rsquo;ll arrange it.</p>
         </form>
       )}
 
-      {step === "pay" && order && chosen && (
+      {step === "pay" && order && (
         <div className="ph-pay">
           <p className="ph-chosen">{order.offer} · ₱{order.amount.toLocaleString("en-PH")}</p>
           <h3>Secure your session.</h3>
-          <p className="ed-muted" style={{ maxWidth: "46ch" }}>Pay in the way that's easiest for you. The moment it clears, you'll be taken to choose your time.</p>
+          <p className="ed-muted" style={{ maxWidth: "46ch" }}>Pay in the way that&rsquo;s easiest for you. The moment it clears, you&rsquo;ll be taken straight to my calendar to choose your time.</p>
           <div className="ph-paybtns">
             {order.link && <a className="ed-btn ed-btn-gold" href={order.link}>Pay with GCash, Maya or card</a>}
             <a className="ed-btn ed-btn-ghost" href={order.manualPayUrl}>Pay by bank transfer</a>

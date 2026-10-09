@@ -1,5 +1,6 @@
 import { promises as fs } from "node:fs";
 import path from "node:path";
+import { BOOKING } from "@/config/channels";
 
 // ============================================================================
 // Site content Libni edits herself in /admin/studio — photos for each slot,
@@ -269,7 +270,7 @@ export const DEFAULT_BRANDS: Brand[] = [
 
 // The link-in-bio page, in the order Libni asked for.
 export const DEFAULT_BIO_LINKS: BioLink[] = [
-  { id: "mentorship", label: "Apply for 1:1 mentorship", note: "The Becoming · 12 weeks, just us", href: "/apply/the-becoming" },
+  { id: "mentorship", label: "Apply for 1:1 mentorship", note: "The Becoming · 12 weeks, just us", href: BOOKING.tallyBecoming },
   { id: "programs", label: "Join a program", note: "Liberate, retreats, workshops", href: "/work-with-me" },
   { id: "power-hour", label: "Book a Power Hour", note: "90 minutes to move what’s stuck", href: "/programs/ignite" },
   { id: "speaker", label: "Get me as your speaker", note: "Keynotes, workshops, retreats", href: "/speaking" },
@@ -361,7 +362,8 @@ function normalise(raw: Partial<SiteContent> | null | undefined): SiteContent {
   return {
     photos: raw?.photos ?? {},
     videos: raw?.videos ?? {},
-    links: raw?.links ?? {},
+    // Code defaults (config/channels.ts BOOKING) sit under whatever she sets in the Studio.
+    links: { calendlyPowerHour: BOOKING.calendlyPowerHour, ...(raw?.links ?? {}) },
     podcast: raw?.podcast ?? [],
     writings: raw?.writings ?? [],
     events: raw?.events ?? [],
