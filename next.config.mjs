@@ -7,9 +7,12 @@ const nextConfig = {
   async headers() {
     return [{ source: "/dl/:path*", headers: [{ key: "X-Robots-Tag", value: "noindex, nofollow" }] }];
   },
-  // The Becoming moved to the cleaner /the-mentorship URL (2026-10-09).
+  // The Becoming lives at the cleaner /thebecoming URL (2026-10-09).
   async redirects() {
-    return [{ source: "/programs/the-becoming", destination: "/the-mentorship", permanent: true }];
+    return [
+      { source: "/programs/the-becoming", destination: "/thebecoming", permanent: true },
+      { source: "/the-mentorship", destination: "/thebecoming", permanent: true },
+    ];
   },
 };
 
