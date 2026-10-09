@@ -29,8 +29,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Sorry — that didn't go through. Please try again in a moment." }, { status: 500 });
   }
   const pay = result.waitlisted ? null : await selfPayAfterApply(parsed.data);
-  // Liberate's call application: hand them the booking link if Libni has set one.
-  const book = !result.waitlisted && !pay && parsed.data.offerSlug === "liberate" ? ((await getContent()).links.calendlyLiberate || null) : null;
+  // Hand over a booking link when they qualify and Libni has set one.
+  // Liberate: any call applicant. The Becoming: only those ready to invest (the ₱250k filter) —
+  // the "start with a Power Hour" / "more details" answers are followed up on WhatsApp instead.
+  const content = !result.waitlisted && !pay ? await getContent() : null;
+  const becomingReady = parsed.data.offerSlug === "the-becoming" && /^Yes/i.test(parsed.data.answers?.investment || "");
+  const book = !content ? null
+    : parsed.data.offerSlug === "liberate" ? (content.links.calendlyLiberate || null)
+      : becomingReady ? (content.links.calendlyBecoming || null)
+        : null;
+  const callApplication = parsed.data.offerSlug === "liberate" || parsed.data.offerSlug === "the-becoming";
   return NextResponse.json({
     ok: true,
     waitlisted: result.waitlisted,
@@ -42,7 +50,7 @@ export async function POST(req: Request) {
         ? "Your place is held the moment your payment clears. Pay below, or from the link in your inbox."
         : book
           ? "Thank you. Pick a time for our call below — I'm looking forward to it."
-          : parsed.data.offerSlug === "liberate"
+          : callApplication
             ? "Thank you. I'll call you on WhatsApp in the window you chose — and there's a note in your inbox."
             : "Got it — thank you. Check your email shortly.",
   });

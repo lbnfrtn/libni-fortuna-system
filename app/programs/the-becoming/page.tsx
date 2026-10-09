@@ -3,7 +3,6 @@ import { SitePage } from "@/app/components/Chrome";
 import { EdHero, EdCtas, EdCircle, EdFinal, EdVideo, tx } from "@/app/components/Editorial";
 import { getOffer } from "@/config/offers";
 import { getProgram } from "@/config/programs";
-import { BOOKING } from "@/config/channels";
 import { getContent, storyPhoto } from "@/lib/content";
 import { photoFor, resolveVideo } from "@/config/site-slots";
 import OneOnOneProof from "@/app/components/OneOnOneProof";
@@ -61,8 +60,10 @@ export default async function TheBecoming() {
   const gallery = uploadedGallery.length ? uploadedGallery : GALLERY_FALLBACK;
   const portal = content.photos.becoming_portal;
 
-  // Applications go to Libni's Tally form for now (her call, 2026-10-09); opens in a new tab.
-  const apply = { label: "Apply for The Becoming", href: BOOKING.tallyBecoming, variant: "gold" as const, external: true };
+  // Applications run through the site's own form (her call, 2026-10-09): captures the lead in the CRM,
+  // filters on the ₱250k investment, routes "Power Hour first" to the Power Hour, and hands those
+  // who are ready straight to the booking calendar.
+  const apply = { label: "Apply for The Becoming", href: "/apply/the-becoming", variant: "gold" as const };
 
   return (
     <SitePage navOverlay>

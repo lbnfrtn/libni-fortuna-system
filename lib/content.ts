@@ -270,7 +270,7 @@ export const DEFAULT_BRANDS: Brand[] = [
 
 // The link-in-bio page, in the order Libni asked for.
 export const DEFAULT_BIO_LINKS: BioLink[] = [
-  { id: "mentorship", label: "Apply for 1:1 mentorship", note: "The Becoming · 12 weeks, just us", href: BOOKING.tallyBecoming },
+  { id: "mentorship", label: "Apply for 1:1 mentorship", note: "The Becoming · 12 weeks, just us", href: "/apply/the-becoming" },
   { id: "programs", label: "Join a program", note: "Liberate, retreats, workshops", href: "/work-with-me" },
   { id: "power-hour", label: "Book a Power Hour", note: "90 minutes to move what’s stuck", href: "/programs/ignite" },
   { id: "speaker", label: "Get me as your speaker", note: "Keynotes, workshops, retreats", href: "/speaking" },

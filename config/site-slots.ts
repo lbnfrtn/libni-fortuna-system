@@ -201,6 +201,7 @@ export function photoFor(photos: Record<string, string>, id: string): string | u
 /** Named links Libni pastes in the Studio. */
 export const LINK_FIELDS: { key: string; label: string; hint: string; placeholder: string }[] = [
   { key: "calendlyLiberate", label: "Liberate call calendar", hint: "Your Calendly (or any booking) link for the “talk to me first” call. Until it's here, applicants choose a WhatsApp window and you call them.", placeholder: "https://calendly.com/…" },
+  { key: "calendlyBecoming", label: "The Becoming call calendar", hint: "Your Calendly (or any booking) link for the discovery call. When an applicant says they’re ready to invest, they book this straight away. Until it's here, they choose a WhatsApp window and you call them.", placeholder: "https://calendly.com/…" },
   { key: "calendlyPowerHour", label: "Power Hour booking calendar", hint: "Your Calendly (or any booking) link. After someone pays for a Power Hour they land on it to pick a time. Until it's here, the page tells them you'll message within a day.", placeholder: "https://calendly.com/…" },
   { key: "instagramFeed", label: "Instagram feed (Behold)", hint: "Paste the feed link Behold gives you after you connect @libnifortuna. Your latest posts then appear at the bottom of every page.", placeholder: "https://feeds.behold.so/…" },
   { key: "spotify", label: "Spotify show", hint: "Your podcast on Spotify. The home page then shows a live player with your latest episodes.", placeholder: "https://open.spotify.com/show/…" },
