@@ -71,6 +71,8 @@ export const ONE_ON_ONE_SHOTS: ProofShot[] = [
   { src: "/photos/one-on-one/dms/8527.jpg", alt: "From the mindset, character dev, to showing up online — I learned it from you", for: ["becoming"] },
   { src: "/photos/one-on-one/dms/college.jpg", alt: "Here I am nearly reaching the finish line, because someone held space for me", for: ["becoming"] },
   { src: "/photos/one-on-one/dms/danessa.jpg", alt: "Generational trauma ends with me", for: ["becoming"] },
+  { src: "/photos/one-on-one/dms/mika-learned.jpg", alt: "Through our sessions I've learned to hold space for my emotions, respond not react, and listen to my body before my inner critic", for: ["becoming"] },
+  { src: "/photos/one-on-one/dms/yssa.jpg", alt: "I'm seeing and feeling the changes in her — she's making better choices because of the guidance you've given her", for: ["becoming"] },
 ];
 
 export function shotsFor(page: "power-hour" | "becoming"): ProofShot[] {

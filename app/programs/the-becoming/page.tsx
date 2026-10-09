@@ -8,6 +8,7 @@ import { photoFor, resolveVideo } from "@/config/site-slots";
 import OneOnOneProof from "@/app/components/OneOnOneProof";
 import BecomingJourney, { type JourneyStop } from "@/app/components/BecomingJourney";
 import { ONE_ON_ONE_STORIES, shotsFor } from "@/config/one-on-one-proof";
+import { BOOKING } from "@/config/channels";
 
 export const dynamic = "force-dynamic";
 
@@ -60,10 +61,8 @@ export default async function TheBecoming() {
   const gallery = uploadedGallery.length ? uploadedGallery : GALLERY_FALLBACK;
   const portal = content.photos.becoming_portal;
 
-  // Applications run through the site's own form (her call, 2026-10-09): captures the lead in the CRM,
-  // filters on the ₱250k investment, routes "Power Hour first" to the Power Hour, and hands those
-  // who are ready straight to the booking calendar.
-  const apply = { label: "Apply for The Becoming", href: "/apply/the-becoming", variant: "gold" as const };
+  // Applications go to Libni's Tally form for now (her call, 2026-10-09). Opens in a new tab.
+  const apply = { label: "Apply for The Becoming", href: BOOKING.tallyBecoming, variant: "gold" as const, external: true };
 
   return (
     <SitePage navOverlay>
