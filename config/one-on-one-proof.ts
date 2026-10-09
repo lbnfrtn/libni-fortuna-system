@@ -27,17 +27,17 @@ export const ONE_ON_ONE_STORIES: ProofStory[] = [
   {
     id: "jana", name: "Jana", role: "Head of Operations · 1:1 mentorship",
     quote: "I love working with Lib. She gave me space to think about what I really want. If all-in ka, all-in din siya. Libni became a door for me to see. To be clear. If you're a person who's tired of carrying things on your own, Lib can hold you until ma-feel mo na you can do it na ulit.",
-    poster: "/photos/one-on-one/posters/jana.jpg", driveFile: "Jana Testimonial Interview Landscape.mp4",
+    poster: "/photos/one-on-one/posters/jana.jpg", vimeo: "1234287461", driveFile: "Jana Testimonial Interview Landscape.mp4",
   },
   {
     id: "hannah", name: "Hannah", role: "Chef, Sydney · 1:1 mentorship",
     quote: "I'm tired of the cycle. Working with her changed my mindset. It changed my view and how I deal with things. Indeed, I can say that working with her is a safe space. After working with coach, challenges, problems, situations are much more structured in the way I know I can get through it. It's life changing.",
-    poster: "/photos/one-on-one/posters/hannah.jpg", driveFile: "Hannah with subtitle.mp4",
+    poster: "/photos/one-on-one/posters/hannah.jpg", vimeo: "1234287460", driveFile: "Hannah with subtitle.mp4",
   },
   {
     id: "zyra", name: "Zyra", role: "Mom · wife · 1:1 mentorship",
     quote: "Working with Lib is like dying a hundred times in a safe way. She was like this light at the end of the tunnel that's just there. During our one-on-ones, I could really be who I am. I got this power now that I can handle situations better. I love my life every day, even if it doesn't turn out the way that I want it to be.",
-    poster: "/photos/one-on-one/posters/zyra.jpg", driveFile: "Zyra Testimonial Landscape.mp4",
+    poster: "/photos/one-on-one/posters/zyra.jpg", vimeo: "1234287585", driveFile: "Zyra Testimonial Landscape.mp4",
   },
   {
     id: "yokie", name: "Yokie", role: "Mom · 1:1 mentorship",
@@ -47,7 +47,7 @@ export const ONE_ON_ONE_STORIES: ProofStory[] = [
   {
     id: "kay", name: "Kay", role: "Chef, Brisbane · 1:1 mentorship",
     quote: "She's so gentle and safe mag-handle ng spaces. Being in the session is not fixing. Being in the session is understanding yourself. If you're serious about your personal growth, a deep understanding about yourself, inner work — then doing it with Libni is gonna be worth it.",
-    driveFile: "Kay Testimonial Landscape.mp4",
+    vimeo: "1234287459", driveFile: "Kay Testimonial Landscape.mp4",
   },
 ];
 

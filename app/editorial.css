@@ -990,7 +990,7 @@ a.ed-talk:hover h4 { color: var(--ed-plum); }
 .oo-spot-media { max-width: 560px; }
 .oo-poster { position: relative; margin: 0; }
 .oo-poster img { width: 100%; aspect-ratio: 16 / 9; object-fit: cover; object-position: 50% 50%; display: block; border: 1px solid var(--ed-line); box-shadow: 0 34px 60px -34px rgba(36,28,42,.55); }
-.oo-poster-quiet { aspect-ratio: 16 / 9; background: linear-gradient(180deg, #efe9e4 0%, #dcd0e6 100%); display: grid; place-items: center; }
+.oo-poster-quiet { position: relative; aspect-ratio: 16 / 9; background: linear-gradient(180deg, #efe9e4 0%, #dcd0e6 100%); display: grid; place-items: center; border: 1px solid var(--ed-line); }
 .oo-initial { font-family: var(--ed-serif); font-size: 120px; color: var(--ed-plum); opacity: .5; }
 .oo-play { position: absolute; left: 18px; right: 18px; bottom: 18px; display: flex; align-items: center; gap: 12px; padding: 10px 16px 10px 10px; border: 0; border-radius: 999px; background: rgba(36,28,42,.78); color: var(--ed-ivory); font-family: var(--ed-sans); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; cursor: pointer; backdrop-filter: blur(8px); transition: background .3s, transform .3s; }
 .oo-play:hover { background: rgba(36,28,42,.95); transform: translateY(-2px); }

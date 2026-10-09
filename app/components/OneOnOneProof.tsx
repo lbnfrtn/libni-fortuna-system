@@ -17,17 +17,15 @@ function Spotlight({ stories }: { stories: ProofStory[] }) {
       <div className="oo-spot-media">
         {play && s.vimeo ? (
           <div className="oo-player"><iframe src={`https://player.vimeo.com/video/${s.vimeo}?autoplay=1&title=0&byline=0&portrait=0`} allow="autoplay; fullscreen; picture-in-picture" allowFullScreen title={`${s.name} — in their words`} /></div>
-        ) : s.poster ? (
-          <figure className="oo-poster">
-            <img src={s.poster} alt={`${s.name} — in their words`} />
+        ) : (
+          <figure className={`oo-poster${s.poster ? "" : " oo-poster-quiet"}`}>
+            {s.poster ? <img src={s.poster} alt={`${s.name} — in their words`} /> : <span className="oo-initial">{s.name.slice(0, 1)}</span>}
             {s.vimeo && (
               <button type="button" className="oo-play" onClick={() => setPlay(true)}>
                 <span className="oo-play-ring"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden><path d="M8 5v14l11-7z" /></svg></span>Watch {s.name}
               </button>
             )}
           </figure>
-        ) : (
-          <div className="oo-poster oo-poster-quiet"><span className="oo-initial">{s.name.slice(0, 1)}</span></div>
         )}
       </div>
       <div className="oo-spot-copy">
