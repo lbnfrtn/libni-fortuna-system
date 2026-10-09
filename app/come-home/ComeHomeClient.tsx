@@ -2,16 +2,15 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-/** The workbook's butterfly, drawn as a line mark. */
+/** A small botanical sprig — the Come Home emblem (Libni's call, 2026-10-09: no butterfly, it's another coach's mark). */
 export function Butterfly({ className }: { className?: string }) {
   return (
-    <svg className={className} viewBox="0 0 120 100" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" aria-hidden>
-      <path d="M60 44 C52 20 34 6 18 8 C4 10 2 26 10 36 C18 46 40 46 60 44 Z" />
-      <path d="M60 44 C68 20 86 6 102 8 C116 10 118 26 110 36 C102 46 80 46 60 44 Z" />
-      <path d="M60 46 C46 46 28 52 24 64 C20 76 30 84 40 80 C50 76 58 62 60 46 Z" />
-      <path d="M60 46 C74 46 92 52 96 64 C100 76 90 84 80 80 C70 76 62 62 60 46 Z" />
-      <path d="M60 34 V74" strokeWidth="3.4" />
-      <path d="M22 18 C34 20 44 28 50 38 M98 18 C86 20 76 28 70 38 M30 70 C38 64 46 58 52 54 M90 70 C82 64 74 58 68 54" strokeWidth="2" opacity=".45" />
+    <svg className={className} viewBox="0 0 100 130" fill="none" stroke="currentColor" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+      <path d="M50 126 C50 104 50 62 50 24" />
+      <path d="M50 92 C34 90 24 80 22 64 C40 66 49 76 50 92Z" fill="currentColor" fillOpacity=".14" />
+      <path d="M50 78 C66 76 76 66 78 50 C60 52 51 62 50 78Z" fill="currentColor" fillOpacity=".14" />
+      <path d="M50 60 C36 58 27 49 25 35 C41 37 49 46 50 60Z" fill="currentColor" fillOpacity=".14" />
+      <circle cx="50" cy="20" r="7" fill="currentColor" fillOpacity=".85" stroke="none" />
     </svg>
   );
 }
