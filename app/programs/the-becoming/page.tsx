@@ -6,7 +6,6 @@ import { getProgram } from "@/config/programs";
 import { BOOKING } from "@/config/channels";
 import { getContent, storyPhoto } from "@/lib/content";
 import { photoFor, resolveVideo } from "@/config/site-slots";
-import BecomingWords from "./BecomingWords";
 import OneOnOneProof from "@/app/components/OneOnOneProof";
 import { ONE_ON_ONE_STORIES, shotsFor } from "@/config/one-on-one-proof";
 
@@ -47,10 +46,7 @@ export default async function TheBecoming() {
   const videos = ["video_1", "video_2", "video_3"].map((id) => content.videos[id] ?? "").filter((u) => resolveVideo(u));
 
   // The Becoming's own series — case studies (with an arc) and shorter testimonies (quote only). Separate from the shared stories.
-  const cases = content.becomingStories.filter((c) => c.before || c.during || c.after);
-  const wall = content.becomingStories.filter((c) => !(c.before || c.during || c.after));
   const hasSeries = content.becomingStories.length > 0;
-  const casePhoto = (id: string) => content.photos[`case_${id}`];
   const gallery = ["becoming_gallery_1", "becoming_gallery_2", "becoming_gallery_3", "becoming_gallery_4"].map((id) => content.photos[id]).filter(Boolean);
   const portal = content.photos.becoming_portal;
 
@@ -191,23 +187,6 @@ export default async function TheBecoming() {
           </div>
         </div>
       </section>
-
-      {/* CASE STUDIES — The Becoming's own series, added in the Studio */}
-      {hasSeries && (
-        <section className="ed-sec ed-ivory">
-          <div className="ed-wrap">
-            <div className="ed-head ed-reveal">
-              <div><p className="ed-eyebrow">Case studies</p><h2 className="ed-display">What actually <span className="ed-gold">changed.</span></h2></div>
-              <p className="ed-lede ed-muted">Real people who did this exact work, one to one. Where they started, what we did, and where they are now — in their own words.</p>
-            </div>
-
-            <BecomingWords
-              cases={cases.map((c) => ({ ...c, photo: casePhoto(c.id) }))}
-              wall={wall.map((c) => ({ ...c, photo: casePhoto(c.id) }))}
-            />
-          </div>
-        </section>
-      )}
 
       {/* WORDS — the shared stories, only until The Becoming has its own series */}
       {!hasSeries && words.length > 0 && (
