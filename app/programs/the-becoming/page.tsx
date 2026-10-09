@@ -7,6 +7,8 @@ import { getContent, storyPhoto } from "@/lib/content";
 import { photoFor, resolveVideo } from "@/config/site-slots";
 import OneOnOneProof from "@/app/components/OneOnOneProof";
 import BecomingJourney, { type JourneyStop } from "@/app/components/BecomingJourney";
+import LifeWheel, { type WheelArea } from "@/app/components/LifeWheel";
+import StickyApply from "@/app/components/StickyApply";
 import { ONE_ON_ONE_STORIES, shotsFor } from "@/config/one-on-one-proof";
 import { BOOKING } from "@/config/channels";
 
@@ -40,8 +42,30 @@ const JOURNEY: JourneyStop[] = [
   { phase: "12", weeks: "Week 12", title: "The one who was here all along.", body: "Not a new you. By week twelve the shift isn’t something you have to remember to do — it’s who you are. You make decisions from a different place, and the life you’ve built can finally hold her.", arrival: true },
 ];
 
-// Real photos from the work, shown now and replaced the moment Libni uploads her own in the Studio.
-const GALLERY_FALLBACK = ["/photos/liberate/session-1.jpg", "/photos/liberate/session-2.jpg", "/photos/liberate/session-3.jpg", "/photos/liberate/inside-8.jpg"];
+// Real 1:1 moments from her Instagram highlight — Zoom sessions and the first time meeting a client in person.
+// Replaced the moment Libni uploads her own in the Studio.
+const GALLERY_FALLBACK = ["/photos/one-on-one/sessions/river.jpg", "/photos/one-on-one/sessions/cafe.jpg", "/photos/one-on-one/sessions/nadia.jpg", "/photos/one-on-one/sessions/zoom.jpg"];
+
+// One private client's own life-wheel scores, six weeks apart (April 29 → June 10), exactly as Libni shared them.
+const WHEEL: WheelArea[] = [
+  { label: "Health", before: 5, after: 10 }, { label: "Career", before: 5, after: 7 }, { label: "Love", before: 1, after: 8 }, { label: "Spirituality", before: 1, after: 6 },
+  { label: "Family", before: 5, after: 8 }, { label: "Money", before: 3, after: 7 }, { label: "Fun", before: 5, after: 9 }, { label: "Friends", before: 5, after: 10 },
+];
+// What changed for her, in Libni's words from that same post.
+const WHEEL_OUTCOMES = [
+  "More money — the by-product of self work, clarity and clearing off energies",
+  "Bigger opportunities, based on what you desire",
+  "More self-discipline and consistency",
+  "Healthier body, clearer communication",
+  "Desires manifesting",
+  "More self-love, on a deeper level",
+  "Spirituality unlocked, and a deeper understanding of how energy works",
+];
+// The faces under the hero — real 1:1 clients whose words are on this page.
+const FACES = [
+  ["/photos/one-on-one/posters/jana.jpg", "Jana"], ["/photos/one-on-one/posters/zyra.jpg", "Zyra"], ["/photos/one-on-one/posters/hannah.jpg", "Hannah"],
+  ["/photos/one-on-one/posters/yokie.jpg", "Yokie"], ["/photos/one-on-one/posters/mika.jpg", "Mika"], ["/photos/one-on-one/posters/nadia.jpg", "Nadia"],
+];
 
 export default async function TheBecoming() {
   const offer = getOffer("the-becoming")!;
@@ -78,6 +102,17 @@ export default async function TheBecoming() {
         alt="The Becoming — 1:1 mentorship with Libni Fortuna"
       />
 
+      {/* FACES — the people whose words are on this page */}
+      <section className="ed-ivory" style={{ paddingTop: 8 }}>
+        <div className="ed-wrap">
+          <div className="bk-faces ed-reveal">
+            <div className="bk-faces-row">{FACES.map(([src, name]) => <img key={name} src={src} alt={name} loading="lazy" />)}</div>
+            <p>Jana, Zyra, Hannah, Yokie, Mika, Nadia.<span>Real 1:1 clients · in their own words below</span></p>
+            <Link href="#in-their-words" className="ed-link">Hear from them</Link>
+          </div>
+        </div>
+      </section>
+
       {/* THE STORY */}
       <section className="ed-sec ed-ivory">
         <div className="ed-wrap ed-split ed-split-top">
@@ -88,6 +123,23 @@ export default async function TheBecoming() {
           </div>
           <div className="ed-off1 ed-copy ed-reveal" style={{ transitionDelay: ".15s" }}>
             {(p.longCopy ?? []).map((para, i) => <p key={i} style={{ fontSize: "clamp(17px, 1.9vw, 20px)" }}>{tx(para)}</p>)}
+          </div>
+        </div>
+      </section>
+
+      {/* THE SHIFT, MEASURED — one client's life wheel, six weeks apart */}
+      <section className="ed-sec ed-ivory" style={{ paddingTop: 0 }}>
+        <div className="ed-wrap">
+          <div className="ed-head ed-reveal">
+            <div><p className="ed-eyebrow">The shift, measured</p><h2 className="ed-display">Six weeks in. <span className="ed-plum-text">Scored by her, not by me.</span></h2></div>
+            <p className="ed-lede ed-muted">A private 1:1 client&rsquo;s own life-wheel check-in, April 29 to June 10 — exactly as Libni shared it. Watch it move, or tap Before and After.</p>
+          </div>
+          <div className="ed-reveal">
+            <LifeWheel areas={WHEEL} beforeLabel="April 29" afterLabel="June 10" />
+          </div>
+          <div className="ed-reveal" style={{ marginTop: "clamp(28px, 3.5vw, 48px)" }}>
+            <p className="ed-eyebrow">What changed for her — in Libni&rsquo;s words</p>
+            <ul className="lw-outcomes">{WHEEL_OUTCOMES.map((o) => <li key={o}>{o}</li>)}</ul>
           </div>
         </div>
       </section>
@@ -181,12 +233,16 @@ export default async function TheBecoming() {
         </div>
       </section>
 
-      {/* GALLERY — moments from the work, shown once Libni uploads them */}
+      {/* GALLERY — real 1:1 moments: Zoom sessions, and meeting clients in person */}
       {gallery.length > 0 && (
         <section className="ed-sec-sm ed-ivory" style={{ paddingTop: 0 }}>
           <div className="ed-wrap">
-            <div className={`ab-gallery ab-gallery-${gallery.length} light ed-reveal`} style={{ marginTop: 0 }}>
-              {gallery.map((src, i) => <figure key={src}><img src={src} alt={`The Becoming — moment ${i + 1}`} loading="lazy" /></figure>)}
+            <div className="ed-head ed-reveal">
+              <div><p className="ed-eyebrow">From Zoom calls to meeting in real life</p><h2 className="ed-display-md">What 1:1 with Libni actually looks like.</h2></div>
+              <p className="ed-lede ed-muted">Weekly sessions wherever you are in the world — and, when the time is right, a table for two.</p>
+            </div>
+            <div className={`ab-gallery ab-gallery-${gallery.length} light ed-reveal`} style={{ marginTop: "clamp(28px, 3.5vw, 48px)" }}>
+              {gallery.map((src, i) => <figure key={src}><img src={src} alt={`1:1 with Libni — moment ${i + 1}`} loading="lazy" /></figure>)}
             </div>
           </div>
         </section>
@@ -338,6 +394,7 @@ export default async function TheBecoming() {
         meta={[["Investment", "By application"], ["Length", "12 weeks"], ["Format", "1:1"]]}
         ctas={[apply, { label: "Say hello first", href: "/contact", variant: "light" }]}
       />
+      <StickyApply href={apply.href} label="Apply" note="The Becoming · 12 weeks, just us" />
     </SitePage>
   );
 }
