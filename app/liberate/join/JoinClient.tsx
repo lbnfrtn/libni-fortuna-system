@@ -10,7 +10,7 @@ const QR_METHODS = [
   { tag: "BPI", src: "/photos/liberate/qr-bpi.png" },
 ];
 
-export default function JoinClient({ price, count, refundNote }: { price: number; count: number; refundNote?: string }) {
+export default function JoinClient({ price, count, refundNote, callHref = "/liberate/apply" }: { price: number; count: number; refundNote?: string; callHref?: string }) {
   const [plan, setPlan] = useState<"full" | "instalment">("full");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -109,7 +109,7 @@ export default function JoinClient({ price, count, refundNote }: { price: number
         <button className="ck-pay" disabled={busy}>{busy ? "One moment…" : "Continue to secure checkout →"}</button>
         {link && <p className="ck-note" style={{ textAlign: "center" }}>Your link is ready: <a href={link}>open it here →</a></p>}
         <p className="ck-secure">🔒 100% secure payment via Xendit · GCash · Maya · Card · QR</p>
-        <p className="ck-talk">Prefer to talk first? <a href="/liberate/apply">Book a quick call →</a></p>
+        <p className="ck-talk">Want to talk to me before you join? <a href={callHref} target="_blank" rel="noreferrer">Book a call with me →</a></p>
       </form>
 
       {/* OPTION 2 — QR */}
