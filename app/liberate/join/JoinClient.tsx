@@ -95,7 +95,7 @@ export default function JoinClient({ price, count, refundNote }: { price: number
         <div className="ck-sum">
           <p className="ck-k">Order summary</p>
           <div className="ck-row"><span>Liberate — 12-week group experience</span><span>{peso(price)}</span></div>
-          <div className="ck-row ck-sub"><span>{plan === "full" ? "Pay in full" : `${count} monthly payments`}</span><span>Begins Nov 3, 2026</span></div>
+          <div className="ck-row ck-sub"><span>{plan === "full" ? "Pay in full" : `${count} monthly payments`}</span><span>Begins Nov 17, 2026</span></div>
           <div className="ck-row ck-total"><span>Due today</span><b>{peso(dueNow)}</b></div>
         </div>
 
@@ -151,7 +151,7 @@ export default function JoinClient({ price, count, refundNote }: { price: number
         <div className="ck-steps">
           <div className="ck-step"><span className="ck-n">1</span><div><b>I confirm your payment</b><p>Pay-now orders confirm automatically. Paid by QR? Email your proof and I&rsquo;ll verify it — usually within a few hours.</p></div></div>
           <div className="ck-step"><span className="ck-n">2</span><div><b>Your welcome email arrives</b><p>It has your portal access code and the full schedule. Sign in at libni.co/portal with the email you used here.</p></div></div>
-          <div className="ck-step"><span className="ck-n">3</span><div><b>You&rsquo;re in the circle</b><p>We begin Tuesday, November 3 at 7 pm (Manila) — Tuesdays with me, Thursdays with the community.</p></div></div>
+          <div className="ck-step"><span className="ck-n">3</span><div><b>You&rsquo;re in the circle</b><p>We begin Tuesday, November 17 at 7 pm (Manila) — Tuesdays with me, Thursdays with the community.</p></div></div>
         </div>
         <p className="ck-afternote">Don&rsquo;t see the email within a few minutes? Check spam / promotions, or just reply and I&rsquo;ll sort it.</p>
       </div>

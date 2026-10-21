@@ -1,7 +1,7 @@
 // Questions people ask before joining Liberate. Only facts Libni has confirmed live here —
 // anything she hasn't decided is written as "to be announced", never guessed.
 export const LIBERATE_FAQ: { q: string; a: string }[] = [
-  { q: "When does Liberate start, and when do we meet?", a: "The next circle begins Tuesday, November 3, 2026. We meet twice a week at 7 pm (Manila time): Tuesdays and Thursdays, for twelve weeks — we rest over Christmas and New Year (December 22 and 29) and continue January 5 — with the in-person retreat in the final week." },
+  { q: "When does Liberate start, and when do we meet?", a: "The next circle begins Tuesday, November 17, 2026. We meet twice a week at 7 pm (Manila time): Tuesdays and Thursdays, for twelve weeks — we rest over Christmas and New Year (December 22 and 29) and continue January 5 — with the in-person retreat in the final week." },
   { q: "What’s the difference between Tuesday and Thursday?", a: "Tuesday is the Circle — the coaching space with Libni: a check-in to be heard, then the week’s deeper work. Thursday is the Lab — the workshop space with Libni and the Liberate community, where this intake learns alongside previous Liberate students." },
   { q: "What happens after the twelve weeks?", a: "The circle doesn’t close. Liberate alumni are invited back into Thursday Labs, so you keep learning alongside every intake that follows." },
   { q: "What if I can’t make a night?", a: "Every session is recorded. The replay lands in your portal, together with that week’s practices, so you can catch up in your own time." },

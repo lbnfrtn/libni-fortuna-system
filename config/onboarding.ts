@@ -103,7 +103,7 @@ export const ONBOARDING: Record<string, OnboardingPack> = {
   workshops: { intro: "You're registered. Here's what's next.", steps: [{ title: "Save the date", body: "Details and joining instructions are on their way to your inbox." }], closing: CONTACT },
   liberate: { intro: "Welcome to the circle. Here's how we begin.", steps: [
     { title: "Open your portal", body: "Your welcome email has your access code. Sign in with the same email you paid with — the roadmap, each week's session, the replays and the practices all live there.", ctaLabel: "Go to the portal", ctaHref: "/portal/liberate" },
-    { title: "When we meet", body: "We begin Tuesday, November 3, 2026, at 7 pm (Manila). Tuesdays are the Circle with Libni; Thursdays are the Lab with the Liberate community. The link to join each session is in your portal." },
+    { title: "When we meet", body: "We begin Tuesday, November 17, 2026, at 7 pm (Manila). Tuesdays are the Circle with Libni; Thursdays are the Lab with the Liberate community. The link to join each session is in your portal." },
     { title: "Before week one", body: "A letter from Libni will arrive in the days before we start with everything you need. Nothing to prepare but yourself." },
   ], closing: CONTACT },
   "founders-circle": { intro: "Your seat at the table is confirmed.", steps: [{ title: "Details", body: "Date, place and who else is coming will follow by email." }], closing: CONTACT },

@@ -113,7 +113,7 @@ const WEEKS: JourneyWeek[] = [
 
 // Tuesday circle dates for the November 2026 cohort. Thursdays follow two days later.
 // We rest on Dec 22 and 29 and continue January 5.
-const WEEK_DATES = ["Nov 3", "Nov 10", "Nov 17", "Nov 24", "Dec 1", "Dec 8", "Dec 15", "Jan 5", "Jan 12", "Jan 19", "Jan 26", "Feb 2"];
+const WEEK_DATES = ["Nov 17", "Nov 24", "Dec 1", "Dec 8", "Dec 15", "Jan 5", "Jan 12", "Jan 19", "Jan 26", "Feb 2", "Feb 9", "Feb 16"];
 
 const RETREAT_TILES: [string, string, string][] = [
   ["retreat_1", "Floating — a sound bath on the water", "/photos/liberate/retreat-1.jpg"],
@@ -705,7 +705,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <h1 className="lb-hero-title">Liberate</h1>
           <p className="lb-hero-lede">Stop abandoning yourself to keep everything else together.</p>
           <p className="lb-hero-sub lb-hero-sub2">To feel safe in your body. Clear in your boundaries. Free in your energy.</p>
-          <p className="lb-hero-meta"><span>We begin</span><strong>November 3, 2026 · 7 pm</strong></p>
+          <p className="lb-hero-meta"><span>We begin</span><strong>November 17, 2026 · 7 pm</strong></p>
           <div className="lb-ctas">
             <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">I’m ready to Liberate</a>
             <a href="#for-you" className="lb-btn lb-btn-light">Is this for me?</a>
@@ -806,7 +806,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           </div>
           <div className="lb-head lb-reveal" style={{ marginTop: "clamp(56px, 7vw, 96px)", marginBottom: 0 }}>
             <div><p className="lb-eyebrow">Week by week</p><h3 className="lb-h3">Your twelve weeks, dated.</h3></div>
-            <p className="lb-muted" style={{ fontSize: 15, maxWidth: "40ch" }}>Tap a week. Tuesdays are the Circle, Thursdays the Lab. We begin November 3 and rest over Christmas and New Year.</p>
+            <p className="lb-muted" style={{ fontSize: 15, maxWidth: "40ch" }}>Tap a week. Tuesdays are the Circle, Thursdays the Lab. We begin November 17 and rest over Christmas and New Year.</p>
           </div>
           <div className="lb-journey lb-reveal">
             <div className="lb-journey-track" role="tablist" aria-label="The twelve weeks">
@@ -1172,11 +1172,11 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <div className="lb-copy lb-reveal" style={{ transitionDelay: ".15s" }}>
             <p>Break free from the emotional weight you’ve been carrying. From the people-pleasing, the patterns, the quiet exhaustion that’s become your normal.</p>
             <p>Liberate is your space to unravel, rebuild, and rise. This is your next chapter, and it doesn’t have to be written in pain.</p>
-            <p style={{ color: "var(--lb-ivory)" }}>We begin November 3, 2026, at 7 pm. Spots are limited and held with intention.</p>
+            <p style={{ color: "var(--lb-ivory)" }}>We begin November 17, 2026, at 7 pm. Spots are limited and held with intention.</p>
           </div>
           <div className="lb-final-meta lb-reveal" style={{ transitionDelay: ".25s" }}>
             <div>Liberate<b>12 weeks · Tuesdays &amp; Thursdays, 7 pm</b></div>
-            <div>We begin<b>November 3, 2026</b></div>
+            <div>We begin<b>November 17, 2026</b></div>
             <div>Investment<b>{price}</b></div>
           </div>
           <div className="lb-ctas lb-reveal" style={{ transitionDelay: ".35s" }}>
@@ -1188,7 +1188,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
 
       <div className={`lb-sticky${stuck ? " is-on" : ""}`} aria-hidden={!stuck}>
         <div className="lb-wrap lb-sticky-in">
-          <p><span>Begins November 3, 2026 · 7 pm</span><em>{price}{perMonth ? ` or ${offer.instalmentCount} × ${perMonth}` : ""}</em></p>
+          <p><span>Begins November 17, 2026 · 7 pm</span><em>{price}{perMonth ? ` or ${offer.instalmentCount} × ${perMonth}` : ""}</em></p>
           <div className="lb-ctas">
             <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">Join</a>
             <Link href="/liberate/apply" className="lb-btn lb-btn-light">Talk first</Link>

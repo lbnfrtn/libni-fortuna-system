@@ -292,7 +292,7 @@ Everything for our twelve weeks together lives in your portal — the roadmap, e
 
 Sign in with this email. Your access code: {{access_code}}
 
-We begin Tuesday, November 3, at 7 pm (Manila). Tuesdays are the Circle, with me. Thursdays are the Lab, with the Liberate community. The link to join is in your portal.
+We begin Tuesday, November 17, at 7 pm (Manila). Tuesdays are the Circle, with me. Thursdays are the Lab, with the Liberate community. The link to join is in your portal.
 
 Take what you need, when you need it. See you in week one.
 
@@ -318,7 +318,7 @@ Tuesday, 7 pm (Manila). The link is in your portal: {{portal_link}}. Come five m
 
 I'll be there before you are.
 
-— Libni`, "2026-11-02"],
+— Libni`, "2026-11-16"],
     [2, "After our first night", `{{first_name}},
 
 Thank you for last night. The first Circle is always the one that asks the most of you.
@@ -327,7 +327,7 @@ The replay is in your portal: {{portal_link}}. On Thursday at 7 pm we meet again
 
 If anything came up for you, write it down before it fades. That's the work beginning.
 
-— Libni`, "2026-11-04"],
+— Libni`, "2026-11-18"],
     [1, "We rest for a while", `{{first_name}},
 
 We pause for the holidays. No sessions on December 22, 24, 29 and 31 — we gather again on Tuesday, January 5, at 7 pm.
@@ -347,7 +347,7 @@ Your portal — the replays, the practices — stays with you: {{portal_link}}.
 
 I'm proud of you. Thank you for trusting the room.
 
-— Libni`, "2027-02-03"],
+— Libni`, "2027-02-17"],
   ]),
 
   S("paid-general", "Paid · everything else", "Any other program is paid — studio sessions, workshops, retreats, bespoke experiences.", ["paid:*"], [

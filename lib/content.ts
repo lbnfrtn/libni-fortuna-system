@@ -309,7 +309,7 @@ const ROADMAP: [string, string][] = [
 ];
 
 // Tuesday circle dates for the November 2026 cohort (rest on Dec 22 and 29).
-export const LIBERATE_TUESDAYS = ["2026-11-03", "2026-11-10", "2026-11-17", "2026-11-24", "2026-12-01", "2026-12-08", "2026-12-15", "2027-01-05", "2027-01-12", "2027-01-19", "2027-01-26", "2027-02-02"];
+export const LIBERATE_TUESDAYS = ["2026-11-17", "2026-11-24", "2026-12-01", "2026-12-08", "2026-12-15", "2027-01-05", "2027-01-12", "2027-01-19", "2027-01-26", "2027-02-02", "2027-02-09", "2027-02-16"];
 
 export const DEFAULT_LIBERATE: LiberateHQ = {
   cohortLabel: "November 2026 cohort",
