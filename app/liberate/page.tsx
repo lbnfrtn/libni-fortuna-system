@@ -13,7 +13,9 @@ export const metadata = {
 };
 
 export default async function LiberatePage() {
-  const { photos, videos: videoSlots, stories, liberateWords } = await getContent();
+  const { photos, videos: videoSlots, stories, liberateWords, links } = await getContent();
+  // The "talk to me first" buttons book the Liberate alignment call; until a link is set they fall back to the details form.
+  const callHref = links.calendlyLiberate || "/liberate/apply";
   const videoUrls = Array.from({ length: 10 }, (_, i) => videoSlots[`lib_video_${i + 1}`] ?? "").filter((u) => resolveVideo(u));
   // The curated ten always show. Studio links that resolve to a real video are added after them
   // (same Vimeo id = already in the set); raw uploads without a poster or name are skipped.
@@ -29,7 +31,7 @@ export default async function LiberatePage() {
     : (tagged.length ? tagged : stories.filter((s) => s.featured)).map((s) => ({ id: s.id, q: s.quote, who: s.name, role: s.role, photo: photos[`story_${s.id}`] }));
   return (
     <SitePage navOverlay>
-      <LiberateClient photos={photos} words={words} videos={videos} clips={clips} />
+      <LiberateClient photos={photos} words={words} videos={videos} clips={clips} callHref={callHref} />
     </SitePage>
   );
 }

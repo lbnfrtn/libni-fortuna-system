@@ -19,5 +19,7 @@ export const BOOKING = {
   calendlyPowerHour: "https://calendly.com/hello-libni/powerhour",
   // The Becoming "alignment call" — only offered to applicants who can invest (the ₱250k filter).
   calendlyBecoming: "https://calendly.com/hello-libni/alignment",
+  // Liberate "alignment call" — for people who want to talk before they join (Libni, 2026-10-21).
+  calendlyLiberate: "https://calendly.com/hello-libni/liberate-alignment-call",
   tallyBecoming: "https://tally.so/r/mO2VVR",
 };

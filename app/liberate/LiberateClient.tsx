@@ -237,7 +237,7 @@ function Face({ src, name, size = 56 }: { src?: string; name: string; size?: num
 }
 
 
-export default function LiberateClient({ photos = {}, words: incoming, videos: incomingVideos = [], clips: incomingClips = [] }: { photos?: Photos; words?: Word[]; videos?: Video[]; clips?: Clip[] }) {
+export default function LiberateClient({ photos = {}, words: incoming, videos: incomingVideos = [], clips: incomingClips = [], callHref = "/liberate/apply" }: { photos?: Photos; words?: Word[]; videos?: Video[]; clips?: Clip[]; callHref?: string }) {
   const clips: Clip[] = incomingClips.length ? incomingClips : DEFAULT_CLIPS;
   const [week, setWeek] = useState(1);
   const [plan, setPlan] = useState<"full" | "instalment">("full");
@@ -1112,7 +1112,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
             <p className="lb-eyebrow">The investment</p>
             <h2 className="lb-display" style={{ marginTop: 14, maxWidth: "12ch" }}>One payment, or three.</h2>
             <p className="lb-lede lb-muted" style={{ marginTop: 18, maxWidth: "26ch" }}>Your place is held the moment it clears.</p>
-            <p className="lb-note" style={{ marginTop: 18, maxWidth: "46ch" }}>Nothing is charged until you choose to. GCash, Maya, cards and bank transfer all work. Need a different arrangement? <Link href="/liberate/apply" style={{ textDecoration: "underline" }}>Talk to me first</Link>.</p>
+            <p className="lb-note" style={{ marginTop: 18, maxWidth: "46ch" }}>Nothing is charged until you choose to. GCash, Maya, cards and bank transfer all work. Need a different arrangement? <a href={callHref} target="_blank" rel="noreferrer" style={{ textDecoration: "underline" }}>Talk to me first</a>.</p>
             <p className="lb-lede" style={{ marginTop: 30, maxWidth: "30ch", fontSize: "clamp(20px, 1.9vw, 25px)" }}>This isn’t an investment in more information. It’s an investment in having the space, structure and community to actually live what you already know.</p>
             <div style={{ marginTop: 34 }}>
               <p className="lb-eyebrow" style={{ marginBottom: 14 }}>What you receive</p>
@@ -1142,7 +1142,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
               </div>
               <a href={`/liberate/join${plan === "instalment" ? "?plan=monthly" : ""}`} target="_blank" rel="noreferrer" className="lb-btn lb-btn-ink lb-checkout-cta">Join Liberate →</a>
               <p className="lb-checkout-fine">Opens in a new tab · GCash · Maya · Cards · Bank transfer</p>
-              <p className="lb-checkout-fine" style={{ marginTop: 6 }}>Not sure yet? <Link href="/liberate/apply" style={{ textDecoration: "underline", color: "var(--lb-ink)" }}>Talk to me first</Link></p>
+              <p className="lb-checkout-fine" style={{ marginTop: 6 }}>Not sure yet? <a href={callHref} target="_blank" rel="noreferrer" style={{ textDecoration: "underline", color: "var(--lb-ink)" }}>Talk to me first</a></p>
             </div>
             <p className="lb-refund">Liberate does not offer refunds — this space is built on alignment, not urgency. If you’re unsure, take your time and say yes only when it’s a full yes. Retreat stay and meals are covered; transport is your own.</p>
           </div>
@@ -1181,7 +1181,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           </div>
           <div className="lb-ctas lb-reveal" style={{ transitionDelay: ".35s" }}>
             <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">I’m ready to Liberate</a>
-            <Link href="/liberate/apply" className="lb-btn lb-btn-light">Talk to me first</Link>
+            <a href={callHref} target="_blank" rel="noreferrer" className="lb-btn lb-btn-light">Talk to me first</a>
           </div>
         </div>
       </section>
@@ -1191,7 +1191,7 @@ export default function LiberateClient({ photos = {}, words: incoming, videos: i
           <p><span>Begins November 17, 2026 · 7 pm</span><em>{price}{perMonth ? ` or ${offer.instalmentCount} × ${perMonth}` : ""}</em></p>
           <div className="lb-ctas">
             <a href="/liberate/join" target="_blank" rel="noreferrer" className="lb-btn lb-btn-gold">Join</a>
-            <Link href="/liberate/apply" className="lb-btn lb-btn-light">Talk first</Link>
+            <a href={callHref} target="_blank" rel="noreferrer" className="lb-btn lb-btn-light">Talk first</a>
           </div>
         </div>
       </div>
