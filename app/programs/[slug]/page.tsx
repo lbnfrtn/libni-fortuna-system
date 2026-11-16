@@ -3,6 +3,7 @@ import { SitePage } from "@/app/components/Chrome";
 import { EdHero, EdWords, EdFinal, tx } from "@/app/components/Editorial";
 import { getOffer, isSellable } from "@/config/offers";
 import { getProgram } from "@/config/programs";
+import { PROJECT_ME_LIVE } from "@/config/launch";
 import { img } from "@/config/media";
 import { peso } from "@/lib/util";
 import { getContent, storyPhoto, storiesFor, talkSurfaces, byDateDesc, isUpcoming, talkPhotos, type TalkSurface } from "@/lib/content";
@@ -26,6 +27,7 @@ const REAL_PHOTO: Record<string, string> = {
 export default async function ProgramPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   if (slug === "liberate") redirect("/liberate");
+  if (slug === "project-me" && !PROJECT_ME_LIVE) notFound();
   const offer = getOffer(slug);
   const p = getProgram(slug);
   if (!offer || !p) notFound();

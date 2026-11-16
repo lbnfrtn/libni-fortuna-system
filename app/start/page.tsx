@@ -1,13 +1,14 @@
 import { SitePage } from "@/app/components/Chrome";
 import { EdHeroSimple } from "@/app/components/Editorial";
 import { listOffers } from "@/config/offers";
+import { PROJECT_ME_LIVE } from "@/config/launch";
 import StartClient from "./StartClient";
 
 export const dynamic = "force-dynamic";
 
 export default function StartPage() {
   const offers = listOffers()
-    .filter((o) => o.track === "consumer" && !o.hideFromStart)
+    .filter((o) => o.track === "consumer" && !o.hideFromStart && (PROJECT_ME_LIVE || o.slug !== "project-me"))
     .map((o) => ({
       slug: o.slug,
       name: o.name,

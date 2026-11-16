@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { PROJECT_ME_LIVE } from "@/config/launch";
 
 type OfferLite = { slug: string; name: string; blurb: string; journey: string; externalUrl: string | null; waitlist: boolean };
 
@@ -64,7 +65,7 @@ export default function StartClient({ offers }: { offers: OfferLite[] }) {
               <Choice block on={looking === "sound"} onClick={() => setLooking("sound")} label="Sound, breathwork, nervous-system reset" />
               <Choice block on={looking === "group"} onClick={() => setLooking("group")} label="To grow alongside others in a group" />
               <Choice block on={looking === "retreat"} onClick={() => setLooking("retreat")} label="To get away — a retreat" />
-              <Choice block on={looking === "daily"} onClick={() => setLooking("daily")} label="Daily practice I can do on my own" />
+              {PROJECT_ME_LIVE && <Choice block on={looking === "daily"} onClick={() => setLooking("daily")} label="Daily practice I can do on my own" />}
               <Choice block on={looking === "bespoke"} onClick={() => setLooking("bespoke")} label="Something private and bespoke" />
             </div>
 

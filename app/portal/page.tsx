@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { currentMember, PROGRAM_HOME } from "@/lib/portal-auth";
 import { getContent } from "@/lib/content";
 import PortalLogin from "./PortalLogin";
+import { PROJECT_ME_LIVE } from "@/config/launch";
 
 export const dynamic = "force-dynamic";
 
@@ -11,6 +12,7 @@ const PROGRAMS = [
   { key: "one-on-one", name: "1:1 with Libni", note: "The Becoming · Power Hour", href: "/portal?program=one-on-one" },
   { key: "project-me", name: "Project Me", note: "The daily-practice app", href: "https://projectme.libni.co", external: true },
 ] as const;
+const VISIBLE_PROGRAMS = PROGRAMS.filter((p) => PROJECT_ME_LIVE || p.key !== "project-me");
 
 export default async function PortalPage({ searchParams }: { searchParams: Promise<{ program?: string }> }) {
   const me = await currentMember();
@@ -50,7 +52,7 @@ export default async function PortalPage({ searchParams }: { searchParams: Promi
               <p className="ed-eyebrow">Sign in</p>
               <h1 className="ed-display-md" style={{ marginTop: 12, marginBottom: 28 }}>Which program are you in?</h1>
               <div className="pt-pick">
-                {PROGRAMS.map((p) =>
+                {VISIBLE_PROGRAMS.map((p) =>
                   "external" in p
                     ? <a key={p.key} href={p.href} target="_blank" rel="noreferrer"><b>{p.name}</b><span>{p.note}</span><i>Opens the app ↗</i></a>
                     : <Link key={p.key} href={p.href}><b>{p.name}</b><span>{p.note}</span><i>Sign in →</i></Link>

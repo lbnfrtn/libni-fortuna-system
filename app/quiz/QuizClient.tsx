@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { PROJECT_ME_LIVE } from "@/config/launch";
 import Link from "next/link";
 
 // "Which space are you in?" — maps to Libni's five-space framework, then
@@ -45,7 +46,7 @@ const DOOR_Q: { q: string; opts: { t: string; d: Door }[] } = {
   q: "How much support feels right for this season?",
   opts: [
     { t: "One honest conversation to start.", d: "ignite" },
-    { t: "A gentle daily practice I can keep.", d: "project-me" },
+    ...(PROJECT_ME_LIVE ? [{ t: "A gentle daily practice I can keep.", d: "project-me" as Door }] : []),
     { t: "A few days away to fully reset.", d: "essence-retreat" },
     { t: "Deep 1:1 work over a full season.", d: "the-becoming" },
     { t: "A circle — I don't want to do this alone.", d: "liberate" },

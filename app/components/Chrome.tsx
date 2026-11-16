@@ -2,6 +2,7 @@ import Link from "next/link";
 import EditorialFx from "./EditorialFx";
 import InstagramStrip from "./InstagramStrip";
 import { CHANNELS } from "@/config/channels";
+import { PROJECT_ME_LIVE } from "@/config/launch";
 
 type NavLink = { label: string; href: string; external?: boolean };
 type NavItem = NavLink & { children?: NavLink[] };
@@ -19,7 +20,7 @@ const NAV: NavItem[] = [
       { label: "Curate an Experience", href: "/experiences" },
       { label: "For Your Company", href: "/programs/organizations" },
       { label: "Speaking & Stages", href: "/speaking" },
-      { label: "Project Me · The App", href: "https://projectme.libni.co", external: true },
+      ...(PROJECT_ME_LIVE ? [{ label: "Project Me · The App", href: "https://projectme.libni.co", external: true }] : []),
     ],
   },
   { label: "Client Stories", href: "/client-love" },
@@ -33,7 +34,7 @@ const NAV: NavItem[] = [
       { label: "Subscribe to My Newsletter", href: "/resources#newsletter" },
     ],
   },
-  { label: "Project Me", href: "https://projectme.libni.co", external: true },
+  ...(PROJECT_ME_LIVE ? [{ label: "Project Me", href: "https://projectme.libni.co", external: true }] : []),
   { label: "Contact", href: "/contact" },
 ];
 
@@ -144,7 +145,7 @@ export function SiteFooter() {
           <div>
             <h4>Member access</h4>
             <Link href="/portal">Member log in</Link>
-            <a href="https://projectme.libni.co" target="_blank" rel="noreferrer">Project Me</a>
+            {PROJECT_ME_LIVE && <a href="https://projectme.libni.co" target="_blank" rel="noreferrer">Project Me</a>}
           </div>
         </div>
         <p className="ed-footnote">

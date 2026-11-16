@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PROJECT_ME_LIVE } from "@/config/launch";
 import { SitePage } from "@/app/components/Chrome";
 import { EdFinal, offerMeta, opensInNewTab, tx } from "@/app/components/Editorial";
 import { OFFERS } from "@/config/offers";
@@ -175,7 +176,8 @@ export default async function WorkWithMe() {
         </div>
       </section>
 
-      {/* PROJECT ME */}
+      {/* PROJECT ME — hidden until launch (config/launch.ts) */}
+      {PROJECT_ME_LIVE && (
       <section className="ed-sec ww-pm" id="project-me">
         <div className="ed-wrap">
           <div className="ww-pm-grid">
@@ -203,6 +205,7 @@ export default async function WorkWithMe() {
           </div>
         </div>
       </section>
+      )}
 
       <EdFinal
         title="Still not sure where to begin?"
