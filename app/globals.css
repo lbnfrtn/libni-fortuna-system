@@ -469,3 +469,8 @@ th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: 
 .ck-step p { font-size: 14px; color: var(--muted); margin-top: 2px; }
 .ck-afternote { margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(91,68,112,.18); font-size: 13px; color: var(--muted); text-align: center; }
 @media (max-width: 560px) { .ck-plans, .ck-qrgrid { grid-template-columns: 1fr; } }
+
+/* Newsletter page — Libni's Flodesk form, framed as the page */
+.nl-wrap { display: block; }
+.nl-frame { display: block; width: 100%; border: 0; min-height: 900px; height: calc(100vh - 72px); background: #faf6f0; }
+@media (max-width: 720px) { .nl-frame { height: auto; min-height: 100vh; } }
