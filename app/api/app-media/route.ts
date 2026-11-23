@@ -3,7 +3,6 @@
 // reading. Public data only — nothing here is private or writable.
 import { NextRequest, NextResponse } from "next/server";
 import { getContent, byDateDesc } from "@/lib/content";
-import { photoFor } from "@/config/site-slots";
 import { CHANNELS } from "@/config/channels";
 import { safeHtml } from "@/lib/safe-html";
 
@@ -13,6 +12,25 @@ const ALLOW = new Set(["https://app.libni.co", "http://localhost:8899"]);
 const SITE = "https://libni.co";
 // Libni's picks for the app (2026-11-24): leave these out of the app only — the website keeps them.
 const APP_HIDE = /byaheng|dxfe|abante/i;
+// Cover images for items without a YouTube/Spotify thumbnail or a Studio photo (press_<id>).
+// Outlet images = each article's own share image (og:image), checked 2026-11-24. Facebook's image
+// links expire, so those clips (and Manila Bulletin, which blocks lookups) use Libni's own photos.
+const THUMB: Record<string, string> = {
+  "vogue-hypnotherapy-sound-bath": "https://assets.vogue.ph/wp-content/uploads/2026/03/inner-child-healing-bianca-custodio-experience-vogue-philippines-wellness-L.webp",
+  "vogue-editor-sound-bath": "https://assets.vogue.ph/wp-content/uploads/2026/02/danyl-geneciran-pompi-editors-experience-sound-bath-L.webp",
+  "bilyonaryo-face-their-shadows": "https://bnc.bilyonaryo.com/wp-content/uploads/2026/06/girl3.jpg",
+  "bilyonaryo-depression-expression": "https://bnc.bilyonaryo.com/wp-content/uploads/2026/06/girl.jpg",
+  "bilyonaryo-people-pleasing": "https://bnc.bilyonaryo.com/wp-content/uploads/2026/06/girl2.jpg",
+  "philstar-awr-asia-lotus": "https://media.philstar.com/photos/2026/06/19/switchplay-yoga-40_2026-06-19_16-22-41.jpg",
+  "preview-sound-baths-manila": "https://images.preview.ph/preview/dynsto/1772428764-7E5286C3-FECA-4496-BF52-C4BE71B91552_1_201_a.jpeg",
+  "when-in-manila-floatation": "https://www.wheninmanila.com/wp-content/uploads/2025/09/FINAL-Article-HeaderFeatured-Image-Template.png",
+  "genz-mag-goal-getters": "https://ph.genz-mag.com/wp-content/uploads/2025/05/GRWM-May-24-0885-scaled.jpg",
+  "manila-standard-influencers": "https://cdn.manilastandard.net/wp-content/uploads/2025/05/GRWM-May-24-0238-scaled.jpeg",
+  "mb-emotional-safety": "/photos/liberate-libni-thought.jpg",
+  "rise-and-shine-pilipinas": "/photos/libni-portrait.jpg",
+  "rise-and-shine-mental-health": "/photos/liberate-libni-warm.jpg",
+  "bilyonaryo-floatation-feature": "/photos/libni-hero.jpg",
+};
 // BNC's Daily Dish is a TV programme even when the Studio files it under podcasts.
 const kindFor = (p: { kind: string; outlet: string }) => (/bilyonaryo news/i.test(p.outlet) ? "tv" : p.kind);
 
@@ -64,12 +82,12 @@ export async function GET(req: NextRequest) {
   const shown = content.press.filter((p) => p.url && /^https:\/\//.test(p.url) && !APP_HIDE.test(`${p.outlet} ${p.id}`)).sort(byDateDesc);
   const interviews = shown
     .filter((p) => p.kind !== "article")
-    .map((p) => ({ id: p.id, title: p.title, outlet: p.outlet, date: p.date || null, kind: kindFor(p), url: p.url, image: ytThumb(p.url) || abs(photoFor(content.photos, `press_${p.id}`)) || null }))
+    .map((p) => ({ id: p.id, title: p.title, outlet: p.outlet, date: p.date || null, kind: kindFor(p), url: p.url, image: abs(content.photos[`press_${p.id}`]) || ytThumb(p.url) || abs(THUMB[p.id]) || null }))
     .sort((a, b) => Number(/tedx/i.test(b.outlet)) - Number(/tedx/i.test(a.outlet)));
   await Promise.all(interviews.map(async (v) => { if (!v.image) v.image = (await spotifyThumb(v.url)) || null; }));
   const features = shown
     .filter((p) => p.kind === "article")
-    .map((p) => ({ id: p.id, title: p.title, outlet: p.outlet, date: p.date || null, url: p.url }));
+    .map((p) => ({ id: p.id, title: p.title, outlet: p.outlet, date: p.date || null, url: p.url, image: abs(content.photos[`press_${p.id}`]) || abs(THUMB[p.id]) || null }));
   const res = NextResponse.json({ interviews, features, letters: posts, substack: CHANNELS.substack, updated: Date.now() });
   res.headers.set("Cache-Control", "public, s-maxage=900, stale-while-revalidate=3600");
   return cors(req, res);
