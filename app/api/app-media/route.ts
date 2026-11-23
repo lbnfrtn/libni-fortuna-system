@@ -5,6 +5,9 @@ import { NextRequest, NextResponse } from "next/server";
 import { getContent, byDateDesc } from "@/lib/content";
 import { CHANNELS } from "@/config/channels";
 import { safeHtml } from "@/lib/safe-html";
+// Every upload on youtube.com/@libnifortuna_ (id, title), captured 2026-11-24. New uploads come from the channel feed below.
+import YT_VIDEOS from "@/config/youtube-videos.json";
+const YT_CHANNEL = "UCx0NrqMF-WmZ8eB_Jggf3Hg";
 
 export const dynamic = "force-dynamic";
 
@@ -56,6 +59,16 @@ async function spotifyThumb(u?: string): Promise<string | undefined> {
   } catch { return undefined; }
 }
 
+// Her YouTube videos (so the app can offer "Watch" on podcast episodes that also exist as video).
+async function videos(): Promise<[string, string][]> {
+  const all = new Map<string, string>((YT_VIDEOS as [string, string][]).map(([id, t]) => [id, t]));
+  try {
+    const r = await fetch(`https://www.youtube.com/feeds/videos.xml?channel_id=${YT_CHANNEL}`, { next: { revalidate: 3600 } });
+    if (r.ok) for (const m of (await r.text()).matchAll(/<entry>[\s\S]*?<yt:videoId>([\w-]{11})<\/yt:videoId>[\s\S]*?<title>([\s\S]*?)<\/title>/g)) all.set(m[1], plain(m[2]));
+  } catch { /* the saved list is enough */ }
+  return [...all.entries()];
+}
+
 async function letters() {
   try {
     const r = await fetch(CHANNELS.substackRss, { headers: { "User-Agent": "LibniFortuna/1.0" }, next: { revalidate: 900 } });
@@ -78,7 +91,7 @@ async function letters() {
 }
 
 export async function GET(req: NextRequest) {
-  const [content, posts] = await Promise.all([getContent(), letters()]);
+  const [content, posts, vids] = await Promise.all([getContent(), letters(), videos()]);
   const shown = content.press.filter((p) => p.url && /^https:\/\//.test(p.url) && !APP_HIDE.test(`${p.outlet} ${p.id}`)).sort(byDateDesc);
   const interviews = shown
     .filter((p) => p.kind !== "article")
@@ -88,7 +101,7 @@ export async function GET(req: NextRequest) {
   const features = shown
     .filter((p) => p.kind === "article")
     .map((p) => ({ id: p.id, title: p.title, outlet: p.outlet, date: p.date || null, url: p.url, image: abs(content.photos[`press_${p.id}`]) || abs(THUMB[p.id]) || null }));
-  const res = NextResponse.json({ interviews, features, letters: posts, substack: CHANNELS.substack, updated: Date.now() });
+  const res = NextResponse.json({ interviews, features, letters: posts, videos: vids, substack: CHANNELS.substack, updated: Date.now() });
   res.headers.set("Cache-Control", "public, s-maxage=900, stale-while-revalidate=3600");
   return cors(req, res);
 }
